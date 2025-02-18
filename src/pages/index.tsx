@@ -5,6 +5,7 @@ import Seo from '../components/atoms/Seo';
 import Hero from '../components/organisms/Hero';
 import Hero2 from '../components/organisms/Hero2';
 import Cursor from '../components/atoms/Cursor';
+import Sections from '../components/molecules/Sections';
 
 const IndexPage = () => {
   return (
@@ -18,6 +19,7 @@ const IndexPage = () => {
           Become an UUUKer
         </h1>
       </div>
+      <Sections />
     </main>
   )
 }
