@@ -1,17 +1,13 @@
 import React, { useEffect, useRef, useState } from "react"
 
 const Cursor = () => {
-  // Ref for the outer container to update its position directly.
   const containerRef = useRef<HTMLDivElement>(null)
-  // Refs to track the mouse and smoothed position.
   const positionRef = useRef({ x: 0, y: 0 })
   const smoothPositionRef = useRef({ x: 0, y: 0 })
   const requestRef = useRef<number>()
 
-  // State for the scale, which changes on mouse events only.
   const [scale, setScale] = useState(1)
 
-  // Update mouse position on move.
   useEffect(() => {
     const moveCursor = (event: MouseEvent) => {
       positionRef.current = { x: event.clientX, y: event.clientY }
@@ -23,14 +19,11 @@ const Cursor = () => {
     }
   }, [])
 
-  // Smoothly animate the outer container’s position using requestAnimationFrame.
   useEffect(() => {
     const animate = () => {
-      // Ease the transition by interpolating between the current and target positions.
       smoothPositionRef.current.x += (positionRef.current.x - smoothPositionRef.current.x) * 0.2
       smoothPositionRef.current.y += (positionRef.current.y - smoothPositionRef.current.y) * 0.2
 
-      // Directly update the container's transform style.
       if (containerRef.current) {
         containerRef.current.style.transform = `translate3d(${smoothPositionRef.current.x - 20}px, ${smoothPositionRef.current.y - 20}px, 0)`
       }
@@ -42,7 +35,6 @@ const Cursor = () => {
     }
   }, [])
 
-  // Handle mouse down/up events to adjust scale.
   useEffect(() => {
     const handleMouseDown = () => {
       setScale(0.7)
