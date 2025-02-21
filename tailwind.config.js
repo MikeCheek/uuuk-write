@@ -37,6 +37,7 @@ module.exports = {
     },
   },
   plugins: [
+    require('tailwind-scrollbar'),
     function({ addVariant }) {
       addVariant('no-cursor', '@media (hover: none)');
     }

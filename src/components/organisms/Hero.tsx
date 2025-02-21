@@ -2,7 +2,7 @@ import React from "react";
 
 const Hero = () => {
   return (
-    <section className="bg-black min-h-screen flex items-center justify-center px-6">
+    <section id="section1" className="bg-black min-h-screen flex items-center justify-center px-6">
       <div className="max-w-3xl text-center">
         <h1 className="text-4xl md:text-6xl font-heading font-bold text-brown">
           A Smarter Way to Plan Your Day
