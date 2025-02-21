@@ -1,4 +1,5 @@
 import type { GatsbyConfig } from 'gatsby'
+const path = require('path')
 
 const config: GatsbyConfig = {
   siteMetadata: {
@@ -30,6 +31,14 @@ const config: GatsbyConfig = {
         path: './src/images/'
       },
       __key: 'images'
+    },
+    {
+      resolve: 'gatsby-plugin-react-svg',
+      options: {
+        rule: {
+          include: path.resolve(__dirname, 'src/assets')
+        }
+      }
     }
   ]
 }

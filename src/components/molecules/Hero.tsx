@@ -1,5 +1,6 @@
 import React from "react";
 import Section from "./Section";
+import CircledText from "../atoms/CircledText";
 
 const Hero = () => {
   return (
@@ -9,7 +10,7 @@ const Hero = () => {
           A Smarter Way to Plan Your Day
         </h1>
         <p className="text-lg md:text-xl text-white mt-4">
-          Experience a <span className="text-magenta">revolutionary agenda</span> that adapts to your needs and
+          Experience a <CircledText text="revolutionary agenda" /> that adapts to your needs and
           optimizes your schedule like never before.
         </p>
         <div className="mt-6">
