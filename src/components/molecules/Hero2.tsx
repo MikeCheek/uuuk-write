@@ -1,8 +1,9 @@
 import React from "react";
+import Section from "./Section";
 
 const Hero2 = () => {
   return (
-    <section id="section2" className="relative bg-blue min-h-screen flex items-center justify-center px-6">
+    <Section id="section2" bgColor="bg-blue" shapeColor="text-white">
       <div className="max-w-3xl text-center text-white">
         <h1 className="text-5xl md:text-7xl font-heading font-extrabold text-transparent bg-clip-text bg-white drop-shadow-lg">
           Redefining Productivity
@@ -19,7 +20,7 @@ const Hero2 = () => {
           </a>
         </div>
       </div>
-    </section>
+    </Section>
   );
 };
 

@@ -1,8 +1,9 @@
 import React from "react";
+import Section from "./Section";
 
 const Hero = () => {
   return (
-    <section id="section1" className="bg-black min-h-screen flex items-center justify-center px-6">
+    <Section id="section1" bgColor="bg-black" shapeColor="text-brown">
       <div className="max-w-3xl text-center">
         <h1 className="text-4xl md:text-6xl font-heading font-bold text-brown">
           A Smarter Way to Plan Your Day
@@ -14,13 +15,13 @@ const Hero = () => {
         <div className="mt-6">
           <a
             href="#"
-            className="bg-yellow text-black font-medium px-6 py-3 rounded-xl shadow-soft transition hover:bg-opacity-90"
+            className="bg-red text-white font-medium px-6 py-3 rounded-xl shadow-soft transition hover:bg-opacity-90"
           >
             Get Started
           </a>
         </div>
       </div>
-    </section>
+    </Section>
   );
 };
 
