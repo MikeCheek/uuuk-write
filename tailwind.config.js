@@ -12,6 +12,15 @@ module.exports = {
         background: "#F3E8D3", // Warm beige for a clean look
         textPrimary: "#1E293B", // Darker grayish-blue for readability
         textSecondary: "#64748B", // Lighter gray-blue for subtitles
+
+        black: "#1a1615",
+        purple: "#4f186b",
+        blue: "#3e4db4",
+        magenta: "#91144e",
+        red: "#ea1f25",
+        brown: "#ac6d37",
+        yellow: "#f1ca00",
+        white: "#ecddbe"
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
@@ -27,5 +36,9 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addVariant }) {
+      addVariant('no-cursor', '@media (hover: none)');
+    }
+  ],
 };

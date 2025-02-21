@@ -36,22 +36,3 @@ button{
   mix-blend-mode: difference;
   background: white;
 }
-
-@keyframes blob {
-  0% {
-    border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
-  }
-  25% {
-    border-radius: 70% 30% 80% 20% / 40% 60% 70% 30%;
-  }
-  50% {
-    border-radius: 30% 70% 20% 80% / 60% 40% 30% 70%;
-  }
-  75% {
-    border-radius: 80% 20% 70% 30% / 30% 70% 80% 20%;
-  }
-  100% {
-    border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
-  }
-}
-

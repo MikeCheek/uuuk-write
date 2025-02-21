@@ -54,13 +54,13 @@ const Cursor = () => {
   return (
     <div
       ref={containerRef}
-      className="pointer-events-none fixed top-0 left-0 z-50 w-full h-full mix-blend-difference isolate"
+      className="pointer-events-none fixed top-0 left-0 z-50 w-full h-full mix-blend-difference isolate no-cursor:hidden"
       style={{
         willChange: "transform",
       }}
     >
       <div
-        className="bg-secondary rounded-full"
+        className="bg-brown rounded-full"
         style={{
           width: "20px",
           height: "20px",

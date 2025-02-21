@@ -9,8 +9,13 @@ gsap.registerPlugin(ScrollToPlugin);
 const VerticalMenu = () => {
   const [active, setActive] = useState("");
 
+  const sections = [
+    { id: "section1", label: "Section 1" },
+    { id: "section2", label: "Section 2" },
+    { id: "section3", label: "Section 3" },
+  ];
+
   useEffect(() => {
-    // For each section, set up a ScrollTrigger to update active state
     const triggers = sections.map((section) =>
       ScrollTrigger.create({
         trigger: `#${section.id}`,
@@ -28,25 +33,34 @@ const VerticalMenu = () => {
     setActive(sectionId);
   };
 
-  const sections = [
-    { id: "section1", label: "Section 1" },
-    { id: "section2", label: "Section 2" },
-    { id: "section3", label: "Section 3" },
-  ];
-
   const handleScroll = (targetId: string) => {
-    gsap.to(window, { duration: 1, scrollTo: `#${targetId}`, ease: "power2.out" });
+    gsap.to(window, {
+      duration: 1,
+      scrollTo: `#${targetId}`,
+      ease: "power2.out",
+    });
   };
 
   return (
-    <nav className="fixed top-0 right-0 h-screen w-16 flex flex-col items-center justify-center bg-gray-800">
+    <nav
+      className={`fixed top-0 w-screen flex flex-row items-center justify-center ${active === "section1"
+        ? "bg-black"
+        : active === "section2"
+          ? "bg-blue"
+          : "bg-brown"
+        }`}
+    >
       {sections.map((section) => (
         <button
           key={section.id}
           onClick={() => handleScroll(section.id)}
-          className={`mb-4 p-2 transition-colors ${active === section.id ? "text-cyan-300" : "text-white"}`}
+          className="relative group my-2 p-2 transition-colors text-white"
         >
           {section.label}
+          <span
+            className={`absolute left-0 bottom-0 h-0.5 bg-purple w-full transform transition-transform duration-300 ${active === section.id ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+              }`}
+          />
         </button>
       ))}
     </nav>

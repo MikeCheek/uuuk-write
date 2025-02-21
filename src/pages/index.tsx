@@ -9,16 +9,11 @@ import Sections from '../components/molecules/Sections';
 
 const IndexPage = () => {
   return (
-    <main className="relative cursor-none bg-gradient-to-br from-gray-800 to-black">
+    <main className="relative cursor-none">
       <Cursor />
       <Hero />
       <Hero2 />
       <Environment />
-      <div className="flex justify-center items-center h-screen">
-        <h1 className="title text-white text-6xl font-extrabold tracking-widest">
-          Become an UUUKer
-        </h1>
-      </div>
       <Sections />
     </main>
   )
