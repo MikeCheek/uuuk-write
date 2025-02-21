@@ -21,7 +21,7 @@ const CircledText = ({ text = "Default" }: { text?: string }) => {
       {/* The Text */}
       <span
         ref={textRef}
-        className="text-white font-bold text-2xl relative z-10"
+        className="text-white font-bold relative z-10"
       >
         {text}
       </span>
@@ -33,7 +33,7 @@ const CircledText = ({ text = "Default" }: { text?: string }) => {
           width: "100%", // Ensure the wrapper takes up the full width of the container
           height: "100%", // Ensure the wrapper takes up the full height of the container
           transform: `translate(-${padding / 2}px, -${padding / 2}px)`,
-          opacity: 0.4,
+          opacity: 0.3,
         }}
       >
         {/* Imported SVG */}
