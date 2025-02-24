@@ -65,7 +65,7 @@ const Cursor = () => {
           width: "20px",
           height: "20px",
           transform: `scale(${scale})`,
-          transition: "transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)",
+          transition: "transform 0.1s cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       />
     </div>
