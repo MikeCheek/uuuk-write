@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Scroll, useScroll } from '@react-three/drei'
 import gsap from 'gsap'
+import Sections from '../organisms/Sections';
 
 const Overlay = () => {
   const scrollRef = useScroll();
@@ -23,8 +24,8 @@ const Overlay = () => {
   )
 
   return (
-    <Scroll html>
-
+    <Scroll style={{ width: '100%' }} html>
+      <Sections />
     </Scroll>
   )
 }

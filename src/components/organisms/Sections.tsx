@@ -5,8 +5,8 @@ import Hero2 from '../molecules/Hero2'
 
 const Sections = () => {
   return (
-    <div className="relative">
-      <Menu />
+    <div className="relative w-full">
+      {/* <Menu /> */}
 
       <Hero />
 

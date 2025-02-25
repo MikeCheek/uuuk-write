@@ -1,15 +1,16 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import type { HeadProps } from "gatsby"
 import Seo from '../components/atoms/Seo';
 import Cursor from '../components/atoms/Cursor';
 import Sections from '../components/organisms/Sections';
+import Environment from '../components/organisms/Environment';
 
 const IndexPage = () => {
 
   return (
     <main className="relative cursor-none">
       <Cursor />
-      {/* <Environment /> */}
+      <Environment />
       <Sections />
     </main>
   )

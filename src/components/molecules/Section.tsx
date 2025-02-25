@@ -7,14 +7,16 @@ const Section = ({
   bgColor = "bg-black",
   shapeColor = "text-brown",
   children,
+  preset = "center"
 }: {
   id?: string;
   bgColor?: string;
   shapeColor?: string;
   children: ReactNode;
+  preset?: "center" | "left" | "right"
 }) => {
   const shapeTypes = ["circle", "triangle", "pencil", "note", "square", "hexagon"];
-  const numShapes = 12;
+  const numShapes = 5;
   const minDistance = 30;
   const maxAttempts = 50;
 
@@ -61,7 +63,7 @@ const Section = ({
   return (
     <section
       id={id}
-      className={`${bgColor} min-h-screen flex items-center justify-center px-6 relative overflow-hidden`}
+      className={`${bgColor} min-h-screen flex items-center ${preset === "center" ? "justify-center" : preset === "left" ? "justify-start" : "justify-end"} px-20 relative overflow-hidden`}
     >
       {/* Background Shapes with Infinite Animations */}
       {shapes.map(({ type, size, rotation, top, left, opacity, animateType }, key) => {
@@ -104,8 +106,9 @@ const Section = ({
           </motion.div>
         );
       })}
-
-      {children}
+      <span className="z-20">
+        {children}
+      </span>
     </section>
   );
 };
