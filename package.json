@@ -34,6 +34,7 @@
     "motion": "^12.4.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-intersection-observer": "^9.15.1",
     "three": "^0.173.0"
   },
   "devDependencies": {

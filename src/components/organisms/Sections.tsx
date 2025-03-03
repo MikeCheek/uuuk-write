@@ -2,6 +2,7 @@ import React from 'react'
 import Menu from '../atoms/Menu'
 import Hero from '../molecules/Hero'
 import Hero2 from '../molecules/Hero2'
+import Hero3 from '../molecules/Hero3'
 
 const Sections = () => {
   return (
@@ -12,9 +13,7 @@ const Sections = () => {
 
       <Hero2 />
 
-      <section id="section3" className="h-screen flex items-center justify-center bg-brown">
-        <h1 className="text-5xl text-white">Section 3</h1>
-      </section>
+      <Hero3 />
     </div>
   )
 }

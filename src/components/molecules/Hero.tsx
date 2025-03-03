@@ -1,24 +1,24 @@
 import React from "react";
 import Section from "./Section";
-import CircledText from "../atoms/CircledText";
+import Typography from "../atoms/Typography";
 
 const Hero = () => {
-  // Function to scroll down by one viewport height
+
   const scrollDown = () => {
     window.scrollBy({ top: window.innerHeight, left: 0, behavior: "smooth" });
   };
 
   return (
-    <Section id="section1" bgColor="bg-black" shapeColor="text-brown">
-      <div className="max-w-3xl text-center z-20 -mt-40">
-        <h1 className="text-5xl md:text-7xl font-heading font-extrabold text-transparent bg-clip-text bg-brown drop-shadow-lg">
+    <Section id="section1" bgColor="bg-black" shapeColor="text-brown" preset="right">
+      <div className="max-w-3xl text-center md:text-right z-20 -mt-40">
+        <h2 className="absolute top-2 left-1/2 -translate-x-1/2 text-5xl md:text-7xl font-heading text-transparent bg-clip-text bg-brown drop-shadow-lg">
           UUUK
-        </h1>
-        <p className="text-lg md:text-xl text-white mt-4">
-          Free your <CircledText text="mind" />. Live inspired.
-        </p>
-        {/* Minimal down arrow that scrolls down on click */}
-        <div className="mt-6">
+        </h2>
+        <Typography variant="h1">
+          "Write your story"
+        </Typography>
+
+        <div className="mt-10">
           <div onClick={scrollDown} className="cursor-pointer inline-block animate-bounce">
             <svg
               xmlns="http://www.w3.org/2000/svg"

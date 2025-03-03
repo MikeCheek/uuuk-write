@@ -17,7 +17,7 @@ const ThreeCanvas = () => {
 
       <spotLight position={[0, 0, 300]} intensity={1} />
 
-      <PerspectiveCamera position={[0, 0, 300]} makeDefault />
+      <PerspectiveCamera position={[0, 0, 300]} makeDefault fov={50} />
       <Agenda />
       {/* </ScrollControls> */}
     </Canvas>

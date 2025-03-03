@@ -19,6 +19,7 @@ module.exports = {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
         heading: ["Poppins", "sans-serif"],
+        calligraph: ["Calligraffitti", "cursive"],
       },
       borderRadius: {
         xl: "1rem",

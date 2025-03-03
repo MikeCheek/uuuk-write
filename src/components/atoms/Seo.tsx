@@ -147,6 +147,12 @@ const Index = ({
       {/* <link rel="preconnect" href="https://www.googletagmanager.com" /> */}
       {/* <link rel="preconnect" href="https://assets.mlcdn.com" /> */}
 
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin='anonymous' />
+
+
+      <link href="https://fonts.googleapis.com/css2?family=Calligraffitti&display=swap" rel="stylesheet" />
+
       {/* <meta name="twitter:creator" content={seo.twitterUsername} /> */}
       {children}
     </>

@@ -20,7 +20,9 @@ type GLTFResult = GLTF & {
 export function Agenda(props: JSX.IntrinsicElements['group']) {
   const { nodes, materials } = useGLTF('/models/agenda.glb') as GLTFResult
   const mesh = useRef<Group>(null)
-  const initialPosition = scrollingSteps[0].position
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+  const initialPosition = isMobile ? scrollingSteps[0].mobile.position : scrollingSteps[0].position
   const initialRotation = scrollingSteps[0].rotation
 
   useLayoutEffect(() => {
@@ -29,14 +31,13 @@ export function Agenda(props: JSX.IntrinsicElements['group']) {
       // Total scroll distance equals one viewport height per transition
       const totalScrollDistance = window.innerHeight * numSteps
 
-      // Define your sensitivity in pixels
+      // Define sensitivity in pixels for steps beyond the first tween
       const offsetPx = 100
       // Convert offset to a fraction of 1 viewport unit
       const offsetFraction = offsetPx / window.innerHeight
-      // The tween will last only for the middle portion of each section
+      // For tweens with offset applied, the tween lasts only the middle portion
       const tweenDuration = 1 - 2 * offsetFraction
 
-      // Create a GSAP timeline with ScrollTrigger attached
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: document.body,
@@ -48,25 +49,29 @@ export function Agenda(props: JSX.IntrinsicElements['group']) {
         },
       })
 
-      // Iterate through the steps (skipping the initial state)
+      // Iterate through steps (skipping the initial state)
       scrollingSteps.slice(1).forEach((step, i) => {
-        // Tween for position
+        // For the first tween (i === 0), use no offset.
+        // For subsequent tweens, add the offsetFraction.
+        const startTime = i === 0 ? i : i + offsetFraction
+        // For the first tween, let the duration be 1, otherwise use tweenDuration
+        const duration = i === 0 ? 1 : tweenDuration
+
         timeline.to(
           mesh.current!.position,
           {
-            duration: tweenDuration,
-            ...step.position,
+            duration,
+            ...(isMobile ? step.mobile.position : step.position),
           },
-          i + offsetFraction // starts after the offset into the section
+          startTime
         )
-        // Tween for rotation
         timeline.to(
           mesh.current!.rotation,
           {
-            duration: tweenDuration,
+            duration,
             ...step.rotation,
           },
-          i + offsetFraction
+          startTime
         )
       })
 
