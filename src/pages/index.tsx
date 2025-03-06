@@ -1,5 +1,5 @@
 import React from 'react';
-import type { HeadProps } from "gatsby"
+import { graphql, type HeadProps } from "gatsby"
 import Seo from '../components/atoms/Seo';
 import Cursor from '../components/atoms/Cursor';
 import Sections from '../components/organisms/Sections';
@@ -18,15 +18,32 @@ const IndexPage = () => {
 
 export default IndexPage
 
-export const Head = ({ data, pageContext }: HeadProps) => {
+export const Head = ({ location, data, pageContext }: HeadProps) => {
+  const edges: Array<{ node: { data: string } }> = (data as any).locales.edges;
+  const json = edges.map((e) => JSON.parse(e.node.data)).reduce((acc, curr) => ({ ...acc, ...curr }));
+  const t = (key: string) => json[key] ?? key;
 
   return (
     <Seo
       lang={(pageContext as any).language}
       title={'SEOTitle'}
-      pathname="/"
+      pathname={location.pathname}
       description={'SEODescription'}
       structuredData
     />
   )
 }
+
+export const query = graphql`
+  query ($language: String!) {
+    locales: allLocale(filter: { ns: { in: ["common", "index"] }, language: { eq: $language } }) {
+      edges {
+        node {
+          ns
+          data
+          language
+        }
+      }
+    }
+  }
+`;

@@ -6,13 +6,14 @@ import CircledText from "../atoms/CircledText";
 
 const Hero2 = () => {
   return (
-    <Section id="section2" bgColor="bg-black" shapeColor="text-white" preset="left">
+    // <Section id="section2" bgColor="bg-gradient-to-b from-1% from-white via-50% via-red to-99% to-blue" shapeColor="text-white" preset="left">
+    <Section id="section2" bgColor="bg-red" shapeColor="text-white" preset="left">
       <div className="max-w-3xl text-left text-white">
-        <ShowOnView>
+        {/* <ShowOnView>
           <Typography variant='h2'>
             Modulare
           </Typography>
-        </ShowOnView>
+        </ShowOnView> */}
         <ShowOnView>
           <Typography variant="p">
             Rendiamo alla portata di tutti la riproduzione di opere e grafiche artistiche ed i benefici della modularità.
