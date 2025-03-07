@@ -10,7 +10,7 @@ const Hero = () => {
 
   return (
     <Section id="section1" bgColor="bg-white" shapeColor="text-black" preset="right">
-      <div className="max-w-3xl text-center text-black md:text-right z-20 -mt-20 mr-20">
+      <div className="max-w-3xl text-center text-black md:text-right z-20 -mt-20 md:mr-40">
         <h2 className="absolute top-2 left-1/2 -translate-x-1/2 text-5xl md:text-7xl font-heading text-transparent bg-clip-text bg-black drop-shadow-lg">
           UUUK
         </h2>
@@ -18,7 +18,7 @@ const Hero = () => {
           "Write your story"
         </Typography>
 
-        <div className="mt-20 mr-60">
+        <div className="mt-20 md:mr-40">
           <div onClick={scrollDown} className="cursor-pointer inline-block animate-bounce">
             <svg
               xmlns="http://www.w3.org/2000/svg"

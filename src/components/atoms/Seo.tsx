@@ -112,7 +112,7 @@ const Index = ({
 
   return (
     <>
-      <html lang={lang} className='scrollbar-thin scrollbar-track-black scrollbar-thumb-brown' />
+      <html lang={lang} className='scrollbar-thin scrollbar-track-black scrollbar-thumb-brown bg-white' />
       <title>{seo.title}</title>
       <meta name="description" content={seo.description} />
       <meta name="keywords" content={seo.keywords} />
