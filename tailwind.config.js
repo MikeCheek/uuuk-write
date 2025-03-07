@@ -14,7 +14,7 @@ module.exports = {
         red: "#ea1f25",
         brown: "#ac6d37",
         yellow: "#f1ca00",
-        white: "#ecddbe",
+        beige: "#ecddbe",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
