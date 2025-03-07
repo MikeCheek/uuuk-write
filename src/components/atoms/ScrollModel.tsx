@@ -1,24 +1,12 @@
 import React, { useLayoutEffect, useRef } from 'react'
-import { useGLTF } from '@react-three/drei'
-import { GLTF } from 'three-stdlib'
-import { Group, Mesh, MeshStandardMaterial } from 'three'
 import scrollingSteps from '../../utilities/scrollingSteps'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
+import { Group } from 'three'
 
 gsap.registerPlugin(ScrollTrigger)
 
-type GLTFResult = GLTF & {
-  nodes: {
-    comlete_uuuk: Mesh
-  }
-  materials: {
-    FR4: MeshStandardMaterial
-  }
-}
-
-export function Agenda(props: JSX.IntrinsicElements['group']) {
-  const { nodes, materials } = useGLTF('/models/agenda.glb') as GLTFResult
+const ScrollModel = ({ children }: { children: React.ReactNode }) => {
   const mesh = useRef<Group>(null)
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
@@ -84,8 +72,6 @@ export function Agenda(props: JSX.IntrinsicElements['group']) {
 
   return (
     <group
-      {...props}
-      dispose={null}
       ref={mesh}
       position={[
         initialPosition.x,
@@ -98,13 +84,9 @@ export function Agenda(props: JSX.IntrinsicElements['group']) {
         initialRotation.z,
       ]}
     >
-      <mesh
-        geometry={nodes.comlete_uuuk.geometry}
-        material={materials.FR4}
-        rotation={[Math.PI / 2, 0, 0]}
-      />
+      {children}
     </group>
   )
 }
 
-useGLTF.preload('/models/agenda.glb')
+export default ScrollModel

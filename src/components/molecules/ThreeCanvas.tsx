@@ -2,8 +2,8 @@ import { Environment, OrbitControls, PerspectiveCamera, ScrollControls } from '@
 import { Canvas } from '@react-three/fiber'
 import React from 'react'
 import Overlay from '../atoms/Overlay'
-import { Agenda } from '../atoms/Agenda'
-import scrollingSteps from '../../utilities/scrollingSteps'
+import { AgendaComplete } from '../atoms/AgendaComplete'
+import ScrollModel from '../atoms/ScrollModel'
 
 const ThreeCanvas = () => {
   return (
@@ -13,12 +13,13 @@ const ThreeCanvas = () => {
       {/* <Environment preset='city' /> */}
 
       <ambientLight intensity={0.2} />
-      <directionalLight position={[0, 1, 1]} intensity={1} />
 
-      <spotLight position={[0, 0, 300]} intensity={1} />
+      <spotLight position={[0, 0, 1]} intensity={0.4} />
 
-      <PerspectiveCamera position={[0, 0, 300]} makeDefault fov={50} />
-      <Agenda />
+      <PerspectiveCamera position={[0, 0, 1]} makeDefault fov={50} />
+      <ScrollModel>
+        <AgendaComplete />
+      </ScrollModel>
       {/* </ScrollControls> */}
     </Canvas>
   )
