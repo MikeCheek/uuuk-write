@@ -2,7 +2,7 @@ import { Environment, OrbitControls, PerspectiveCamera, ScrollControls } from '@
 import { Canvas } from '@react-three/fiber'
 import React from 'react'
 import Overlay from '../atoms/Overlay'
-import { AgendaComplete } from '../atoms/AgendaComplete'
+import { AnimatedAgendaComplete } from '../atoms/AnimatedAgendaComplete'
 import ScrollModel from '../atoms/ScrollModel'
 
 const ThreeCanvas = () => {
@@ -18,7 +18,7 @@ const ThreeCanvas = () => {
 
       <PerspectiveCamera position={[0, 0, 1]} makeDefault fov={50} />
       <ScrollModel>
-        <AgendaComplete />
+        <AnimatedAgendaComplete />
       </ScrollModel>
       {/* </ScrollControls> */}
     </Canvas>
