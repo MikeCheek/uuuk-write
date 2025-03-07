@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import React from 'react'
+import React, { memo } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { useSpring, a } from '@react-spring/three'
@@ -42,12 +42,14 @@ const AnimatedMesh = ({
   geometry,
   material,
   animationConfig,
+  animate
 }: {
   geometry: THREE.BufferGeometry
   material: THREE.Material
-  animationConfig: any
+  animationConfig: any,
+  animate: boolean
 }) => {
-  const spring = useSpring(animationConfig)
+  const spring = useSpring({ ...animationConfig, immediate: !animate })
 
   return (
     <a.mesh
@@ -60,9 +62,9 @@ const AnimatedMesh = ({
   )
 }
 
-export function AnimatedAgendaComplete(
-  props: JSX.IntrinsicElements['group']
-) {
+const AnimatedAgendaComplete = memo((
+  { groupProps, animate = true }: { groupProps?: JSX.IntrinsicElements['group'], animate?: boolean }
+) => {
   const { nodes } = useGLTF('/models/agenda.glb') as GLTFResult
 
   const animationConfigs: Record<string, any> = {
@@ -117,12 +119,12 @@ export function AnimatedAgendaComplete(
       config: { duration: 2000 },
     },
     RedCircle: {
-      from: { position: [0, 0, 0.501] },
+      from: { position: [0, 0, 0.551] },
       to: { position: [-0.003, 0, 0.001] },
       config: { duration: 2000 },
     },
     Stripes: {
-      from: { position: [0, 0, 0.501] },
+      from: { position: [0, 0, 0.551] },
       to: { position: [-0.003, 0, 0.001] },
       config: { duration: 2000 },
     },
@@ -139,10 +141,11 @@ export function AnimatedAgendaComplete(
   }
 
   return (
-    <group {...props} dispose={null}>
+    <group {...groupProps} dispose={null}>
       {Object.keys(animationConfigs).map((key) => (
         <AnimatedMesh
           key={key}
+          animate={animate}
           geometry={(nodes as any)[key].geometry}
           material={(nodes as any)[key].material}
           animationConfig={animationConfigs[key]}
@@ -150,6 +153,8 @@ export function AnimatedAgendaComplete(
       ))}
     </group>
   )
-}
+})
 
 useGLTF.preload('/models/agenda.glb')
+
+export default AnimatedAgendaComplete

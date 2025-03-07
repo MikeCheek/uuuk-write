@@ -35,6 +35,26 @@ const steps = [
       y: Math.PI,
       z: Math.PI / 2 - Math.PI / 10
     }
+  },
+  {
+    title: 'Broder',
+    description: "Let's go",
+    position: { x: 0.1, y: 0, z: 0.75 },
+    rotation: {
+      x: 0,
+      y: 0,
+      z: 0
+    }
+  },
+  {
+    title: 'Broder',
+    description: "Let's go",
+    position: { x: 0.1, y: 0, z: 0.75 },
+    rotation: {
+      x: 0,
+      y: 0,
+      z: 0
+    }
   }
 ].map(step => ({
   ...step,
