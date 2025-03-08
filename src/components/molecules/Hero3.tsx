@@ -10,8 +10,8 @@ const Hero3 = () => {
       {/* <Typography variant='h2'>Unico</Typography> */}
       <ShowOnView className='text-white text-center -mt-60'>
         <Typography variant='p'>
-          Crediamo che dietro ogni persona ci sia una <CircledText text="storia unica" /> che aspetta solo di essere raccontata ed enorme potenziale
-          da esprimere attraverso il solenne atto della scrittura
+          Personalizza UUUK in base alle tue <CircledText text='esigenze' />.<br />
+          Modifica le sidebar a tuo piacimento in modo da organizzare al meglio le tue attività preferite
         </Typography>
       </ShowOnView>
     </Section>

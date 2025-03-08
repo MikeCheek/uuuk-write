@@ -1,6 +1,7 @@
 import React from "react";
 import Section from "./Section";
 import Typography from "../atoms/Typography";
+import LanguagePicker from "../atoms/LanguagePicker";
 
 const Hero = () => {
 
@@ -14,6 +15,9 @@ const Hero = () => {
         <h2 className="absolute top-2 left-1/2 -translate-x-1/2 text-5xl md:text-7xl font-heading text-transparent bg-clip-text bg-black drop-shadow-lg">
           UUUK
         </h2>
+        <div className="absolute top-4 right-4">
+          <LanguagePicker />
+        </div>
         <Typography variant="h1">
           "Write your story"
         </Typography>
