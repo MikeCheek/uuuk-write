@@ -1,28 +1,4 @@
 <svg viewBox="0 0 800 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-
-<defs>
-<style>
-  @keyframes drawPath {
-    0% {
-      stroke-dashoffset: 2000;
-    }
-    10% {
-      stroke-dashoffset: 0;
-    }
-    90% {
-      stroke-dashoffset: 0;
-    }
-    100% {
-      stroke-dashoffset: 2000;
-    }
-  }
-
-  .animated-path {
-    animation: drawPath 10s ease-in-out infinite;
-  }
-</style>
-</defs>
-
  <g>
   <path 
   stroke-width="15" 

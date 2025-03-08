@@ -36,3 +36,78 @@ button{
   mix-blend-mode: difference;
   background: white;
 }
+
+@keyframes drawPath {
+  0%, 100% {
+    stroke-dashoffset: 2000;
+  }
+  10%, 90% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animated-path {
+  animation: drawPath 10s ease-in-out infinite;
+}
+
+.animated-marker{
+  animation: drawErase 10s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+@keyframes drawErase {
+  0% {
+    clip-path: polygon(
+      0% 5%,
+      0% 0%,
+      0% 5%,
+      0% 0%,
+      0% 5%,
+      0% 0%,
+      0% 5%,
+      0% 95%,
+      0% 100%,
+      0% 95%,
+      0% 100%,
+      0% 95%,
+      0% 100%,
+      0% 95%
+    );
+  }
+  10%, 90% {
+    clip-path: polygon(
+      0% 5%,
+      15% 0%,
+      35% 5%,
+      50% 0%,
+      70% 5%,
+      85% 0%,
+      100% 5%,
+      100% 95%,
+      85% 100%,
+      70% 95%,
+      50% 100%,
+      35% 95%,
+      15% 100%,
+      0% 95%
+    );
+  }
+  100% {
+    clip-path: polygon(
+      100% 5%,
+      100% 0%,
+      100% 5%,
+      100% 0%,
+      100% 5%,
+      100% 0%,
+      100% 5%,
+      100% 95%,
+      100% 100%,
+      100% 95%,
+      100% 100%,
+      100% 95%,
+      100% 100%,
+      100% 95%
+    );
+  }
+}

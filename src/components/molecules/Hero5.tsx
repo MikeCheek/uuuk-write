@@ -3,7 +3,7 @@ import Section from './Section'
 
 const Hero4 = () => {
   return (
-    <Section id="section5" bgColor='bg-brown' shapeColor='text-white' preset='center'>
+    <Section id="section5" bgColor='bg-brown' shapeColor='text-black' preset='center'>
       <></>
     </Section>
   )

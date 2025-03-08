@@ -33,7 +33,7 @@ const CircledText = ({ text = "Default" }: { text?: string }) => {
           width: "100%", // Ensure the wrapper takes up the full width of the container
           height: "100%", // Ensure the wrapper takes up the full height of the container
           transform: `translate(-${padding / 2}px, -${padding / 2}px)`,
-          opacity: 0.3,
+          opacity: 0.5,
         }}
       >
         {/* Imported SVG */}
