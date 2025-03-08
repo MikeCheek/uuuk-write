@@ -97,7 +97,7 @@ const ScrollModel = ({ children }: { children: React.ReactNode }) => {
       >
         {children}
       </group>
-      <group ref={extraGroupRef} position={[-0.3, 0, 0]} dispose={null}>
+      <group ref={extraGroupRef} position={[-0.5, 0, 0]} dispose={null}>
         <AnimatedAgendaComplete
           groupProps={{ position: [-0.2, -0.1, 0.6] }}
           animate={false}
