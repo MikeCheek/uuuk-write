@@ -18,7 +18,6 @@ const CircledText = ({ text = "Default" }: { text?: string }) => {
 
   return (
     <span className="relative inline-block">
-      {/* The Text */}
       <span
         ref={textRef}
         className="text-white font-bold relative z-10"
@@ -26,7 +25,6 @@ const CircledText = ({ text = "Default" }: { text?: string }) => {
         {text}
       </span>
 
-      {/* Wrapper for the SVG */}
       <span
         className="absolute top-0 left-0"
         style={{
@@ -36,7 +34,6 @@ const CircledText = ({ text = "Default" }: { text?: string }) => {
           opacity: 0.5,
         }}
       >
-        {/* Imported SVG */}
         <motion.span
           className="w-full h-full"
           style={{
@@ -48,7 +45,6 @@ const CircledText = ({ text = "Default" }: { text?: string }) => {
             width={textWidth}
             height={textHeight}
             stroke="yellow"
-          // className="text-yellow opacity-80"
           />
         </motion.span>
       </span>

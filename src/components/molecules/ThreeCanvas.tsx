@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import React from 'react'
 import Overlay from '../atoms/Overlay'
 import AnimatedAgendaComplete from '../atoms/AnimatedAgendaComplete'
-import ScrollModel from '../atoms/ScrollModel'
+import ScrollModel from './ScrollModel'
 
 const ThreeCanvas = () => {
   return (

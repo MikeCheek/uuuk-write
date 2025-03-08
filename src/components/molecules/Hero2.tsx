@@ -1,6 +1,6 @@
 import React from "react";
 import Section from "./Section";
-import ShowOnView from "../atoms/ShowOnView";
+import ShowOnView from "./ShowOnView";
 import Typography from "../atoms/Typography";
 import CircledText from "../atoms/CircledText";
 import HighlightedText from "../atoms/HighlightedText";
@@ -18,7 +18,7 @@ const Hero2 = () => {
         <ShowOnView>
           <Typography variant="p">
             Rendiamo alla portata di tutti la riproduzione di opere e grafiche artistiche ed i benefici della <HighlightedText text="modularità" />.
-            UUUK è per tutti coloro che vogliono il meglio della loro <CircledText text="quotidianità" />, e che vogliono lasciare un' impronta della loro vita scrivendola.
+            UUUK è per tutti coloro che vogliono il meglio della loro quotidianità, e che vogliono lasciare un' impronta della loro vita scrivendola.
           </Typography>
         </ShowOnView>
       </div>
