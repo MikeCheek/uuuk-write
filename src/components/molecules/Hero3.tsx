@@ -1,18 +1,19 @@
 import React from 'react'
 import Section from './Section'
 import Typography from '../atoms/Typography'
-import CircledText from '../atoms/CircledText'
 import ShowOnView from './ShowOnView'
-import HighlightedText from '../atoms/HighlightedText'
+import { useTranslation } from 'react-i18next'
+import renderText from '../../utilities/renderText'
 
 const Hero3 = () => {
+  const { t } = useTranslation()
+
   return (
     <Section id="section3" bgColor='bg-blue' shapeColor='text-white' preset='center'>
       {/* <Typography variant='h2'>Unico</Typography> */}
       <ShowOnView className='text-white text-center -mt-60'>
         <Typography variant='p'>
-          Personalizza UUUK in base alle tue <CircledText text='esigenze' />.<br />
-          Modifica le sidebar a tuo piacimento in modo da organizzare al meglio le tue attività preferite
+          {renderText(t('Hero3Text'))}
         </Typography>
       </ShowOnView>
     </Section>

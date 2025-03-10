@@ -2,10 +2,12 @@ import React from "react";
 import Section from "./Section";
 import ShowOnView from "./ShowOnView";
 import Typography from "../atoms/Typography";
-import CircledText from "../atoms/CircledText";
-import HighlightedText from "../atoms/HighlightedText";
+import { useTranslation } from "react-i18next";
+import renderText from "../../utilities/renderText";
 
 const Hero2 = () => {
+  const { t } = useTranslation()
+
   return (
     // <Section id="section2" bgColor="bg-gradient-to-b from-1% from-white via-50% via-red to-99% to-blue" shapeColor="text-white" preset="left">
     <Section id="section2" bgColor="bg-red" shapeColor="text-black" preset="left">
@@ -17,8 +19,7 @@ const Hero2 = () => {
         </ShowOnView> */}
         <ShowOnView>
           <Typography variant="p">
-            Rendiamo alla portata di tutti la riproduzione di opere e grafiche artistiche ed i benefici della <HighlightedText text="modularità" />.
-            UUUK è per tutti coloro che vogliono il meglio della loro quotidianità, e che vogliono lasciare un' impronta della loro vita scrivendola.
+            {renderText(t("Hero2Text"))}
           </Typography>
         </ShowOnView>
       </div>
