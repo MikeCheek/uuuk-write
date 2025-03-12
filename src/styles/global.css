@@ -10,6 +10,11 @@ button{
   cursor: none !important;
 }
 
+img{
+  height: 100% !important;
+  width: 100% !important;
+}
+
 .title {
   font-family: 'Poppins', sans-serif;
   letter-spacing: 0.2rem;

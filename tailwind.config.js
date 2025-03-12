@@ -15,6 +15,8 @@ module.exports = {
         brown: "#ac6d37",
         yellow: "#f1ca00",
         beige: "#ecddbe",
+
+        redBrick: "#a3635e",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],

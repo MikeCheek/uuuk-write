@@ -3,7 +3,8 @@ import scrollingSteps from '../../utilities/scrollingSteps'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import { Group } from 'three'
-import AnimatedAgendaComplete from '../atoms/AnimatedAgendaComplete'
+import { StaticImage } from 'gatsby-plugin-image'
+import { Html } from '@react-three/drei'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -38,22 +39,20 @@ const ScrollModel = ({ children }: { children: React.ReactNode }) => {
             const stepOffset = 0.05
 
             if (self.progress >= step3StartProgress && self.progress < step4StartProgress) {
-              // Animate towards [0, 0, 0] during step 2
               const progress = (self.progress - step3StartProgress) / (step4StartProgress - step3StartProgress)
               gsap.to(extraGroupRef.current!.position, {
                 x: -0.5 + 0.5 * progress,
                 y: 0,
                 z: 0,
-                duration: 0.1, // Small duration to make it smooth
+                duration: 0.1,
               })
             } else if (self.progress >= step4StartProgress + stepOffset) {
-              // Animate back to [-0.5, 0, 0] during step 3
               const progress = (self.progress - (step4StartProgress + stepOffset)) / (1 - (step4StartProgress + stepOffset))
               gsap.to(extraGroupRef.current!.position, {
                 x: 0 - 0.5 * progress,
                 y: 0,
                 z: 0,
-                duration: 0.1, // Small duration to make it smooth
+                duration: 0.1,
               })
             }
           },
@@ -98,18 +97,15 @@ const ScrollModel = ({ children }: { children: React.ReactNode }) => {
         {children}
       </group>
       <group ref={extraGroupRef} position={[-0.5, 0, 0]} dispose={null}>
-        <AnimatedAgendaComplete
-          groupProps={{ position: [-0.2, -0.1, 0.6] }}
-          animate={false}
-        />
-        <AnimatedAgendaComplete
-          groupProps={{ position: [-0.1, -0.05, 0.65] }}
-          animate={false}
-        />
-        <AnimatedAgendaComplete
-          groupProps={{ position: [0, 0, 0.7] }}
-          animate={false}
-        />
+        <Html position={[-0.3, 0.07, 0.6]}>
+          <StaticImage height={500} src="../../images/cover1.png" alt="Cover 1" layout="fixed" />
+        </Html>
+        <Html position={[-0.15, 0.045, 0.65]}>
+          <StaticImage height={500} src="../../images/cover2.png" alt="Cover 2" layout='fixed' />
+        </Html>
+        <Html position={[-0.05, 0.06, 0.7]}>
+          <StaticImage height={500} src="../../images/cover1.png" alt="Cover 3" layout='fixed' />
+        </Html>
       </group>
     </>
   )
