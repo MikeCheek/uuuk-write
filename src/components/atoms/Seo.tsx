@@ -12,6 +12,7 @@ export type SeoProps = {
   keywords?: string;
   noIndex?: boolean;
   images?: string[];
+  bgColor?: string;
 };
 
 export type Meta = ConcatArray<PropertyMetaObj | NameMetaObj>;
@@ -46,6 +47,7 @@ const Index = ({
   keywords,
   noIndex,
   images = [],
+  bgColor = "beige"
 }: SeoProps) => {
   const { metadata, featuredImage } = useSiteMetadata();
 
@@ -112,7 +114,7 @@ const Index = ({
 
   return (
     <>
-      <html lang={lang} className='scrollbar-thin scrollbar-track-black scrollbar-thumb-brown bg-beige' />
+      <html lang={lang} className={`scrollbar-thin scrollbar-track-black scrollbar-thumb-brown bg-${bgColor}`} />
       <title>{seo.title}</title>
       <meta name="description" content={seo.description} />
       <meta name="keywords" content={seo.keywords} />

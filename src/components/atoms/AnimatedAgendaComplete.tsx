@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import React, { memo } from 'react'
+import React from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { useSpring, a } from '@react-spring/three'
@@ -62,7 +62,7 @@ const AnimatedMesh = ({
   )
 }
 
-const AnimatedAgendaComplete = memo((
+const AnimatedAgendaComplete = (
   { groupProps, animate = true }: { groupProps?: JSX.IntrinsicElements['group'], animate?: boolean }
 ) => {
   const { nodes } = useGLTF('/models/agenda.glb') as GLTFResult
@@ -153,7 +153,7 @@ const AnimatedAgendaComplete = memo((
       ))}
     </group>
   )
-})
+}
 
 useGLTF.preload('/models/agenda.glb')
 
