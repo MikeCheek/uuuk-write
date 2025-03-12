@@ -4,12 +4,14 @@ import Seo from '../components/atoms/Seo';
 import Cursor from '../components/atoms/Cursor';
 import Sections from '../components/organisms/Sections';
 import Environment from '../components/organisms/Environment';
+import PageLoader from '../components/atoms/PageLoader';
 
 const IndexPage = () => {
 
   return (
     <main className="relative cursor-none">
       <Cursor />
+      <PageLoader />
       <Environment />
       <Sections />
     </main>
