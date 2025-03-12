@@ -1,7 +1,7 @@
 import { Environment, PerspectiveCamera } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import React from 'react'
-import AgendaCustomize from '../atoms/AgendaCustomize'
+import AgendaCustomize from './AgendaCustomize'
 
 const CustomizeCanvas = () => {
   const isMobile = window.matchMedia('(max-width: 768px)').matches
