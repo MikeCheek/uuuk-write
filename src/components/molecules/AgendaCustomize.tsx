@@ -4,7 +4,7 @@ import { Html, useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
 import gsap from 'gsap';
 import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
-import CustomizeOverlay from '../atoms/CustomizeOverlay';
+import CustomizeOverlay from './CustomizeOverlay';
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -100,11 +100,34 @@ const AgendaCustomize = (props: JSX.IntrinsicElements['group']) => {
   }, [targetY]);
 
   const updateMaterial = (part: string, color: string) => {
-    if (part === 'SidebarSmall') materials['3d texture rossa (1).001'].color.set(color);
-    if (part === 'Front') materials['3d texture bianco'].color.set(color);
-    if (part === 'LaceUL') materials['ABS (White)'].color.set(color);
+    const targetColor = new THREE.Color(color);
+    if (part === 'SidebarSmall') {
+      gsap.to(materials['3d texture rossa (1).001'].color, {
+        r: targetColor.r,
+        g: targetColor.g,
+        b: targetColor.b,
+        duration: 0.7,
+      });
+    }
+    if (part === 'Front') {
+      gsap.to(materials['3d texture bianco'].color, {
+        r: targetColor.r,
+        g: targetColor.g,
+        b: targetColor.b,
+        duration: 0.7,
+      });
+    }
+    if (part === 'LaceUL') {
+      gsap.to(materials['ABS (White)'].color, {
+        r: targetColor.r,
+        g: targetColor.g,
+        b: targetColor.b,
+        duration: 0.7,
+      });
+    }
     setColors((prev) => ({ ...prev, [part]: color }));
   };
+
 
   useFrame(() => { });
 
