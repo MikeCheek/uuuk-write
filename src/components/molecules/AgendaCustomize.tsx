@@ -106,26 +106,12 @@ const AgendaCustomize = (props: JSX.IntrinsicElements['group']) => {
     setColors((prev) => ({ ...prev, [part]: color }));
   };
 
-  const get2DPosition = (part: string) => {
-    const object = nodes[part as keyof GLTFResult['nodes']];
-    if (!object) return { x: 0, y: 0 };
-
-    const vector = new THREE.Vector3();
-    object.getWorldPosition(vector);
-    vector.project(camera);
-
-    return {
-      x: ((vector.x + 1) / 2) * size.width,
-      y: ((1 - vector.y) / 2) * size.height,
-    };
-  };
-
   useFrame(() => { });
 
   return (
     <>
       <Html>
-        <CustomizeOverlay onColorChange={updateMaterial} get3DPosition={get2DPosition} />
+        <CustomizeOverlay onColorChange={updateMaterial} />
       </Html>
       <group
         ref={groupRef}

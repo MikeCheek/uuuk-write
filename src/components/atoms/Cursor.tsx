@@ -25,7 +25,7 @@ const Cursor = () => {
       smoothPositionRef.current.y += (positionRef.current.y - smoothPositionRef.current.y) * 0.2
 
       if (containerRef.current) {
-        containerRef.current.style.transform = `translate3d(${smoothPositionRef.current.x - 20}px, ${smoothPositionRef.current.y - 20}px, 0)`
+        containerRef.current.style.transform = `translate3d(${smoothPositionRef.current.x - 10}px, ${smoothPositionRef.current.y - 10}px, 0)`
       }
       requestRef.current = requestAnimationFrame(animate)
     }

@@ -2,50 +2,48 @@ import React, { useRef, useEffect, useState } from 'react';
 
 interface CustomizeOverlayProps {
   onColorChange: (part: string, color: string) => void;
-  get3DPosition: (part: string) => { x: number; y: number };
 }
 
-const CustomizeOverlay: React.FC<CustomizeOverlayProps> = ({ onColorChange, get3DPosition }) => {
-  const [positions, setPositions] = useState<{ [key: string]: { x: number; y: number } }>({});
+const CustomizeOverlay: React.FC<CustomizeOverlayProps> = ({ onColorChange }) => {
 
-  useEffect(() => {
-    const updatePositions = () => {
-      setPositions({
-        SidebarSmall: get3DPosition('SidebarSmall'),
-        Front: get3DPosition('Front'),
-        Laces: get3DPosition('Laces'),
-      });
-    };
+  const positions = {
+    SidebarSmall: { x: -600, y: -300, name: "sidebar" },
+    Front: { x: 400, y: 150, name: "cover" },
+  }
 
-    updatePositions();
-    window.addEventListener('resize', updatePositions);
-
-    return () => window.removeEventListener('resize', updatePositions);
-  }, [get3DPosition]);
+  const colors = [
+    "#1a1615", // black
+    "#4f186b", // purple
+    "#3e4db4", // blue
+    "#91144e", // magenta
+    "#ea1f25", // red
+    "#ac6d37", // brown
+    "#f1ca00", // yellow
+    "#ecddbe", // beige
+    "#a3635e"  // redBrick
+  ]
 
   return (
-    <div className="z-10">
-      {Object.entries(positions).map(([part, pos]) => (
-        <div key={part} className="annotation" style={{ left: pos.x, top: pos.y }}>
-          <p>Customize {part}</p>
-          <div className="flex flex-row gap-2">
-            {['#FF0000', '#00FF00', '#0000FF', '#FFFFFF'].map((color) => (
-              <button
-                key={color}
-                className="rounded-full"
-                style={{ backgroundColor: color, width: 20, height: 20 }}
-                onClick={() => onColorChange(part, color)}
-              />
-            ))}
+    <>
+      {Object.entries(positions).map(([part, pos]) => {
+        return (<>
+          <div key={part} className="z-50 absolute text-white w-60 flex flex-col gap-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 shadow-lg" style={{ left: pos.x, top: pos.y }}>
+            <p>Customize {pos.name} color</p>
+            <div className="flex flex-row gap-2 flex-wrap">
+              {colors.map((color) => (
+                <button
+                  key={color}
+                  className="rounded-full hover:scale-105 transition-transform duration-100 w-8 h-6 border-[1px] border-white"
+                  style={{ backgroundColor: color }}
+                  onClick={() => onColorChange(part, color)}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
-      <svg className="lines">
-        {Object.entries(positions).map(([part, pos]) => (
-          <line key={part} x1={pos.x} y1={pos.y} x2={pos.x - 50} y2={pos.y - 50} stroke="white" strokeWidth="2" />
-        ))}
-      </svg>
-    </div>
+        </>
+        )
+      })}
+    </>
   );
 };
 

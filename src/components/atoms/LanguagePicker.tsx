@@ -9,7 +9,7 @@ const LanguagePicker = () => {
       <div className="flex flex-row md:flex-col gap-x-4 gap-y-2">
         {languages.sort().map((lng, _) => (
           <Link
-            className={`flex flex-col-reverse md:flex-row items-center gap-2 justify-end hover:scale-105 transition-scale duration-200 ${language === lng ? "" : "opacity-70"}`}
+            className={`flex flex-col-reverse md:flex-row cursor-none items-center gap-2 justify-end hover:scale-110 transition-scale duration-200 ${language === lng ? "" : "opacity-70"}`}
             key={lng}
             to={originalPath}
             language={lng}

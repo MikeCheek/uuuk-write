@@ -2,13 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
+/* * {
   cursor: none;
-}
+} */
 
-button{
+/* button{
   cursor: none !important;
-}
+} */
 
 img{
   height: 100% !important;

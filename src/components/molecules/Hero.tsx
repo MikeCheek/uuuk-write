@@ -23,7 +23,7 @@ const Hero = () => {
         </Typography>
 
         <div className="mt-20 md:mr-40">
-          <div onClick={scrollDown} className="cursor-pointer inline-block animate-bounce">
+          <div onClick={scrollDown} className="inline-block animate-bounce">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="w-16 h-16 text-black mx-auto"
