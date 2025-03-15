@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Section from './Section'
 import Typography from '../atoms/Typography'
 import ShowOnView from './ShowOnView'
@@ -15,11 +15,6 @@ const Hero4 = () => {
 
   const isMobile = window.matchMedia('(max-width: 768px)').matches
   const isTablet = window.matchMedia('(max-width: 1024px)').matches
-
-  const isActive = (index: number) =>
-    isMobile ? activeSlide === index :
-      isTablet ? activeSlide === index || activeSlide === index + 1 :
-        activeSlide + 1 === index
 
   const data = useStaticQuery(graphql`
    query {
@@ -42,6 +37,12 @@ const Hero4 = () => {
       }
     }
   `)
+
+  const isActive = (index: number) =>
+    isMobile ? activeSlide === index :
+      isTablet ? activeSlide === index || activeSlide === (index + 1) % data.allFile.edges.length :
+        (activeSlide + 1) % data.allFile.edges.length === index
+
 
   return (
     <Section id="section4" bgColor='bg-beige' shapeColor='text-black' preset='center'>
@@ -76,8 +77,7 @@ const Hero4 = () => {
               settings: {
                 slidesToShow: 2,
                 slidesToScroll: 1,
-                infinite: true,
-                dots: true,
+                dots: true
               },
             },
             {
@@ -85,6 +85,7 @@ const Hero4 = () => {
               settings: {
                 slidesToShow: 1,
                 slidesToScroll: 1,
+                dots: true,
               },
             },
           ]}
