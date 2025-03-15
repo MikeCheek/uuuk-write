@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Connection from './Connection'
 
-const CustomizePart = ({ name, x, y, width, height, onColorChange }: { name: string, x: number, y: number, width: number, height: number, onColorChange: (color: string) => void }) => {
+const CustomizePart = ({ name, x, y, width, height, onColorChange, text }: { name: string, x: number, y: number, width: number, height: number, onColorChange: (color: string) => void, text: string }) => {
   const [hovered, setHovered] = useState(false)
   const colors = [
     "#1a1615", // black
@@ -21,7 +21,7 @@ const CustomizePart = ({ name, x, y, width, height, onColorChange }: { name: str
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <p>Customize {name} color</p>
+      <p>{text}</p>
       <div className="flex flex-row gap-2 flex-wrap">
         {colors.map((color) => (
           <button

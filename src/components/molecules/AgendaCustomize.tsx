@@ -34,7 +34,11 @@ type GLTFResult = GLTF & {
   animations: any;
 };
 
-const AgendaCustomize = (props: JSX.IntrinsicElements['group']) => {
+interface AgendaCustomizeProps {
+  text: { [key: string]: string };
+}
+
+const AgendaCustomize = (props: JSX.IntrinsicElements['group'] & AgendaCustomizeProps) => {
   const { nodes, materials } = useGLTF('/models/agenda.glb') as GLTFResult;
   const groupRef = useRef<THREE.Group>(null);
   const pointerDownX = useRef(0);
@@ -134,7 +138,7 @@ const AgendaCustomize = (props: JSX.IntrinsicElements['group']) => {
   return (
     <>
       <Html>
-        <CustomizeOverlay onColorChange={updateMaterial} />
+        <CustomizeOverlay onColorChange={updateMaterial} text={props.text} />
       </Html>
       <group
         ref={groupRef}

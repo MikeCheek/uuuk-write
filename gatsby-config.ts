@@ -4,7 +4,7 @@ const path = require('path')
 const siteUrl = `https://www.yourdomain.tld`
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `uuuk-site`,
+    title: `UUUK`,
     siteUrl: siteUrl,
     keywords: [`innovation`, 'agenda', 'uuuk', 'creative', '3d print']
   },

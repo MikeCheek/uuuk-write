@@ -1,4 +1,3 @@
-// SectionContext.tsx
 import React, { createContext, useState, useContext, ReactNode } from "react";
 
 type SectionContextType = {

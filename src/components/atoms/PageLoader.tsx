@@ -41,7 +41,7 @@ const PageLoader = () => {
         height={400}
         width={400}
       />
-      Building the future...
+      Making the future...
     </div>
   ) : <></>
 }

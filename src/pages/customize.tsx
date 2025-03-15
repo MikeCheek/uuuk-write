@@ -1,16 +1,14 @@
 import React from 'react';
 import { graphql, type HeadProps } from "gatsby"
 import Seo from '../components/atoms/Seo';
-import Sections from '../components/organisms/Sections';
-import Environment from '../components/organisms/Environment';
 import EnvironmentCustomize from '../components/organisms/EnvironmentCustomize';
+import { CustomizeProvider } from '../utilities/CustomizeContext';
 
 const CustomizePage = () => {
-
   return (
-    <>
+    <CustomizeProvider >
       <EnvironmentCustomize />
-    </>
+    </CustomizeProvider>
   )
 }
 
@@ -24,7 +22,7 @@ export const Head = ({ location, data, pageContext }: HeadProps) => {
   return (
     <Seo
       lang={(pageContext as any).language}
-      title={'SEOTitle'}
+      title={'Customize'}
       pathname={location.pathname}
       description={'SEODescription'}
       structuredData

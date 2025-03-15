@@ -1,1 +1,5 @@
-{}
+{
+  "SideBarColor": "Customize the sidebar color",
+  "CoverColor": "Customize the cover color",
+  "DragToRotate": "Drag to rotate"
+}

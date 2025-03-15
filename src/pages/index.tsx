@@ -24,7 +24,7 @@ export const Head = ({ location, data, pageContext }: HeadProps) => {
   return (
     <Seo
       lang={(pageContext as any).language}
-      title={'SEOTitle'}
+      title={'Home'}
       pathname={location.pathname}
       description={'SEODescription'}
       structuredData
