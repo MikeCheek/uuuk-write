@@ -11,7 +11,7 @@ const Hero3 = () => {
   return (
     <Section id="section3" bgColor='bg-redBrick' shapeColor='text-white' preset='left'>
       {/* <Typography variant='h2'>Unico</Typography> */}
-      <ShowOnView className='text-beige -mt-60'>
+      <ShowOnView className='text-beige mt-96 md:-mt-60'>
         <Typography variant='p'>
           {renderText(t('Hero3Text'))}
         </Typography>

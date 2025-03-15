@@ -3,13 +3,13 @@ export type StepsType = {
   description: string
   position?: { x: number; y: number; z: number }
   rotation?: { x: number; y: number; z: number }
-  mobile?: {
+  mobile: {
     position?: { x: number; y: number; z: number }
     rotation?: { x: number; y: number; z: number }
   }
 }[]
 
-const steps: StepsType = [
+const steps = [
   {
     title: 'Broder',
     description: "Let's go",
@@ -27,6 +27,14 @@ const steps: StepsType = [
       x: Math.PI - Math.PI / 4,
       y: Math.PI,
       z: Math.PI / 4
+    },
+    mobile: {
+      position: { x: 0, y: 0.08, z: 0.65 },
+      rotation: {
+        x: Math.PI - Math.PI / 3,
+        y: -Math.PI / 2.5 + Math.PI,
+        z: Math.PI / 2
+      }
     }
   },
   // {

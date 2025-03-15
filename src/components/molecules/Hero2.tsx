@@ -11,7 +11,7 @@ const Hero2 = () => {
   return (
     // <Section id="section2" bgColor="bg-gradient-to-b from-1% from-white via-50% via-red to-99% to-blue" shapeColor="text-white" preset="left">
     <Section id="section2" bgColor="bg-redBrick" shapeColor="text-white" preset="left">
-      <div className="max-w-3xl text-left text-white">
+      <div className="text-left text-beige">
         {/* <ShowOnView>
           <Typography variant='h2'>
             Modulare
