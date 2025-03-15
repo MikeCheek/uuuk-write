@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Section from './Section'
 import Typography from '../atoms/Typography'
 import ShowOnView from './ShowOnView'
@@ -11,6 +11,8 @@ import "slick-carousel/slick/slick-theme.css";
 
 const Hero4 = () => {
   const { t } = useTranslation()
+  const [activeSlide, setActiveSlide] = useState(0);
+
   const data = useStaticQuery(graphql`
    query {
       allFile(
@@ -35,26 +37,31 @@ const Hero4 = () => {
 
   return (
     <Section id="section4" bgColor='bg-beige' shapeColor='text-black' preset='center'>
-      <ShowOnView className='mb-20 -mt-40'>
+      <ShowOnView className='mb-20'>
         <Typography variant="p" className='text-center text-black' dangerouslySetInnerHTML>
           {t("Hero4Text")}
         </Typography>
       </ShowOnView>
-      <div className='w-screen h-96'>
+      <div className='w-screen'>
         <Slider
           dots={false}
           lazyLoad='progressive'
           infinite
           centerMode
-          speed={3000}
+          speed={1000}
           slidesToShow={3}
           centerPadding="60px"
+          pauseOnHover
           slidesToScroll={1}
           autoplay
           autoplaySpeed={3000}
           cssEase='linear'
-          swipeToSlide
+          swipeToSlide={false}
           arrows={false}
+          className='h-fit'
+          beforeChange={(_, next) => {
+            setActiveSlide(next);
+          }}
           responsive={[
             {
               breakpoint: 1024,
@@ -77,7 +84,7 @@ const Hero4 = () => {
           {data.allFile.edges.map(({ node }: { node: { childImageSharp: { gatsbyImageData: IGatsbyImageData } } }, index: number) => (
             <div className='!flex justify-center items-center' key={index}>
               <GatsbyImage
-                className='w-3/4 h-auto'
+                className={`w-3/4 h-auto transition-transform duration-1000 ${activeSlide + 1 === index ? 'scale-100 translate-y-0' : 'scale-75 translate-y-10'}`}
                 image={node.childImageSharp.gatsbyImageData}
                 alt={`Cover Image ${index + 1}`}
               /></div>
