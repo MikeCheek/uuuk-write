@@ -5,6 +5,7 @@ import ScrollTrigger from 'gsap/ScrollTrigger'
 import { Group } from 'three'
 import { StaticImage } from 'gatsby-plugin-image'
 import { Html } from '@react-three/drei'
+import Typography from '../atoms/Typography'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -41,20 +42,23 @@ const ScrollModel = ({ children }: { children: React.ReactNode }) => {
             if (self.progress >= step3StartProgress && self.progress < step4StartProgress) {
               const progress = (self.progress - step3StartProgress) / (step4StartProgress - step3StartProgress)
               gsap.to(extraGroupRef.current!.position, {
-                x: -0.5 + 0.5 * progress,
+                x: -0.5 + 0.5 * progress, // Moves from left (-0.5) to center (0)
                 y: 0,
                 z: 0,
                 duration: 0.1,
               })
-            } else if (self.progress >= step4StartProgress + stepOffset) {
-              const progress = (self.progress - (step4StartProgress + stepOffset)) / (1 - (step4StartProgress + stepOffset))
+              // } else if (self.progress >= step4StartProgress + stepOffset) {
+              //   const progress = (self.progress - (step4StartProgress + stepOffset)) / (1 - (step4StartProgress + stepOffset))
+            } else if (self.progress >= step4StartProgress) {
+              const progress = (self.progress - (step4StartProgress)) / (1 - (step4StartProgress))
               gsap.to(extraGroupRef.current!.position, {
-                x: 0 - 0.5 * progress,
+                x: 0 + 0.5 * progress, // Now moves from center (0) to right (0.8)
                 y: 0,
                 z: 0,
                 duration: 0.1,
               })
             }
+
           },
         },
       })
@@ -97,14 +101,14 @@ const ScrollModel = ({ children }: { children: React.ReactNode }) => {
         {children}
       </group>
       <group ref={extraGroupRef} position={[-0.5, 0, 0]} dispose={null}>
-        <Html position={[-0.3, 0.07, 0.6]}>
+        <Html position={[-0.15, 0.03, 0.8]}> {/*[-0.3, 0.07, 0.6]*/}
           <StaticImage height={500} src="../../images/cover1.png" alt="Cover 1" layout="fixed" />
         </Html>
-        <Html position={[-0.15, 0.045, 0.65]}>
+        <Html position={[-0.05, 0.03, 0.8]}> {/*[-0.15, 0.045, 0.65]*/}
           <StaticImage height={500} src="../../images/cover2.png" alt="Cover 2" layout='fixed' />
         </Html>
-        <Html position={[-0.05, 0.06, 0.7]}>
-          <StaticImage height={500} src="../../images/cover1.png" alt="Cover 3" layout='fixed' />
+        <Html position={[0.05, 0.03, 0.8]}> {/*[-0.05, 0.06, 0.7]*/}
+          <StaticImage height={500} src="../../images/cover3.png" alt="Cover 3" layout='fixed' />
         </Html>
       </group>
     </>

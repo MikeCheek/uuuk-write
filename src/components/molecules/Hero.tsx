@@ -11,14 +11,14 @@ const Hero = () => {
 
   return (
     <Section id="section1" bgColor="bg-beige" shapeColor="text-black" preset="right">
-      <div className="max-w-3xl text-center text-black md:text-right z-20 -mt-20 md:mr-40">
-        <h2 className="absolute top-2 left-1/2 -translate-x-1/2 text-5xl md:text-7xl font-heading text-transparent bg-clip-text bg-black drop-shadow-lg">
+      <div className="max-w-3xl text-center text-black md:text-right z-20 mt-20 md:mr-40">
+        <Typography variant="h2" className="absolute top-2 left-1/2 -translate-x-1/2 text-5xl md:text-7xl text-transparent bg-clip-text !bg-black drop-shadow-lg">
           UUUK
-        </h2>
+        </Typography>
         <div className="absolute top-4 right-4">
           <LanguagePicker />
         </div>
-        <Typography variant="h1">
+        <Typography variant="h1" className="uppercase ">
           "Write your story"
         </Typography>
 

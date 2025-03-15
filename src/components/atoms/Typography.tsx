@@ -2,14 +2,14 @@ import React from 'react'
 
 type TypoType = "p" | "h2" | "h1"
 
-const Typography = ({ variant, render, children }: { variant: TypoType, render?: TypoType, children: string | React.ReactNode }) => {
+const Typography = ({ variant, render, children, className = "", dangerouslySetInnerHTML = false }: { variant: TypoType, render?: TypoType, children: string | React.ReactNode, className?: string, dangerouslySetInnerHTML?: boolean }) => {
   let renderElem: TypoType
   if (render) renderElem = render
   else renderElem = variant
 
-  const h1Class = "font-calligraph text-4xl md:text-6xl"
-  const h2Class = "text-5xl md:text-7xl font-heading font-extrabold text-transparent bg-clip-text bg-white drop-shadow-lg"
-  const pClass = "text-lg md:text-2xl mt-4 max-w-2xl mx-auto"
+  const h1Class = "text-6xl md:text-9xl " + className
+  const h2Class = "text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-white drop-shadow-lg " + className
+  const pClass = "text-lg md:text-2xl mt-4 max-w-2xl mx-auto " + className
 
   const assignedClass = variant === "h1" ? h1Class :
     variant === "h2" ? h2Class :
@@ -21,7 +21,9 @@ const Typography = ({ variant, render, children }: { variant: TypoType, render?:
     : renderElem === "h2" ?
       <h2 className={assignedClass}>{children}</h2>
       : renderElem === "p" ?
-        <p className={assignedClass}>{children}</p>
+        dangerouslySetInnerHTML && typeof children === "string" ?
+          <p className={assignedClass} dangerouslySetInnerHTML={{ __html: children }}></p> :
+          <p className={assignedClass}>{children}</p>
         :
         <></>
 }

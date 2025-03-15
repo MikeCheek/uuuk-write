@@ -39,21 +39,21 @@ const steps = [
   {
     title: 'Broder',
     description: "Let's go",
-    position: { x: 0.1, y: 0, z: 0.75 },
+    position: { x: 0, y: 0.15, z: 0.8 }, //{ x: 0.1, y: 0, z: 0.75 },
     rotation: {
-      x: 0,
-      y: 0,
-      z: 0
+      x: Math.PI / 2 + Math.PI / 60,
+      y: Math.PI,
+      z: Math.PI / 2 - Math.PI / 10
     }
   },
   {
     title: 'Broder',
     description: "Let's go",
-    position: { x: 0.1, y: 0, z: 0.75 },
+    position: { x: 0, y: 0.2, z: 0.8 }, //{ x: 0.1, y: 0, z: 0.75 },
     rotation: {
-      x: 0,
-      y: 0,
-      z: 0
+      x: Math.PI / 2 + Math.PI / 60,
+      y: Math.PI,
+      z: Math.PI / 2 - Math.PI / 10
     }
   }
 ].map(step => ({

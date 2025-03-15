@@ -22,6 +22,7 @@ module.exports = {
         sans: ["Inter", "sans-serif"],
         heading: ["Poppins", "sans-serif"],
         calligraph: ["Calligraffitti", "cursive"],
+        roboto: ["Roboto", "sans-serif"],
       },
       borderRadius: {
         xl: "1rem",
