@@ -12,8 +12,8 @@ const CustomizeCanvas = ({ text }: { text: { [key: string]: string } }) => {
 
       <ambientLight intensity={1} />
 
-      <spotLight position={[0, 0, 1.5]} intensity={1} />
-      <spotLight position={[0, 0, -1.5]} intensity={1} />
+      {/* <spotLight position={[0, 0, 1.5]} intensity={1} />
+      <spotLight position={[0, 0, -1.5]} intensity={1} /> */}
 
       <PerspectiveCamera position={[0, 0, 1]} makeDefault fov={50} />
       <AgendaCustomize position={[0, 0, isMobile ? 0.5 : 0.75]} rotation={[Math.PI, Math.PI - Math.PI / 4, 0]} text={text} />

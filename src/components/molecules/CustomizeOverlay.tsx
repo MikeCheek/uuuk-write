@@ -19,8 +19,8 @@ const CustomizeOverlay: React.FC<CustomizeOverlayProps> = ({ onColorChange, text
   const maxX = halfScreen - 50
 
   const positions = {
-    SidebarSmall: { x: Math.max(-600, -maxX), y: -300, name: "sidebar", width: 260 - (Math.max(-600, -maxX) + 600), height: 40, text: text["SideBarColor"] },
-    Front: { x: Math.min(400, maxX - 250), y: 150, name: "cover", width: 400 + (Math.min(400, maxX - 250) - 400), height: 50, text: text["CoverColor"] },
+    SidebarSmall: { x: Math.max(-600, -maxX), y: -300, name: "sidebar", width: 280 - (Math.max(-600, -maxX) + 600), height: 40, text: text["SideBarColor"] },
+    Front: { x: Math.min(400, maxX - 250), y: 150, name: "cover", width: 420 + (Math.min(400, maxX - 250) - 400), height: 50, text: text["CoverColor"] },
   };
 
   return (

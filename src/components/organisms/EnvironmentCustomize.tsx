@@ -20,7 +20,7 @@ const EnvironmentCustomize = () => {
 
   return (
     <>
-      <h1 className='text-white/70 text-3xl w-screen text-center mt-4'>Make your UUUK</h1>
+      <h1 className='text-white/70 text-2xl w-screen text-left mt-4 pl-4'>Make your UUUK</h1>
       <div className="absolute top-4 right-4 z-50">
         <LanguagePicker white cursor />
       </div>

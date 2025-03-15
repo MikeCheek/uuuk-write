@@ -5,9 +5,9 @@ import LanguagePicker from "../atoms/LanguagePicker";
 
 const Hero = () => {
 
-  const scrollDown = () => {
-    window.scrollBy({ top: window.innerHeight, left: 0, behavior: "smooth" });
-  };
+  // const scrollDown = () => {
+  //   window.scrollBy({ top: window.innerHeight, left: 0, behavior: "smooth" });
+  // };
 
   return (
     <Section id="section1" bgColor="bg-beige" shapeColor="text-black" preset="right">
