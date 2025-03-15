@@ -9,9 +9,9 @@ const Hero3 = () => {
   const { t } = useTranslation()
 
   return (
-    <Section id="section3" bgColor='bg-redBrick' shapeColor='text-white' preset='center'>
+    <Section id="section3" bgColor='bg-redBrick' shapeColor='text-white' preset='left'>
       {/* <Typography variant='h2'>Unico</Typography> */}
-      <ShowOnView className='text-white text-center -mt-60'>
+      <ShowOnView className='text-beige -mt-60'>
         <Typography variant='p'>
           {renderText(t('Hero3Text'))}
         </Typography>

@@ -20,7 +20,7 @@ const CircledText = ({ text = "Default" }: { text?: string }) => {
     <span className="relative inline-block">
       <span
         ref={textRef}
-        className="text-white font-bold relative z-10"
+        className="font-bold relative z-10"
       >
         {text}
       </span>

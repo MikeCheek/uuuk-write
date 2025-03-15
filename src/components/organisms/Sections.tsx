@@ -9,7 +9,7 @@ const Sections = () => {
   return (
     <div className="relative w-full">
       <Hero />
-      <Hero2 />
+      {/* <Hero2 /> */}
       <Hero3 />
       <Hero4 />
       <Hero5 />

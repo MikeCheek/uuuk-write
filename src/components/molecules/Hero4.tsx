@@ -8,6 +8,7 @@ import { graphql, useStaticQuery } from 'gatsby'
 import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import renderText from '../../utilities/renderText'
 
 const Hero4 = () => {
   const { t } = useTranslation()
@@ -48,7 +49,7 @@ const Hero4 = () => {
     <Section id="section4" bgColor='bg-beige' shapeColor='text-black' preset='center'>
       <ShowOnView className='mb-20'>
         <Typography variant="p" className='text-center text-black' dangerouslySetInnerHTML>
-          {t("Hero4Text")}
+          {renderText(t("Hero4Text"))}
         </Typography>
       </ShowOnView>
       <div className='w-screen'>

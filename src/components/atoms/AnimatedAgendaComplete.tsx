@@ -1,8 +1,10 @@
 import * as THREE from 'three'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { useSpring, a } from '@react-spring/three'
+import { useFrame } from '@react-three/fiber'
+import { Euler } from 'three'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -66,6 +68,28 @@ const AnimatedAgendaComplete = (
   { groupProps, animate = true }: { groupProps?: JSX.IntrinsicElements['group'], animate?: boolean }
 ) => {
   const { nodes } = useGLTF('/models/agenda.glb') as GLTFResult
+
+  // const [mouse, setMouse] = useState({ x: 0, y: 0 })
+  // const [rotation, setRotation] = useState(new Euler(0, 0, 0))
+
+  // const isMobile = window.matchMedia('(max-width: 768px)').matches
+
+  // useEffect(() => {
+  //   if (!isMobile) {
+  //     const handleMouseMove = (event: MouseEvent) => {
+  //       const x = (event.clientX / window.innerWidth) * 2 - 1 // Normalize to [-1, 1]
+  //       const y = -(event.clientY / window.innerHeight) * 2 + 1
+  //       setMouse({ x, y })
+  //     }
+  //     window.addEventListener('mousemove', handleMouseMove)
+  //     return () => window.removeEventListener('mousemove', handleMouseMove)
+  //   }
+  // }, [])
+
+  // useFrame(() => {
+  //   if (isMobile) return
+  //   setRotation(new Euler(mouse.y * 0.2, -mouse.x * 0.2, 0)) // Adjust sensitivity if needed
+  // })
 
   const animationConfigs: Record<string, any> = {
     Front: {
@@ -141,7 +165,9 @@ const AnimatedAgendaComplete = (
   }
 
   return (
-    <group {...groupProps} dispose={null}>
+    <group {...groupProps} dispose={null}
+    // rotation={rotation}
+    >
       {Object.keys(animationConfigs).map((key) => (
         <AnimatedMesh
           key={key}

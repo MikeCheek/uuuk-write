@@ -18,11 +18,11 @@ const Hero = () => {
         <div className="absolute top-4 right-4">
           <LanguagePicker />
         </div>
-        <Typography variant="h1" className="uppercase ">
+        <Typography variant="h1" className="uppercase -mt-80 mb-40 md:mt-0">
           "Write your story"
         </Typography>
 
-        <div className="mt-20 md:mr-40">
+        {/* <div className="mt-20 md:mr-40">
           <div onClick={scrollDown} className="inline-block animate-bounce">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -34,7 +34,7 @@ const Hero = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
-        </div>
+        </div>*/}
       </div>
     </Section>
   );

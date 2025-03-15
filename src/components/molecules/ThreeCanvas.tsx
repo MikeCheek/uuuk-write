@@ -13,8 +13,8 @@ const ThreeCanvas = () => {
 
       <ambientLight intensity={1} />
 
-      <spotLight position={[0, 0, 1.5]} intensity={0.8} />
-      <spotLight position={[0, 0, -1.5]} intensity={0.8} />
+      {/* <spotLight position={[0, 0, 1.5]} intensity={0.4} />
+      <spotLight position={[0, 0, -1.5]} intensity={0.4} /> */}
 
       <PerspectiveCamera position={[0, 0, 1]} makeDefault fov={50} />
       <ScrollModel>
