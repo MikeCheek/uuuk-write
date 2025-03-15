@@ -13,6 +13,14 @@ const Hero4 = () => {
   const { t } = useTranslation()
   const [activeSlide, setActiveSlide] = useState(0);
 
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
+  const isTablet = window.matchMedia('(max-width: 1024px)').matches
+
+  const isActive = (index: number) =>
+    isMobile ? activeSlide === index :
+      isTablet ? activeSlide === index || activeSlide === index + 1 :
+        activeSlide + 1 === index
+
   const data = useStaticQuery(graphql`
    query {
       allFile(
@@ -73,7 +81,7 @@ const Hero4 = () => {
               },
             },
             {
-              breakpoint: 720,
+              breakpoint: 768,
               settings: {
                 slidesToShow: 1,
                 slidesToScroll: 1,
@@ -84,7 +92,7 @@ const Hero4 = () => {
           {data.allFile.edges.map(({ node }: { node: { childImageSharp: { gatsbyImageData: IGatsbyImageData } } }, index: number) => (
             <div className='!flex justify-center items-center' key={index}>
               <GatsbyImage
-                className={`w-3/4 h-auto transition-transform duration-1000 ${activeSlide + 1 === index ? 'scale-100 translate-y-0' : 'scale-75 translate-y-10'}`}
+                className={`w-3/4 h-auto transition-transform duration-1000 ${isActive(index) ? 'scale-100 translate-y-0' : 'scale-75 translate-y-10'}`}
                 image={node.childImageSharp.gatsbyImageData}
                 alt={`Cover Image ${index + 1}`}
               /></div>
