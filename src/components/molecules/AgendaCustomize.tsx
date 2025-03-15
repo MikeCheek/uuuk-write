@@ -58,6 +58,7 @@ const AgendaCustomize = (props: JSX.IntrinsicElements['group'] & AgendaCustomize
   }
 
   const handlePointerDown = (e: ThreeEvent<PointerEvent | TouchEvent> | PointerEvent | TouchEvent) => {
+    document.body.style.cursor = 'grabbing';
     draggingRef.current = true;
     pointerDownX.current = "touches" in e ? e.touches[0].clientX : (e as ThreeEvent<PointerEvent>).clientX;
     if (e instanceof PointerEvent || e instanceof TouchEvent)
@@ -83,6 +84,7 @@ const AgendaCustomize = (props: JSX.IntrinsicElements['group'] & AgendaCustomize
   };
 
   const handlePointerUp = () => {
+    document.body.style.cursor = 'auto'
     draggingRef.current = false;
     if (groupRef.current) {
       gsap.to(groupRef.current.rotation, { y: targetY, duration: 0.5 });
@@ -146,6 +148,7 @@ const AgendaCustomize = (props: JSX.IntrinsicElements['group'] & AgendaCustomize
         dispose={null}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
+        onPointerEnter={() => { if (document.body.style.cursor != 'grabbing') document.body.style.cursor = 'grab' }}
       >
         <mesh geometry={nodes.Front.geometry} material={materials['3d texture bianco']} rotation={[Math.PI / 2, 0, 0]} scale={0.01} />
         <mesh geometry={nodes.Back.geometry} material={materials['3d texture bianco']} rotation={[Math.PI / 2, 0, 0]} scale={0.01} />
