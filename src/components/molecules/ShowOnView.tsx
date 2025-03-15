@@ -23,9 +23,7 @@ const ShowOnView = ({ children, triggerOnce = false, className, setInView }: Sho
 
   return (
     <div
-      className={`${className ?? ''} 
-                    ${inView ? 'opacity-100 transform-none' : ''} 
-                    will-change-[opacity,transform] opacity-0 translate-y-[50px] flex flex-col items-center justify-center`}
+      className={`${className ?? ''} ${inView ? 'opacity-100 transform-none' : ''} will-change-[opacity,transform] opacity-0 translate-y-[50px] flex flex-col items-center justify-center`}
       style={{ transition: 'opacity 400ms ease-out, transform 400ms ease-out' }}
       ref={ref}>
       {children}
