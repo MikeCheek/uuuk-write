@@ -23,6 +23,7 @@ module.exports = {
         heading: ["Poppins", "sans-serif"],
         calligraph: ["Calligraffitti", "cursive"],
         roboto: ["Roboto", "sans-serif"],
+        helvetica: ["Helvetica", "sans-serif"],
       },
       borderRadius: {
         xl: "1rem",

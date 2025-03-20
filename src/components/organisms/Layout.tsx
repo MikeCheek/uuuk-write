@@ -12,7 +12,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <SectionProvider>
-        <main className={`font-roboto relative ${showCustomCursor ? "cursor-none" : ""}`}>
+        <main className={`font-helvetica relative ${showCustomCursor ? "cursor-none" : ""}`}>
           {
             showCustomCursor ? <Cursor /> : <></>
           }
