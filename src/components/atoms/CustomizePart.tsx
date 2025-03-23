@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Connection from './Connection'
 
-const CustomizePart = ({ name, x, y, width, height, onColorChange, text }: { name: string, x: number, y: number, width: number, height: number, onColorChange: (color: string) => void, text: string }) => {
+const CustomizePart = ({ name, x, y, width, height, onColorChange, text, setCustomizing, customizing }:
+  {
+    name: string, x: number, y: number, width: number, height: number,
+    onColorChange: (color: string) => void, text: string,
+    setCustomizing: () => void, customizing: boolean
+  }) => {
+
   const [hovered, setHovered] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const dragThreshold = 5
@@ -70,15 +76,17 @@ const CustomizePart = ({ name, x, y, width, height, onColorChange, text }: { nam
     transition: 'opacity 0.2s'
   }
 
+  const showOnCustomizeClass = `transition-opacity duration-200 ${customizing ? 'opacity-100' : 'opacity-0'}`
+
   return (
     <div
-      className={`z-50 absolute text-white w-64 flex flex-col gap-4 ${hovered ? 'bg-white/5 border-white/40' : 'bg-white/[0.005] border-white/10'} backdrop-blur-md border rounded-xl p-6 shadow-lg transition-bgColor duration-200`}
+      className={`z-50 absolute text-white w-64 flex flex-col gap-4 shadow-lg ${!customizing ? "bg-transparent border-none shadow-none" : hovered ? 'bg-white/5 border-white/40' : 'bg-white/[0.005] border-white/10'} backdrop-blur-md border rounded-xl p-6 transition-bgColor duration-200`}
       style={containerStyle}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <p>{text}</p>
-      <div className="flex flex-row gap-2 flex-wrap">
+      <p className={showOnCustomizeClass}>{text}</p>
+      <div className={`flex flex-row gap-2 flex-wrap ${showOnCustomizeClass}`}>
         {colors.map((color) => (
           <button
             key={color}
@@ -94,6 +102,8 @@ const CustomizePart = ({ name, x, y, width, height, onColorChange, text }: { nam
         width={width}
         height={height}
         bgColor={hovered ? 'bg-white/40' : 'bg-white/10'}
+        customizing={customizing}
+        setCustomizing={setCustomizing}
       />
     </div>
   )

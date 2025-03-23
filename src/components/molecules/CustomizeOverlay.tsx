@@ -6,6 +6,7 @@ interface CustomizeOverlayProps {
   text: { [key: string]: string };
 }
 
+
 const CustomizeOverlay: React.FC<CustomizeOverlayProps> = ({ onColorChange, text }) => {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
@@ -23,6 +24,8 @@ const CustomizeOverlay: React.FC<CustomizeOverlayProps> = ({ onColorChange, text
     Front: { x: Math.min(400, maxX - 250), y: 150, name: "cover", width: 420 + (Math.min(400, maxX - 250) - 400), height: 50, text: text["CoverColor"] },
   };
 
+  const [customizing, setCustomizing] = useState<keyof typeof positions>()
+
   return (
     <>
       {Object.entries(positions).map(([part, pos]) => (
@@ -35,6 +38,8 @@ const CustomizeOverlay: React.FC<CustomizeOverlayProps> = ({ onColorChange, text
           width={pos.width}
           text={pos.text}
           onColorChange={(color) => onColorChange(part, color)}
+          setCustomizing={() => setCustomizing(part as keyof typeof positions)}
+          customizing={customizing === part}
         />
       ))}
     </>

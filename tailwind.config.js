@@ -38,9 +38,20 @@ module.exports = {
           '0%': { opacity: '0', transform: "translate(0, 10%)" },
           '100%': { opacity: '1' },
         },
+        expandCircle: {
+          '0%': {
+            transform: 'scale(1)',
+            opacity: '0.3',
+          },
+          '100%': {
+            transform: 'scale(2)',
+            opacity: '0',
+          },
+        },
       },
       animation: {
         fadeIn: 'fadeIn 1s ease-out forwards',
+        expandCircle: 'expandCircle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },

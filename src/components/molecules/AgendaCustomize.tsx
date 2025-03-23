@@ -42,7 +42,6 @@ const AgendaCustomize = (props: JSX.IntrinsicElements['group'] & AgendaCustomize
   const { nodes, materials } = useGLTF('/models/agenda.glb') as GLTFResult;
   const groupRef = useRef<THREE.Group>(null);
   const pointerDownX = useRef(0);
-  const { camera, size } = useThree();
   const draggingRef = useRef(false);
   const [colors, setColors] = useState({
     SidebarSmall: materials['3d texture rossa (1).001'].color.getStyle(),
