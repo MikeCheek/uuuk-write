@@ -3,7 +3,7 @@ import React, { useState, useEffect, Suspense, lazy } from 'react'
 import LanguagePicker from '../atoms/LanguagePicker';
 import { useTranslation } from 'react-i18next';
 
-const CustomizeCanvas = lazy(() => import('../molecules/CustomizeCanvas'));
+const CustomizeCanvas = lazy(() => import('./CustomizeCanvas'));
 
 const EnvironmentCustomize = () => {
   const [isMounted, setIsMounted] = useState(false)
