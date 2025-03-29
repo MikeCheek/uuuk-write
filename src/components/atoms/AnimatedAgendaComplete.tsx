@@ -72,8 +72,6 @@ const AnimatedAgendaComplete = (
   // const [mouse, setMouse] = useState({ x: 0, y: 0 })
   // const [rotation, setRotation] = useState(new Euler(0, 0, 0))
 
-  // const isMobile = window.matchMedia('(max-width: 768px)').matches
-
   // useEffect(() => {
   //   if (!isMobile) {
   //     const handleMouseMove = (event: MouseEvent) => {

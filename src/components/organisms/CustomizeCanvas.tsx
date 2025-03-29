@@ -4,7 +4,6 @@ import React from 'react'
 import FormatChoose from '../molecules/FormatChoose'
 
 const CustomizeCanvas = ({ text }: { text: { [key: string]: string } }) => {
-  const isMobile = window.matchMedia('(max-width: 768px)').matches
   return (
     <Canvas className='z-10 left-0 top-0 animate-fadeIn' style={{ height: '100vh', position: 'fixed' }}>
       {/* <Overlay /> */}

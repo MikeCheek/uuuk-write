@@ -6,13 +6,13 @@ import { Group } from 'three'
 import { StaticImage } from 'gatsby-plugin-image'
 import { Html } from '@react-three/drei'
 import Typography from '../atoms/Typography'
+import { isMobile } from '../../utilities/mediaQueries'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const ScrollModel = ({ children }: { children: React.ReactNode }) => {
   const mesh = useRef<Group>(null)
   const extraGroupRef = useRef<Group>(null)
-  const isMobile = window.matchMedia('(max-width: 768px)').matches
 
   const numSteps = scrollingSteps.length - 1
   const totalScrollDistance = numSteps * window.innerHeight

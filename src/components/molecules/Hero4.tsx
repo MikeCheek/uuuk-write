@@ -9,13 +9,11 @@ import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import renderText from '../../utilities/renderText'
+import { isMobile, isTablet } from '../../utilities/mediaQueries'
 
 const Hero4 = () => {
   const { t } = useTranslation()
   const [activeSlide, setActiveSlide] = useState(0);
-
-  const isMobile = window.matchMedia('(max-width: 768px)').matches
-  const isTablet = window.matchMedia('(max-width: 1024px)').matches
 
   const data = useStaticQuery(graphql`
    query {
