@@ -3,14 +3,15 @@ import { graphql, type HeadProps } from "gatsby"
 import Seo from '../components/atoms/Seo';
 import Sections from '../components/organisms/Sections';
 import Environment from '../components/organisms/Environment';
+import Layout from '../components/organisms/Layout';
 
 const IndexPage = () => {
 
   return (
-    <>
+    <Layout>
       <Environment />
       <Sections />
-    </>
+    </Layout>
   )
 }
 

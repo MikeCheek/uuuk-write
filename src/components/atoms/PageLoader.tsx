@@ -36,11 +36,11 @@ const PageLoader = () => {
       className={`fixed top-0 left-0 h-screen w-screen flex flex-col items-center justify-center text-2xl text-center text-white bg-redBrick z-[9999999] duration-1000 transition-opacity 
                   ${progress === 100 ? "opacity-0" : "opacity-100"}`}
     >
-      <Lottie
+      {/* <Lottie
         options={defaultOptions}
         height={400}
         width={400}
-      />
+      /> */}
       Making the future...
     </div>
   ) : <></>

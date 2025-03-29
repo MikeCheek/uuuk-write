@@ -2,6 +2,7 @@ import { Rotate3D } from 'lucide-react';
 import React, { useState, useEffect, Suspense, lazy } from 'react'
 import LanguagePicker from '../atoms/LanguagePicker';
 import { useTranslation } from 'react-i18next';
+import Overlay from '../atoms/Overlay';
 
 const CustomizeCanvas = lazy(() => import('./CustomizeCanvas'));
 
@@ -24,6 +25,7 @@ const EnvironmentCustomize = () => {
       <div className="absolute top-4 right-4 z-50">
         <LanguagePicker white cursor />
       </div>
+      <Overlay />
       {!isMounted ? <></> : (
         <Suspense fallback={null}>
           <CustomizeCanvas text={customizeText} />

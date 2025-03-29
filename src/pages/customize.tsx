@@ -2,10 +2,13 @@ import React from 'react';
 import { graphql, type HeadProps } from "gatsby"
 import Seo from '../components/atoms/Seo';
 import EnvironmentCustomize from '../components/organisms/EnvironmentCustomize';
+import Layout from '../components/organisms/Layout';
 
 const CustomizePage = () => {
   return (
-    <EnvironmentCustomize />
+    <Layout showCustomCursor={false}>
+      <EnvironmentCustomize />
+    </Layout>
   )
 }
 
