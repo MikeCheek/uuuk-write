@@ -1,3 +1,12 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/c41176de-a59a-4147-a341-02ee415244a4/deploy-status)](https://app.netlify.com/sites/uuuk/deploys)
+[![Gatsby](https://img.shields.io/badge/Gatsby-2.32.0-blue.svg)](https://www.gatsbyjs.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-4.5.2-blue.svg)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-17.0.2-blue.svg)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-14.17.0-blue.svg)](https://nodejs.org/)
+[![npm](https://img.shields.io/badge/npm-6.14.13-blue.svg)](https://www.npmjs.com/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+
 <p align="center">
   <a href="https://www.gatsbyjs.com/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts">
     <img alt="Gatsby" src="https://www.gatsbyjs.com/Gatsby-Monogram.svg" width="60" />
