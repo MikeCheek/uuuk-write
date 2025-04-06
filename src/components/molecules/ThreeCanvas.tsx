@@ -4,6 +4,8 @@ import React from 'react'
 import Overlay from '../atoms/Overlay'
 import AnimatedAgendaComplete from '../atoms/AnimatedAgendaComplete'
 import ScrollModel from './ScrollModel'
+import Exploding from '../3Dmodels/Exploding'
+import GeneralAgenda from '../atoms/GeneralAgenda'
 
 const ThreeCanvas = () => {
   return (
@@ -18,7 +20,8 @@ const ThreeCanvas = () => {
 
       <PerspectiveCamera position={[0, 0, 1]} makeDefault fov={50} />
       <ScrollModel>
-        <AnimatedAgendaComplete />
+        {/* <AnimatedAgendaComplete /> */}
+        <GeneralAgenda />
       </ScrollModel>
       {/* </ScrollControls> */}
     </Canvas>

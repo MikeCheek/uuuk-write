@@ -9,27 +9,30 @@ export type StepsType = {
   }
 }[]
 
+// { x: -0.05, y: -0.02, z: 0.8 }
+// { x: -5, y: -1, z: -18 }
+
 const steps = [
   {
     title: 'Broder',
     description: "Let's go",
-    position: { x: -0.05, y: -0.02, z: 0.8 },
+    position: { x: -5, y: -1, z: -18 },
     rotation: { x: Math.PI, y: Math.PI - Math.PI / 6, z: 0 },
     mobile: {
-      position: { x: 0.005, y: -0.06, z: 0.7 }
+      position: { x: 1, y: -7, z: -25 }
     }
   },
   {
     title: 'Broder',
     description: "Let's go",
-    position: { x: 0.1, y: 0, z: 0.85 },
+    position: { x: 10, y: 1, z: -18 },
     rotation: {
       x: Math.PI - Math.PI / 4,
       y: Math.PI,
       z: Math.PI / 4
     },
     mobile: {
-      position: { x: 0, y: 0.08, z: 0.65 },
+      position: { x: 0, y: 10, z: -40 },
       rotation: {
         x: Math.PI - Math.PI / 3,
         y: -Math.PI / 2.5 + Math.PI,
@@ -50,20 +53,20 @@ const steps = [
   {
     title: 'Broder',
     description: "Let's go",
-    position: { x: 0, y: 0.15, z: 0.8 }, //{ x: 0.1, y: 0, z: 0.75 },
+    position: { x: 0, y: 15, z: -20 }, //{ x: 0.1, y: 0, z: 0.75 },
     rotation: {
       x: Math.PI / 2 + Math.PI / 30,
       y: Math.PI,
       z: Math.PI / 2 - Math.PI / 10
     },
     mobile: {
-      position: { x: 0, y: 0.16, z: 0.8 } //{ x: 0.1, y: 0, z: 0.75 },
+      position: { x: 0, y: 20, z: -30 } //{ x: 0.1, y: 0, z: 0.75 },
     }
   },
   {
     title: 'Broder',
     description: "Let's go",
-    position: { x: 0, y: 0.2, z: 0.8 }, //{ x: 0.1, y: 0, z: 0.75 },
+    position: { x: 0, y: 15, z: -20 }, //{ x: 0.1, y: 0, z: 0.75 },
     rotation: {
       x: Math.PI / 2 + Math.PI / 60,
       y: Math.PI,
@@ -79,7 +82,7 @@ const steps = [
           position: {
             x: step.position.x,
             y: step.position.y,
-            z: step.position.z - 0.05
+            z: step.position.z - 1
           }
         }
       }
