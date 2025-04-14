@@ -24,7 +24,7 @@ export const Head = ({ location, data, pageContext }: HeadProps) => {
       lang={(pageContext as any).language}
       title={'Customize'}
       pathname={location.pathname}
-      description={'SEODescription'}
+      description={'Customize your UUUK and order it!'}
       structuredData
       bgColor='black'
     />
