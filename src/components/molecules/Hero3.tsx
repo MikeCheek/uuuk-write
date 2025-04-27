@@ -44,7 +44,7 @@ const Hero3 = () => {
 
 
   return (
-    <Section id="section4" bgColor='bg-beige' shapeColor='text-black' preset='center'>
+    <Section id="section3" bgColor='bg-beige' shapeColor='text-black' preset='center'>
       <ShowOnView className='mb-20'>
         <Typography variant="p" className='text-center text-black' dangerouslySetInnerHTML>
           {renderText(t("Hero4Text"))}

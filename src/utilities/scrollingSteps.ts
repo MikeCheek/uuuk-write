@@ -19,7 +19,7 @@ const steps = [
     position: { x: -5, y: -2, z: -18 },
     rotation: { x: Math.PI, y: Math.PI - Math.PI / 6, z: 0 },
     mobile: {
-      position: { x: 1, y: -7, z: -25 }
+      position: { x: 1, y: -10, z: -25 }
     }
   },
   {

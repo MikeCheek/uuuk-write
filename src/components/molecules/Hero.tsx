@@ -21,10 +21,10 @@ const Hero = () => {
         <div className="absolute top-4 right-4">
           <LanguagePicker />
         </div>
-        <Typography variant="h1" className="uppercase -mt-80 mb-10 md:mt-0 text-darkBrown opacity-100">
+        <Typography variant="h1" className="uppercase -mt-80 mb-4 md:mb-10 md:mt-0 text-darkBrown opacity-100">
           "Write your story"
         </Typography>
-        <Typography variant="p" className="w-1/2 mr-0 text-black opacity-80">
+        <Typography variant="p" className="md:w-1/2 mr-0 text-black opacity-80">
           Build an agenda that reflects your style, fuels your creativity.
         </Typography>
 
