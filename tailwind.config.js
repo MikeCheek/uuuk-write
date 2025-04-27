@@ -13,6 +13,7 @@ module.exports = {
         magenta: "#91144e",
         red: "#ea1f25",
         brown: "#ac6d37",
+        darkBrown: "#5c3b1e", // Adjusted to complement the brown palette
         yellow: "#f1ca00",
         beige: "#ecddbe",
 

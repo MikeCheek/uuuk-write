@@ -4,6 +4,7 @@ import Seo from '../components/atoms/Seo';
 import Sections from '../components/organisms/Sections';
 import Environment from '../components/organisms/Environment';
 import Layout from '../components/organisms/Layout';
+import Footer from '../components/molecules/Footer';
 
 const IndexPage = () => {
 
@@ -11,6 +12,7 @@ const IndexPage = () => {
     <Layout>
       <Environment />
       <Sections />
+      <Footer />
     </Layout>
   )
 }

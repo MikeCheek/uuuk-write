@@ -8,8 +8,8 @@ const Typography = ({ variant, render, children, className = "", dangerouslySetI
   else renderElem = variant
 
   const h1Class = "text-7xl md:text-8xl font-thin " + className
-  const h2Class = "text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-white drop-shadow-lg " + className
-  const pClass = "text-xl md:text-3xl mt-4 max-w-2xl mx-auto max-w-[80vw] md:max-w-[40vw] " + className
+  const h2Class = "text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-white drop-shadow-lg " + className
+  const pClass = "text-lg md:text-2xl mt-4 max-w-2xl mx-auto max-w-[80vw] md:max-w-[40vw] " + className
 
   const assignedClass = variant === "h1" ? h1Class :
     variant === "h2" ? h2Class :

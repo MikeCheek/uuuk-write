@@ -18,7 +18,7 @@ const Section = ({
   return (
     <section
       id={id}
-      className={`${bgColor} min-h-screen flex items-center ${preset === "center" ? "justify-center" : preset === "left" ? "justify-start" : "justify-end"} px-20 relative overflow-hidden`}
+      className={`${bgColor} min-h-screen flex items-center ${preset === "center" ? "justify-center" : preset === "left" ? "justify-start" : "justify-end"} px-20 relative overflow-x-hidden`}
     >
       {/* <Shapes color={shapeColor} /> */}
       <span className="z-20">

@@ -7,9 +7,9 @@ import Hero5 from '../molecules/Hero5'
 
 const Sections = () => {
   return (
-    <div className="relative w-full">
+    <div className="relative w-full overflow-x-hidden">
       <Hero />
-      {/* <Hero2 /> */}
+      <Hero2 />
       <Hero3 />
       <Hero4 />
       <Hero5 />

@@ -2,6 +2,7 @@ import React from "react";
 import Section from "./Section";
 import Typography from "../atoms/Typography";
 import LanguagePicker from "../atoms/LanguagePicker";
+import Logo from "../../assets/loguuuk.svg"
 
 const Hero = () => {
 
@@ -12,14 +13,19 @@ const Hero = () => {
   return (
     <Section id="section1" bgColor="bg-beige" shapeColor="text-black" preset="right">
       <div className="max-w-3xl text-center text-black md:text-right z-20 mt-20 md:mr-40">
-        <Typography variant="h2" className="absolute top-2 left-1/2 -translate-x-1/2 text-5xl md:text-7xl text-transparent bg-clip-text !bg-black drop-shadow-lg">
+        {/* <Typography variant="p" render="h2" className="absolute top-0 left-1/2 -translate-x-1/2 font-bold text-2xl md:text-5xl text-transparent bg-clip-text !bg-black drop-shadow-lg">
           UUUK
-        </Typography>
+        </Typography> */}
+        <Logo className="absolute top-2 left-2"
+          width={60} height={60} />
         <div className="absolute top-4 right-4">
           <LanguagePicker />
         </div>
-        <Typography variant="h1" className="uppercase -mt-80 mb-40 md:mt-0">
+        <Typography variant="h1" className="uppercase -mt-80 mb-10 md:mt-0 text-darkBrown opacity-100">
           "Write your story"
+        </Typography>
+        <Typography variant="p" className="w-1/2 mr-0 text-black opacity-80">
+          Build an agenda that reflects your style, fuels your creativity.
         </Typography>
 
         {/* <div className="mt-20 md:mr-40">
