@@ -44,10 +44,10 @@ const steps = [
         z: 0
       },
       mobile: {
-        position: { x: 0, y: 0, z: -40 },
+        position: { x: 0, y: 0, z: -50 },
         rotation: {
           x: Math.PI,
-          y: Math.PI,
+          y: i == 0 ? Math.PI : i == 1 ? -Math.PI - Math.PI / 2 : Math.PI,
           z: 0
         }
       }
