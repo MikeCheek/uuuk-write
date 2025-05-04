@@ -1,6 +1,4 @@
 export type StepsType = {
-  title: string
-  description: string
   position?: { x: number; y: number; z: number }
   rotation?: { x: number; y: number; z: number }
   mobile: {
@@ -14,8 +12,6 @@ export type StepsType = {
 
 const steps = [
   {
-    title: 'Broder',
-    description: "Let's go",
     position: { x: -5, y: -2, z: -18 },
     rotation: { x: Math.PI, y: Math.PI - Math.PI / 6, z: 0 },
     mobile: {
@@ -23,8 +19,6 @@ const steps = [
     }
   },
   {
-    title: 'Broder',
-    description: "Let's go",
     position: { x: 10, y: 1, z: -18 },
     rotation: {
       x: Math.PI - Math.PI / 4,
@@ -40,19 +34,25 @@ const steps = [
       }
     }
   },
-  // {
-  //   title: 'Broder',
-  //   description: "Let's go",
-  //   position: { x: 0, y: -0.02, z: 0.8 },
-  //   rotation: {
-  //     x: Math.PI / 2 + Math.PI / 60,
-  //     y: Math.PI,
-  //     z: Math.PI / 2 - Math.PI / 10
-  //   }
-  // },
+  ...Array(3)
+    .fill(null)
+    .map((_, i) => ({
+      position: { x: 0, y: 0, z: -30 },
+      rotation: {
+        x: Math.PI,
+        y: i == 0 ? Math.PI : i == 1 ? -Math.PI - Math.PI / 2 : Math.PI,
+        z: 0
+      },
+      mobile: {
+        position: { x: 0, y: 0, z: -40 },
+        rotation: {
+          x: Math.PI,
+          y: Math.PI,
+          z: 0
+        }
+      }
+    })),
   {
-    title: 'Broder',
-    description: "Let's go",
     position: { x: 0, y: 15, z: -20 }, //{ x: 0.1, y: 0, z: 0.75 },
     rotation: {
       x: Math.PI / 2 + Math.PI / 30,
@@ -64,8 +64,6 @@ const steps = [
     }
   },
   {
-    title: 'Broder',
-    description: "Let's go",
     position: { x: 0, y: 15, z: -20 }, //{ x: 0.1, y: 0, z: 0.75 },
     rotation: {
       x: Math.PI / 2 + Math.PI / 60,

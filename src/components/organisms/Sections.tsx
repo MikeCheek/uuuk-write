@@ -4,12 +4,14 @@ import Hero2 from '../molecules/Hero2'
 import Hero3 from '../molecules/Hero3'
 import Hero4 from '../molecules/Hero4'
 import Hero5 from '../molecules/Hero5'
+import Hero2_3 from '../molecules/Hero2_3'
 
 const Sections = () => {
   return (
     <div className="relative w-full overflow-x-hidden">
       <Hero />
       <Hero2 />
+      <Hero2_3 />
       <Hero3 />
       <Hero4 />
       <Hero5 />

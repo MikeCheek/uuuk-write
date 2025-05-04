@@ -6,9 +6,11 @@ interface ShowOnViewProps {
   triggerOnce?: boolean;
   className?: string;
   setInView?: (inView: boolean) => void;
+  align?: 'left' | 'center' | 'right';
+  fadeIn?: 'topDown' | 'bottomUp' | 'leftRight' | 'rightLeft'
 }
 
-const ShowOnView = ({ children, triggerOnce = false, className, setInView }: ShowOnViewProps) => {
+const ShowOnView = ({ children, triggerOnce = false, className, setInView, align = "center", fadeIn = 'leftRight' }: ShowOnViewProps) => {
   const [ref, inView, _entry] = useInView({
     threshold: 0.5,
     rootMargin: '5% 0px 5% 0px',
@@ -23,7 +25,10 @@ const ShowOnView = ({ children, triggerOnce = false, className, setInView }: Sho
 
   return (
     <div
-      className={`${className ?? ''} ${inView ? 'opacity-100 transform-none' : ''} will-change-[opacity,transform] opacity-0 -translate-x-[50px] flex flex-col items-center justify-center`}
+      className={`${inView ? 'opacity-100 transform-none' : ''} will-change-[opacity,transform] opacity-0 
+      ${fadeIn === 'topDown' ? '-translate-y-[50px]' : fadeIn === 'bottomUp' ? 'translate-y-[50px]' : fadeIn === 'leftRight' ? '-translate-x-[50px]' : fadeIn === 'rightLeft' ? 'translate-x-[50px]' : ''}
+      ${align === 'left' ? 'items-start text-left' : align === 'right' ? 'items-end text-right' : 'items-center text-center'}
+       justify-center flex flex-col ${className ?? ''}`}
       style={{ transition: 'opacity 400ms ease-out, transform 400ms ease-out' }}
       ref={ref}>
       {children}
