@@ -1,18 +1,14 @@
 import React from 'react';
 import { graphql, type HeadProps } from "gatsby"
 import Seo from '../components/atoms/Seo';
-import Sections from '../components/organisms/Sections';
-import Environment from '../components/organisms/Environment';
 import Layout from '../components/organisms/Layout';
-import Footer from '../components/molecules/Footer';
+import NewHero from '../components/organisms/NewHero';
 
 const IndexPage = () => {
 
   return (
     <Layout>
-      <Environment />
-      <Sections />
-      <Footer />
+      <NewHero />
     </Layout>
   )
 }

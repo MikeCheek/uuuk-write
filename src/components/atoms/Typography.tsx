@@ -17,7 +17,9 @@ const Typography = ({ variant, render, children, className = "", dangerouslySetI
         ""
 
   return renderElem === "h1" ?
-    <h1 className={assignedClass} style={{ wordSpacing: '100vw' }}>{children}</h1>
+    <h1 className={assignedClass}
+    // style={{ wordSpacing: '100vw' }}
+    >{children}</h1>
     : renderElem === "h2" ?
       <h2 className={assignedClass}>{children}</h2>
       : renderElem === "p" ?

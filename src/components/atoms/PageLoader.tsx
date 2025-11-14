@@ -2,7 +2,6 @@ import { useProgress } from '@react-three/drei'
 import React, { useEffect, useState } from 'react'
 import { useScrollBlock } from '../../utilities/scrollEdit'
 import animationData from '../../assets/book_animation.json'
-import Lottie from 'react-lottie'
 
 const PageLoader = () => {
   const { progress } = useProgress()

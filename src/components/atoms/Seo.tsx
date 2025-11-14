@@ -47,7 +47,7 @@ const Index = ({
   keywords,
   noIndex,
   images = [],
-  bgColor = "beige"
+  bgColor = "black"
 }: SeoProps) => {
   const { metadata, featuredImage } = useSiteMetadata();
 
