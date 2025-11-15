@@ -101,12 +101,12 @@ const Hero3 = ({ opened }: { opened: boolean }) => {
           {data.allFile.edges.map(({ node }: { node: { name: string, childImageSharp: { gatsbyImageData: IGatsbyImageData } } }, index: number) => (
             <div className='!flex flex-col justify-center items-center' key={index}>
               <GatsbyImage
-                className={`w-3/4 h-auto transition-transform duration-1000`}
+                className={`w-3/4 h-auto transition-transform duration-1000 ${opened ? 'scale-100 translate-y-0' : 'scale-80 -translate-y-5'}`}
                 // ${isActive(index) ? 'scale-100 translate-y-0' : 'scale-75 translate-y-10'}
                 image={node.childImageSharp.gatsbyImageData}
                 alt={`Cover Image ${index + 1}`}
               />
-              <p className='text-beige'>{node.name}</p>
+              <p className={`text-beige transition-opacity duration-1000 ${opened ? 'opacity-100' : 'opacity-0'}`}>{node.name}</p>
             </div>
           ))}
         </Slider>

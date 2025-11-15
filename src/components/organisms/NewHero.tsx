@@ -11,13 +11,13 @@ const NewHero = () => {
   const toggleGallery = () => setGalleryOpen(!galleryOpen)
 
   return (
-    <div className='relative h-full flex flex-col items-center justify-center'>
+    <div className='relative h-full flex flex-col items-center justify-center gap-40'>
       <Logo className="absolute top-2 left-2 z-50"
         width={60} height={60} fill='#ecddbe' />
       <button onClick={toggleGallery} className="absolute cursor-none z-50 top-4 right-4 px-4 py-2 border border-transparent text-lg font-medium rounded-lg text-darkBrown bg-beige focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-amber-700 focus:ring-beige transition duration-300 ease-in-out shadow-lg hover:shadow-xl transform hover:scale-105">
         {galleryOpen ? "X" : "Gallery"}
       </button>
-      <Typography variant="h1" className="uppercase mb-4 md:mb-10 -mt-20 text-beige [text-shadow:_0_10px_10px_#ecddbe22] w-full text-center opacity-100">
+      <Typography variant="h1" className="uppercase mb-4 md:mb-60 -mt-20 text-beige [text-shadow:_0_10px_10px_#ecddbe22] w-full text-center opacity-100">
         Write your story
       </Typography>
       <Actions />
