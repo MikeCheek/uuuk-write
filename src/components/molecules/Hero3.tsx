@@ -7,16 +7,16 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { isMobile, isTablet } from '../../utilities/mediaQueries'
 
-const Hero3 = () => {
+const Hero3 = ({ opened }: { opened: boolean }) => {
   const { t } = useTranslation()
   const [activeSlide, setActiveSlide] = useState(0);
 
-  const data = useStaticQuery(graphql`
-   query {
+  const rawData = useStaticQuery(graphql`
+    query {
       allFile(
         filter: {
-          extension: { regex: "/(jpg)|(jpeg)|(png)/" }
-          name: { regex: "/cover/" }
+          extension: { regex: "/(jpg|jpeg|png)/" }
+          relativePath: { regex: "/collezioni\\//" }
         }
       ) {
         edges {
@@ -27,11 +27,22 @@ const Hero3 = () => {
                 layout: CONSTRAINED
               )
             }
+            relativePath
+            name
           }
         }
       }
     }
   `)
+
+  const [data] = useState(() => {
+    const edges = [...rawData.allFile.edges]
+    for (let i = edges.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+        ;[edges[i], edges[j]] = [edges[j], edges[i]]
+    }
+    return { allFile: { edges } }
+  })
 
   // const isActive = (index: number) =>
   //   isMobile ? activeSlide === index :
@@ -47,7 +58,7 @@ const Hero3 = () => {
           {renderText(t("Hero4Text"))}
         </Typography>
       </ShowOnView> */}
-      <div className='w-screen opacity-30'>
+      <div className='w-[90vw]'>
         <Slider
           dots={false}
           lazyLoad='progressive'
@@ -73,7 +84,8 @@ const Hero3 = () => {
               settings: {
                 slidesToShow: 2,
                 slidesToScroll: 1,
-                // dots: true
+                dots: opened,
+                arrows: opened,
               },
             },
             {
@@ -86,14 +98,16 @@ const Hero3 = () => {
             },
           ]}
         >
-          {data.allFile.edges.map(({ node }: { node: { childImageSharp: { gatsbyImageData: IGatsbyImageData } } }, index: number) => (
-            <div className='!flex justify-center items-center' key={index}>
+          {data.allFile.edges.map(({ node }: { node: { name: string, childImageSharp: { gatsbyImageData: IGatsbyImageData } } }, index: number) => (
+            <div className='!flex flex-col justify-center items-center' key={index}>
               <GatsbyImage
-                className={`w-3/4 h-auto transition-transform duration-1000 scale-75`}
+                className={`w-3/4 h-auto transition-transform duration-1000`}
                 // ${isActive(index) ? 'scale-100 translate-y-0' : 'scale-75 translate-y-10'}
                 image={node.childImageSharp.gatsbyImageData}
                 alt={`Cover Image ${index + 1}`}
-              /></div>
+              />
+              <p className='text-beige'>{node.name}</p>
+            </div>
           ))}
         </Slider>
       </div>
