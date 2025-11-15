@@ -58,7 +58,7 @@ const Hero3 = ({ opened }: { opened: boolean }) => {
           {renderText(t("Hero4Text"))}
         </Typography>
       </ShowOnView> */}
-      <div className='w-[90vw]'>
+      <div className='w-screen'>
         <Slider
           dots={false}
           lazyLoad='progressive'
