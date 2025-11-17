@@ -54,7 +54,7 @@ const Cursor = () => {
   return (
     <div
       ref={containerRef}
-      className="pointer-events-none fixed top-0 left-0 z-50 mix-blend-difference isolate no-cursor:hidden"
+      className="pointer-events-none fixed top-0 left-0 z-[9999999999] mix-blend-difference isolate no-cursor:hidden"
       style={{
         willChange: "transform",
       }}

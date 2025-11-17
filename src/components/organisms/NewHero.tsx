@@ -6,9 +6,11 @@ import Footer from '../molecules/Footer'
 // import Logo from "../../assets/loguuuk.svg"
 import Typography from '../atoms/Typography'
 import { StaticImage } from 'gatsby-plugin-image'
+import Modal from '../atoms/Modal'
 
 const NewHero = () => {
   const [galleryOpen, setGalleryOpen] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const toggleGallery = () => setGalleryOpen(!galleryOpen)
 
@@ -72,13 +74,14 @@ const NewHero = () => {
     return { allFile: { modEdges } }
   })
 
+  const initialFilters = new Set<string>(["A5", "TRIADIC"]);
 
   const filters = Array.from(new Set([
     ...data.allFile.modEdges.map(e => e.collection.toUpperCase()).filter(c => c),
     ...data.allFile.modEdges.map(e => e.format.toUpperCase()).filter(f => f)
   ]));
 
-  const [selectedFilters, setSelectedFilters] = useState(new Set(filters));
+  const [selectedFilters, setSelectedFilters] = useState(new Set(initialFilters));
 
   // Toggles for collections and formats
   const toggleFilter = (filter: string) => {
@@ -98,11 +101,16 @@ const NewHero = () => {
   const formats = filters.filter(f => f.startsWith("A"))
 
   useEffect(() => {
-    setSelectedFilters(new Set(filters));
+    setSelectedFilters(new Set(initialFilters));
   }, [galleryOpen]);
 
   return (
     <div className='relative h-full flex flex-col items-center justify-center gap-40'>
+      <Modal
+        show={modalOpen}
+        onClose={() => setModalOpen(false)}
+      >
+      </Modal>
       <StaticImage
         src="../../images/logo.png"
         alt="UUUK Logo"
@@ -156,9 +164,9 @@ const NewHero = () => {
       )}
 
       <Typography variant="h1" className="uppercase mb-4 md:mb-0 mt-20 text-beige font-roboto font-medium [text-shadow:_0_10px_10px_#1a1615ee] w-full text-center opacity-100">
-        UUUK è per sempre
+        Write your story
       </Typography>
-      <Actions />
+      <Actions onClick={() => setModalOpen(true)} />
       <div className={`w-full h-screen flex items-center justify-center absolute top-0 left-0 transition-all duration-200 ${galleryOpen ? 'z-10 opacity-100 bg-black' : '-z-10 opacity-20 bg-transparent'}`}>
         <Hero3 data={filteredEdges} opened={galleryOpen} />
       </div>
