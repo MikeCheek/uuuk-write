@@ -12,7 +12,7 @@ const Sections = () => {
       <Hero />
       <Hero2 />
       <Hero2_3 />
-      <Hero3 opened={true} />
+      <Hero3 data={[undefined]} opened={true} />
       <Hero4 />
       <Hero5 />
     </div>

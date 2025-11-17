@@ -1,48 +1,14 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Slider from 'react-slick'
-import { graphql, useStaticQuery } from 'gatsby'
 import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { isMobile, isTablet } from '../../utilities/mediaQueries'
 
-const Hero3 = ({ opened }: { opened: boolean }) => {
+const Hero3 = ({ data, opened }: { data: any[], opened: boolean }) => {
   const { t } = useTranslation()
   const [activeSlide, setActiveSlide] = useState(0);
-
-  const rawData = useStaticQuery(graphql`
-    query {
-      allFile(
-        filter: {
-          extension: { regex: "/(jpg|jpeg|png)/" }
-          relativePath: { regex: "/collezioni\\//" }
-        }
-      ) {
-        edges {
-          node {
-            childImageSharp {
-              gatsbyImageData(
-                placeholder: BLURRED
-                layout: CONSTRAINED
-              )
-            }
-            relativePath
-            name
-          }
-        }
-      }
-    }
-  `)
-
-  const [data] = useState(() => {
-    const edges = [...rawData.allFile.edges]
-    for (let i = edges.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-        ;[edges[i], edges[j]] = [edges[j], edges[i]]
-    }
-    return { allFile: { edges } }
-  })
 
   // const isActive = (index: number) =>
   //   isMobile ? activeSlide === index :
@@ -68,6 +34,7 @@ const Hero3 = ({ opened }: { opened: boolean }) => {
           slidesToShow={3}
           centerPadding="60px"
           pauseOnHover
+          waitForAnimate={false}
           slidesToScroll={1}
           autoplay
           autoplaySpeed={3000}
@@ -98,7 +65,7 @@ const Hero3 = ({ opened }: { opened: boolean }) => {
             },
           ]}
         >
-          {data.allFile.edges.map(({ node }: { node: { name: string, childImageSharp: { gatsbyImageData: IGatsbyImageData } } }, index: number) => (
+          {data.map(({ node }: { node: { name: string, relativePath: string, childImageSharp: { gatsbyImageData: IGatsbyImageData } } }, index: number) => (
             <div className='!flex flex-col justify-center items-center' key={index}>
               <GatsbyImage
                 className={`w-3/4 h-auto transition-transform duration-1000 ${opened ? 'scale-100 translate-y-0' : 'scale-80 -translate-y-5'}`}
