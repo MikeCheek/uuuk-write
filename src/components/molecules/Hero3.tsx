@@ -30,7 +30,7 @@ const Hero3 = ({ data, opened }: { data: any[], opened: boolean }) => {
           lazyLoad='progressive'
           infinite
           centerMode
-          speed={3000}
+          speed={opened ? 200 : 3000}
           slidesToShow={3}
           centerPadding="60px"
           pauseOnHover

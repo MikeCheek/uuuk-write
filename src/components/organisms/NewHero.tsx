@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { graphql, useStaticQuery } from 'gatsby'
 import Hero3 from '../molecules/Hero3'
 import Actions from '../atoms/Actions'
@@ -60,39 +60,33 @@ const NewHero = () => {
   })
 
 
-  const collections = Array.from(new Set(data.allFile.modEdges.map(e => e.collection).filter(c => c)));
-  const formats = Array.from(new Set(data.allFile.modEdges.map(e => e.format).filter(f => f)));
+  const filters = Array.from(new Set([
+    ...data.allFile.modEdges.map(e => e.collection.toUpperCase()).filter(c => c),
+    ...data.allFile.modEdges.map(e => e.format.toUpperCase()).filter(f => f)
+  ]));
 
-  // Selected filters state
-  const [selectedCollections, setSelectedCollections] = useState(new Set(collections));
-  const [selectedFormats, setSelectedFormats] = useState(new Set(formats));
-
+  const [selectedFilters, setSelectedFilters] = useState(new Set(filters));
 
   // Toggles for collections and formats
-  const toggleCollection = (col: string) => {
-    setSelectedCollections(prev => {
+  const toggleFilter = (filter: string) => {
+    setSelectedFilters(prev => {
+      const upFilter = filter.toUpperCase();
       const updated = new Set(prev);
-      if (updated.has(col)) updated.delete(col);
-      else updated.add(col);
-      return updated;
-    });
-  };
-
-  const toggleFormat = (fmt: string) => {
-    setSelectedFormats(prev => {
-      const updated = new Set(prev);
-      if (updated.has(fmt)) updated.delete(fmt);
-      else updated.add(fmt);
+      if (updated.has(upFilter)) updated.delete(upFilter);
+      else updated.add(upFilter);
       return updated;
     });
   };
 
   // Filter data according to selected filters
-  const filteredEdges = data.allFile.modEdges.filter(e => {
-    const cMatch = selectedCollections.size === 0 || selectedCollections.has(e.collection);
-    const fMatch = selectedFormats.size === 0 || selectedFormats.has(e.format);
-    return cMatch && fMatch;
-  });
+  const filteredEdges = data.allFile.modEdges.filter(e => selectedFilters.has(e.collection.toUpperCase()) && selectedFilters.has(e.format.toUpperCase()));
+
+  const collections = filters.filter(f => !f.startsWith("A"))
+  const formats = filters.filter(f => f.startsWith("A"))
+
+  useEffect(() => {
+    setSelectedFilters(new Set(filters));
+  }, [galleryOpen]);
 
   return (
     <div className='relative h-full flex flex-col items-center justify-center gap-40'>
@@ -110,8 +104,8 @@ const NewHero = () => {
               {collections.map(col => (
                 <button
                   key={col}
-                  onClick={() => toggleCollection(col)}
-                  className={`px-3 py-1 rounded-md text-sm font-semibold border ${selectedCollections.has(col) ? 'bg-beige text-darkBrown border-darkBrown' : 'text-beige border-beige'
+                  onClick={() => toggleFilter(col)}
+                  className={`px-3 py-1 rounded-md text-sm font-semibold border ${selectedFilters.has(col) ? 'bg-beige text-darkBrown border-darkBrown' : 'text-beige border-beige'
                     }`}
                 >
                   {col}
@@ -125,8 +119,8 @@ const NewHero = () => {
               {formats.map(fmt => (
                 <button
                   key={fmt}
-                  onClick={() => toggleFormat(fmt)}
-                  className={`px-3 py-1 rounded-md text-sm font-semibold border ${selectedFormats.has(fmt) ? 'bg-beige text-darkBrown border-darkBrown' : 'text-beige border-beige'
+                  onClick={() => toggleFilter(fmt)}
+                  className={`px-3 py-1 rounded-md text-sm font-semibold border ${selectedFilters.has(fmt) ? 'bg-beige text-darkBrown border-darkBrown' : 'text-beige border-beige'
                     }`}
                 >
                   {fmt}
