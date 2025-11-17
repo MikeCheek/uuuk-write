@@ -155,7 +155,7 @@ const NewHero = () => {
         </div>
       )}
 
-      <Typography variant="h1" className="uppercase mb-4 md:mb-0 mt-20 text-beige [text-shadow:_0_10px_10px_#1a1615ee] w-full text-center opacity-100">
+      <Typography variant="h1" className="uppercase mb-4 md:mb-0 mt-20 text-beige font-roboto font-medium [text-shadow:_0_10px_10px_#1a1615ee] w-full text-center opacity-100">
         UUUK è per sempre
       </Typography>
       <Actions />
