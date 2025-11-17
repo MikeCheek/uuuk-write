@@ -1,10 +1,10 @@
 import type { GatsbyConfig } from 'gatsby'
 const path = require('path')
 
-const siteUrl = `https://www.yourdomain.tld`
+const siteUrl = `https://uuuk.netlify.app/`
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `UUUK`,
+    title: `UUUK | Write your story`,
     siteUrl: siteUrl,
     keywords: [`innovation`, 'agenda', 'uuuk', 'creative', '3d print']
   },

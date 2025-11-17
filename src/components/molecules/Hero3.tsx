@@ -15,7 +15,6 @@ const Hero3 = ({ data, opened }: { data: any[], opened: boolean }) => {
   //     isTablet ? activeSlide === index || activeSlide === (index + 1) % data.allFile.edges.length :
   //       (activeSlide + 1) % data.allFile.edges.length === index
 
-
   return (
     <>
       {/* <Section id="section3" bgColor='bg-beige' shapeColor='text-black' preset='center'> */}
@@ -27,6 +26,7 @@ const Hero3 = ({ data, opened }: { data: any[], opened: boolean }) => {
       <div className='w-screen'>
         <Slider
           dots={false}
+          arrows={false}
           lazyLoad='progressive'
           infinite
           centerMode
@@ -40,8 +40,7 @@ const Hero3 = ({ data, opened }: { data: any[], opened: boolean }) => {
           autoplaySpeed={3000}
           cssEase='linear'
           swipeToSlide={false}
-          arrows={false}
-          className='h-fit'
+          className='h-fit relative'
           beforeChange={(_, next) => {
             setActiveSlide(next);
           }}
@@ -51,7 +50,6 @@ const Hero3 = ({ data, opened }: { data: any[], opened: boolean }) => {
               settings: {
                 slidesToShow: 2,
                 slidesToScroll: 1,
-                dots: opened,
                 arrows: opened,
               },
             },
