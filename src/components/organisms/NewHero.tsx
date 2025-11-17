@@ -53,6 +53,18 @@ const NewHero = () => {
       return { ...e, collection, format }
     })
 
+    const additional = modEdges
+      .filter(e => (e.format || '').toUpperCase() === 'A6')
+      .map(e => ({ ...e, format: 'A5' }));
+
+    modEdges.push(...additional);
+
+    modEdges.sort((a, b) => {
+      if (a.format !== b.format) return a.format.localeCompare(b.format);
+      if (a.collection !== b.collection) return a.collection.localeCompare(b.collection);
+      return a.node.name.localeCompare(b.node.name);
+    });
+
     // for (let i = modEdges.length - 1; i > 0; i--) {
     //   const j = Math.floor(Math.random() * (i + 1))
     //     ;[modEdges[i], modEdges[j]] = [modEdges[j], modEdges[i]]
@@ -108,9 +120,10 @@ const NewHero = () => {
       </button>
 
       {galleryOpen && (
-        <div className="absolute top-16 left-1/2 transform -translate-x-1/2 flex flex-wrap justify-center gap-4 z-50 bg-black bg-opacity-70 p-3 rounded-lg">
+        <div className="absolute w-max scale-[.8] sm:scale-100 top-16 left-1/2 border-2 text-beige border-beige transform -translate-x-1/2 flex flex-wrap justify-center gap-4 z-50 bg-black bg-opacity-70 p-3 rounded-lg">
+          <p className='absolute -top-8 left-1/2 -translate-x-1/2'>Filtri</p>
           <div className="flex gap-2 flex-col items-center justify-center">
-            <p className="text-beige font-semibold mr-2">Collezioni:</p>
+            <p className="font-semibold mr-2">Collezioni:</p>
             <div className="flex gap-2 flex-wrap">
               {collections.map(col => (
                 <button
@@ -125,7 +138,7 @@ const NewHero = () => {
             </div>
           </div>
           <div className="flex gap-2 flex-col items-center justify-center ml-4">
-            <p className="text-beige font-semibold mr-2">Formati:</p>
+            <p className="font-semibold mr-2">Formati:</p>
             <div className="flex gap-2 flex-wrap">
               {formats.map(fmt => (
                 <button

@@ -63,15 +63,22 @@ const Hero3 = ({ data, opened }: { data: any[], opened: boolean }) => {
             },
           ]}
         >
-          {data.map(({ node }: { node: { name: string, relativePath: string, childImageSharp: { gatsbyImageData: IGatsbyImageData } } }, index: number) => (
+          {data.map(({ node, format, collection }: { format: string, collection: string, node: { name: string, relativePath: string, childImageSharp: { gatsbyImageData: IGatsbyImageData } } }, index: number) => (
             <div className='!flex flex-col justify-center items-center' key={index}>
-              <GatsbyImage
-                className={`w-3/4 h-auto transition-transform duration-1000 ${opened ? 'scale-100 translate-y-0' : 'scale-80 -translate-y-5'}`}
-                // ${isActive(index) ? 'scale-100 translate-y-0' : 'scale-75 translate-y-10'}
-                image={node.childImageSharp.gatsbyImageData}
-                alt={`Cover Image ${index + 1}`}
-              />
-              <p className={`text-beige transition-opacity duration-1000 ${opened ? 'opacity-100' : 'opacity-0'}`}>{node.name}</p>
+              <div
+                className={`w-3/4 h-auto transition-transform duration-1000 ${opened ? `scale-70 translate-y-0` : `scale-90 -translate-y-5`}`}
+              >
+                <GatsbyImage
+                  image={node.childImageSharp.gatsbyImageData}
+                  className={`${format === 'A5' ? `!scale-[0.9]` : format === 'A6' ? `!scale-[0.7]` : `!scale-[0.4]`}`}
+                  alt={`Cover Image ${index + 1}`}
+                />
+              </div>
+              <p className={`text-beige text-xl font-bold transition-opacity duration-1000 ${opened ? 'opacity-100' : 'opacity-0'}`}>{node.name}</p>
+              <div className={`flex gap-2 mt-2 transition-opacity duration-1000 ${opened ? 'opacity-100' : 'opacity-0'}`}>
+                <span className="text-sm bg-black text-beige px-3 border-2 border-beige py-1 rounded-full uppercase tracking-wide">{collection}</span>
+                <span className="text-sm bg-black text-beige px-3 border-2 border-beige py-1 rounded-full uppercase tracking-wide">{format}</span>
+              </div>
             </div>
           ))}
         </Slider>
