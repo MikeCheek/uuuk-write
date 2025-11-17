@@ -59,13 +59,13 @@ const NewHero = () => {
     return { allFile: { modEdges } }
   })
 
-  // Selected filters state
-  const [selectedCollections, setSelectedCollections] = useState(new Set(data.allFile.modEdges.map(e => e.collection).filter(c => c)));
-  const [selectedFormats, setSelectedFormats] = useState(new Set(data.allFile.modEdges.map(e => e.format).filter(f => f)));
 
-  // Extract unique collections and formats
-  const collections = Array.from(selectedCollections);
-  const formats = Array.from(selectedFormats);
+  const collections = Array.from(new Set(data.allFile.modEdges.map(e => e.collection).filter(c => c)));
+  const formats = Array.from(new Set(data.allFile.modEdges.map(e => e.format).filter(f => f)));
+
+  // Selected filters state
+  const [selectedCollections, setSelectedCollections] = useState(new Set(collections));
+  const [selectedFormats, setSelectedFormats] = useState(new Set(formats));
 
 
   // Toggles for collections and formats
@@ -93,9 +93,6 @@ const NewHero = () => {
     const fMatch = selectedFormats.size === 0 || selectedFormats.has(e.format);
     return cMatch && fMatch;
   });
-
-  console.log({ filteredEdges })
-
 
   return (
     <div className='relative h-full flex flex-col items-center justify-center gap-40'>
