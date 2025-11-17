@@ -131,7 +131,7 @@ const NewHero = () => {
         </div>
       )}
 
-      <Typography variant="h1" className="uppercase mb-4 md:mb-60 -mt-20 text-beige [text-shadow:_0_10px_10px_#ecddbe22] w-full text-center opacity-100">
+      <Typography variant="h1" className="uppercase mb-4 md:mb-60 -mt-20 text-beige [text-shadow:_0_10px_10px_#1a1615ee] w-full text-center opacity-100">
         Write your story
       </Typography>
       <Actions />
