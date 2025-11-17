@@ -73,13 +73,15 @@ const Modal: React.FC<{
           ×
         </button>
         <div>{children ?? <div className='flex flex-col items-center justify-center gap-8'>
-          <p className='text-beige text-2xl font-bold'>Scegli la collezione</p>
-          <div className='flex flex-col md:flex-row gap-12'>
-            <a href="https://eu.jotform.com/build/250762743092357" target="_blank" title='Acquista collezione Triadic'>
+          <p className='text-beige text-2xl font-bold uppercase'>Scegli la collezione</p>
+          <div className='flex flex-col md:flex-row gap-12 text-beige'>
+            <a className='group' href="https://eu.jotform.com/build/250762743092357" target="_blank" title='Acquista collezione Triadic'>
               <StaticImage src='../../images/triadic.webp' alt='cover image 1' className='w-64 md:w-80 h-auto m-2 rounded-lg' />
+              <p className='mt-4 w-full text-center text-lg group-hover:underline'>Collezione Triadic</p>
             </a>
-            <a href="https://form.jotform.com/uuukthefuture/mood-paypal-form-" target='_blank' title='Acquista collezione Mood'>
+            <a className='group' href="https://form.jotform.com/uuukthefuture/mood-paypal-form-" target='_blank' title='Acquista collezione Mood'>
               <StaticImage src='../../images/mood.webp' alt='cover image 2' className='w-64 md:w-80 h-auto m-2 rounded-lg' />
+              <p className='mt-4 w-full text-center text-lg group-hover:underline'>Collezione Mood</p>
             </a>
           </div>
         </div>}</div>
