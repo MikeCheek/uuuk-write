@@ -19,7 +19,7 @@ const Hero2 = () => {
     // <Section id="section2" bgColor="bg-gradient-to-b from-1% from-white via-50% via-red to-99% to-blue" shapeColor="text-white" preset="left">
     <Section id="section2" bgColor="bg-beige" shapeColor="text-darkBrown" preset="left">
       <ShowOnView className="text-left md:text-center text-darkBrown self-start mt-20 ">
-        <div className="md:w-2/3 self-start">
+        <div className="self-start">
           <Typography variant="h2" className="font-bold uppercase mr-auto !text-black opacity-90 mb-8 text-center md:text-left" >
             Un UUUK<br />
             è per

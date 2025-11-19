@@ -81,7 +81,7 @@ const NewHero = () => {
     ...data.allFile.modEdges.map(e => e.format.toUpperCase()).filter(f => f)
   ]));
 
-  const [selectedFilters, setSelectedFilters] = useState(new Set(initialFilters));
+  const [selectedFilters, setSelectedFilters] = useState(new Set(filters));
 
   // Toggles for collections and formats
   const toggleFilter = (filter: string) => {
@@ -101,7 +101,7 @@ const NewHero = () => {
   const formats = filters.filter(f => f.startsWith("A"))
 
   useEffect(() => {
-    setSelectedFilters(new Set(initialFilters));
+    setSelectedFilters(new Set(galleryOpen ? initialFilters : filters));
   }, [galleryOpen]);
 
   return (
