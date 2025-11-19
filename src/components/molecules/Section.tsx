@@ -18,12 +18,12 @@ const Section = ({
   return (
     <section
       id={id}
-      className={`${bgColor} min-h-screen flex items-center ${preset === "center" ? "justify-center" : preset === "left" ? "justify-start" : "justify-end"} px-20 relative overflow-x-hidden`}
+      className={`${bgColor} min-h-screen flex items-center z-20 relative ${preset === "center" ? "justify-center" : preset === "left" ? "justify-start" : "justify-end"} px-20 relative overflow-x-hidden`}
     >
       {/* <Shapes color={shapeColor} /> */}
-      <span className="z-20">
-        {children}
-      </span>
+      {/* <span className="z-20 relative min-h-screen"> */}
+      {children}
+      {/* </span> */}
     </section>
   );
 };

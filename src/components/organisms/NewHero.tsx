@@ -170,9 +170,6 @@ const NewHero = () => {
       <div className={`w-full h-screen flex items-center justify-center absolute top-0 left-0 transition-all duration-200 ${galleryOpen ? 'z-10 opacity-100 bg-black' : '-z-10 opacity-20 bg-transparent'}`}>
         <Hero3 data={filteredEdges} opened={galleryOpen} />
       </div>
-      <div className='absolute w-full bottom-0 left-0 flex items-center justify-center'>
-        <Footer />
-      </div>
     </div>
   )
 }

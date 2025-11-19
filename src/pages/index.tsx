@@ -3,12 +3,16 @@ import { graphql, type HeadProps } from "gatsby"
 import Seo from '../components/atoms/Seo';
 import Layout from '../components/organisms/Layout';
 import NewHero from '../components/organisms/NewHero';
+import Hero2 from '../components/molecules/Hero2';
+import Footer from '../components/molecules/Footer';
 
 const IndexPage = () => {
 
   return (
     <Layout>
       <NewHero />
+      <Hero2 />
+      <Footer />
     </Layout>
   )
 }

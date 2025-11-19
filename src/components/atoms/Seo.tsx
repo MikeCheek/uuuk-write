@@ -46,8 +46,7 @@ const Index = ({
   structuredData = false,
   keywords,
   noIndex,
-  images = [],
-  bgColor = "bg-black"
+  images = []
 }: SeoProps) => {
   const { metadata, featuredImage } = useSiteMetadata();
 
@@ -114,7 +113,7 @@ const Index = ({
 
   return (
     <>
-      <html lang={lang} className={`scrollbar-thin scrollbar-track-black scrollbar-thumb-brown ${bgColor}`} />
+      <html lang={lang} />
       <title>{seo.title}</title>
       <meta name="description" content={seo.description} />
       <meta name="keywords" content={seo.keywords} />

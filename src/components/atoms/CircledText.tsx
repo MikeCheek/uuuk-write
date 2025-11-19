@@ -44,7 +44,7 @@ const CircledText = ({ text = "Default" }: { text?: string }) => {
           <HandDrawn
             width={textWidth}
             height={textHeight}
-            stroke="yellow"
+            stroke="red"
           />
         </motion.span>
       </span>

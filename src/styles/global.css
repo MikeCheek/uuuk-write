@@ -10,6 +10,10 @@
   cursor: none !important;
 } */
 
+html{
+  @apply scrollbar-thin scrollbar-track-black scrollbar-thumb-brown bg-black overflow-x-hidden;
+}
+
 img{
   height: 100% !important;
   width: 100% !important;
