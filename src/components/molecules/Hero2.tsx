@@ -20,12 +20,13 @@ const Hero2 = () => {
     <Section id="section2" bgColor="bg-beige" shapeColor="text-darkBrown" preset="left">
       <ShowOnView className="text-left md:text-center text-darkBrown self-start mt-20 ">
         <div className="self-start">
-          <Typography variant="h2" className="font-bold uppercase mr-auto !text-black opacity-90 mb-8 text-center md:text-left" >
-            Un UUUK<br />
-            è per
-            <br />
-            sempre
+          <Typography variant="h2" render="div" className="font-bold uppercase mr-auto !text-black opacity-90 text-center md:text-left [perspective:400px] mb-20" >
+            <h2 className="text-3xl md:text-5xl w-fit scale-y-125">Un UUUK</h2>
+            <h2 className="[transform:rotateY(-35deg)_rotateZ(2deg)] text-5xl md:text-7xl w-fit text-shadow-lg -mb-2 ml-24 md:ml-32">è per</h2>
+            <h2 className="[transform:rotateY(50deg)_rotateZ(5deg)] text-7xl md:text-8xl w-fit text-shadow-lg -mt-2  md:ml-8">sempre</h2>
           </Typography>
+
+
           <Typography variant="p" className="text-lg md:text-xl mr-auto ml-0 text-center md:text-left bg-opacity-80 rounded-lg self-center justify-self-center">
             {renderText(t("UUUKForever").split("<br/><br/>")[0])}
           </Typography>

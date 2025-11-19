@@ -1,6 +1,6 @@
 import React from 'react'
 
-type TypoType = "p" | "h2" | "h1"
+type TypoType = "p" | "h2" | "h1" | "div"
 
 const Typography = ({ variant, render, children, className = "", dangerouslySetInnerHTML = false }: { variant: TypoType, render?: TypoType, children: string | React.ReactNode, className?: string, dangerouslySetInnerHTML?: boolean }) => {
   let renderElem: TypoType
@@ -26,8 +26,10 @@ const Typography = ({ variant, render, children, className = "", dangerouslySetI
         dangerouslySetInnerHTML && typeof children === "string" ?
           <p className={assignedClass} dangerouslySetInnerHTML={{ __html: children }}></p> :
           <p className={assignedClass}>{children}</p>
-        :
-        <></>
+        : renderElem === "div" ?
+          <div className={assignedClass}>{children}</div>
+          :
+          <></>
 }
 
 export default Typography
