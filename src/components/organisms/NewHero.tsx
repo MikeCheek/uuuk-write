@@ -7,6 +7,8 @@ import Footer from '../molecules/Footer'
 import Typography from '../atoms/Typography'
 import { StaticImage } from 'gatsby-plugin-image'
 import Modal from '../atoms/Modal'
+import Logo from '../atoms/Logo'
+import ButtonTop from '../atoms/ButtonTop'
 
 const NewHero = () => {
   const [galleryOpen, setGalleryOpen] = useState(false)
@@ -111,21 +113,9 @@ const NewHero = () => {
         onClose={() => setModalOpen(false)}
       >
       </Modal>
-      <StaticImage
-        src="../../images/logo.png"
-        alt="UUUK Logo"
-        width={60}
-        height={60}
-        className="!absolute top-2 left-4 z-50 w-fit"
-        style={{
-          // approximate colorize filter to tint the white logo to #ecddbe
-          filter: 'invert(97%) sepia(18%) saturate(608%) hue-rotate(8deg) brightness(103%) contrast(91%)',
-          WebkitFilter: 'invert(97%) sepia(18%) saturate(608%) hue-rotate(8deg) brightness(103%) contrast(91%)',
-        }}
-      />
-      <button onClick={toggleGallery} className="absolute cursor-none z-50 top-4 right-4 px-4 py-2 border border-transparent text-lg font-medium rounded-lg text-darkBrown bg-beige focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-amber-700 focus:ring-beige transition duration-300 ease-in-out shadow-lg hover:shadow-xl transform hover:scale-105">
-        {galleryOpen ? "X" : "Galleria"}
-      </button>
+      <Logo />
+      <ButtonTop onClick={toggleGallery} text={galleryOpen ? "X" : "Galleria"}
+        onClickScrolled={() => setModalOpen(true)} textScrolled='Ordina ora' />
 
       {galleryOpen && (
         <div className="absolute w-max scale-[.8] sm:scale-100 top-16 left-1/2 border-2 text-beige border-beige transform -translate-x-1/2 flex flex-wrap justify-center gap-4 z-50 bg-black bg-opacity-70 p-3 rounded-lg">
