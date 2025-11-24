@@ -29,7 +29,7 @@ const Showcase = ({ data, opened }: { data: any[], opened: boolean }) => {
     autoplaySpeed: 3000,
     cssEase: 'linear' as const,
     swipeToSlide: false,
-    className: 'h-fit relative',
+    className: 'h-fit relative overflow-x-hidden',
     beforeChange: handleBeforeChange,
     responsive: [
       {
