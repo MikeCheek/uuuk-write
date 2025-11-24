@@ -12,7 +12,7 @@ interface ShowOnViewProps {
 
 const ShowOnView = ({ children, triggerOnce = false, className, setInView, align = "center", fadeIn = 'leftRight' }: ShowOnViewProps) => {
   const [ref, inView, _entry] = useInView({
-    threshold: 0.5,
+    threshold: 0.1,
     rootMargin: '5% 0px 5% 0px',
     fallbackInView: true,
     triggerOnce: triggerOnce,
