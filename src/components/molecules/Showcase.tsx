@@ -15,9 +15,8 @@ const Showcase = ({ data, opened }: { data: any[], opened: boolean }) => {
 
   const sliderSettings = React.useMemo(() => ({
     dots: false,
-    arrows: false,
+    arrows: true,
     lazyLoad: 'progressive' as const,
-
     infinite: true,
     centerMode: true,
     speed: opened ? 200 : 3000,
@@ -51,6 +50,39 @@ const Showcase = ({ data, opened }: { data: any[], opened: boolean }) => {
     ],
   }), [opened, handleBeforeChange])
 
+  const NextArrow = (props: any) => {
+    const { className, style, onClick } = props;
+    return (
+      <button
+        type="button"
+        className={`top-1/2 -translate-y-1/2 absolute flex items-center justify-center w-10 h-10 rounded-full bg-black text-beige ring-2 ring-beige transition-all hover:scale-105 ${opened ? 'opacity-100' : 'opacity-0'}`}
+        style={{ ...style, display: "flex", right: opened ? "20px" : "-50px", zIndex: 20 }}
+        onClick={onClick}
+        aria-label="Next slide"
+      >
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
+    );
+  }
+
+  const PrevArrow = (props: any) => {
+    const { className, style, onClick } = props;
+    return (
+      <button
+        type="button"
+        className={`top-1/2 -translate-y-1/2 absolute flex items-center justify-center w-10 h-10 rounded-full bg-black text-beige ring-2 ring-beige transition-all hover:scale-105 ${opened ? 'opacity-100' : 'opacity-0'}`}
+        style={{ ...style, display: "flex", left: opened ? "20px" : "-50px", zIndex: 20 }}
+        onClick={onClick}
+        aria-label="Previous slide"
+      >
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+    );
+  }
 
   return (
     <>
@@ -63,7 +95,7 @@ const Showcase = ({ data, opened }: { data: any[], opened: boolean }) => {
           <div className="h-full bg-gradient-to-l from-black to-transparent" />
         </div>
 
-        <Slider {...sliderSettings}>
+        <Slider nextArrow={<NextArrow />} prevArrow={<PrevArrow />} {...sliderSettings}>
           {data.map(({ node, format, collection }: { format: string, collection: string, node: { name: string, relativePath?: string, childImageSharp: { gatsbyImageData: IGatsbyImageData } } }, index: number) => (
             <div className='!flex flex-col justify-center items-center' key={node.relativePath ?? node.name ?? index}>
               <div
