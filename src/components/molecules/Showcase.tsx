@@ -4,9 +4,8 @@ import Slider from 'react-slick'
 import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { isMobile, isTablet } from '../../utilities/mediaQueries'
 
-const Hero3 = ({ data, opened }: { data: any[], opened: boolean }) => {
+const Showcase = ({ data, opened }: { data: any[], opened: boolean }) => {
   const { t } = useTranslation()
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -88,4 +87,4 @@ const Hero3 = ({ data, opened }: { data: any[], opened: boolean }) => {
   )
 }
 
-export default Hero3
+export default Showcase

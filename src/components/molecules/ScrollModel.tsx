@@ -3,9 +3,6 @@ import scrollingSteps from '../../utilities/scrollingSteps'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import { Group } from 'three'
-import { StaticImage } from 'gatsby-plugin-image'
-import { Html } from '@react-three/drei'
-import Typography from '../atoms/Typography'
 import { isMobile } from '../../utilities/mediaQueries'
 
 gsap.registerPlugin(ScrollTrigger)

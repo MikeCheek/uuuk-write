@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { graphql, useStaticQuery } from 'gatsby'
-import Hero3 from '../molecules/Hero3'
+import Showcase from '../molecules/Showcase'
 import Actions from '../atoms/Actions'
-import Footer from '../molecules/Footer'
-// import Logo from "../../assets/loguuuk.svg"
 import Typography from '../atoms/Typography'
-import { StaticImage } from 'gatsby-plugin-image'
 import Modal from '../atoms/Modal'
 import Logo from '../atoms/Logo'
 import ButtonTop from '../atoms/ButtonTop'
@@ -157,8 +154,8 @@ const NewHero = () => {
         Write your story
       </Typography>
       <Actions onClick={() => setModalOpen(true)} />
-      <div className={`w-full h-screen flex items-center justify-center absolute top-0 left-0 transition-all duration-200 ${galleryOpen ? 'z-10 opacity-100 bg-black' : '-z-10 opacity-20 bg-transparent'}`}>
-        <Hero3 data={filteredEdges} opened={galleryOpen} />
+      <div className={`w-full h-screen flex items-center justify-center absolute top-0 left-0 transition-all duration-200 ${galleryOpen ? 'z-10 opacity-100 bg-black' : '-z-10 opacity-40 bg-transparent'}`}>
+        <Showcase data={filteredEdges} opened={galleryOpen} />
       </div>
     </div>
   )

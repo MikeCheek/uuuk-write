@@ -5,6 +5,7 @@ import Layout from '../components/organisms/Layout';
 import NewHero from '../components/organisms/NewHero';
 import Hero2 from '../components/molecules/Hero2';
 import Footer from '../components/molecules/Footer';
+import Hero2_3 from '../components/molecules/Hero2_3';
 
 const IndexPage = () => {
 
@@ -12,6 +13,7 @@ const IndexPage = () => {
     <Layout>
       <NewHero />
       <Hero2 />
+      <Hero2_3 />
       <Footer />
     </Layout>
   )
