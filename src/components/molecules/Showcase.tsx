@@ -9,61 +9,63 @@ const Showcase = ({ data, opened }: { data: any[], opened: boolean }) => {
   const { t } = useTranslation()
   const [activeSlide, setActiveSlide] = useState(0);
 
-  // const isActive = (index: number) =>
-  //   isMobile ? activeSlide === index :
-  //     isTablet ? activeSlide === index || activeSlide === (index + 1) % data.allFile.edges.length :
-  //       (activeSlide + 1) % data.allFile.edges.length === index
+  const handleBeforeChange = React.useCallback((_: any, next: number) => {
+    setActiveSlide(next)
+  }, [])
+
+  const sliderSettings = React.useMemo(() => ({
+    dots: false,
+    arrows: false,
+    lazyLoad: 'progressive' as const,
+
+    infinite: true,
+    centerMode: true,
+    speed: opened ? 200 : 3000,
+    slidesToShow: 3,
+    centerPadding: "60px",
+    pauseOnHover: true,
+    waitForAnimate: false,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    cssEase: 'linear' as const,
+    swipeToSlide: false,
+    className: 'h-fit relative',
+    beforeChange: handleBeforeChange,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          arrows: opened,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  }), [opened, handleBeforeChange])
+
 
   return (
     <>
-      {/* <Section id="section3" bgColor='bg-beige' shapeColor='text-black' preset='center'> */}
-      {/* <ShowOnView className='mb-20'>
-        <Typography variant="p" className='text-center text-black' dangerouslySetInnerHTML>
-          {renderText(t("Hero4Text"))}
-        </Typography>
-      </ShowOnView> */}
-      <div className='w-screen'>
-        <Slider
-          dots={false}
-          arrows={false}
-          lazyLoad='progressive'
-          infinite
-          centerMode
-          speed={opened ? 200 : 3000}
-          slidesToShow={3}
-          centerPadding="60px"
-          pauseOnHover
-          waitForAnimate={false}
-          slidesToScroll={1}
-          autoplay
-          autoplaySpeed={3000}
-          cssEase='linear'
-          swipeToSlide={false}
-          className='h-fit relative'
-          beforeChange={(_, next) => {
-            setActiveSlide(next);
-          }}
-          responsive={[
-            {
-              breakpoint: 1024,
-              settings: {
-                slidesToShow: 2,
-                slidesToScroll: 1,
-                arrows: opened,
-              },
-            },
-            {
-              breakpoint: 768,
-              settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                // dots: true,
-              },
-            },
-          ]}
-        >
-          {data.map(({ node, format, collection }: { format: string, collection: string, node: { name: string, relativePath: string, childImageSharp: { gatsbyImageData: IGatsbyImageData } } }, index: number) => (
-            <div className='!flex flex-col justify-center items-center' key={index}>
+      <div className='w-screen relative'>
+        {/* left/right gradient hints */}
+        <div className="absolute left-0 top-0 bottom-0 w-20 pointer-events-none z-10">
+          <div className="h-full bg-gradient-to-r from-black to-transparent" />
+        </div>
+        <div className="absolute right-0 top-0 bottom-0 w-20 pointer-events-none z-10">
+          <div className="h-full bg-gradient-to-l from-black to-transparent" />
+        </div>
+
+        <Slider {...sliderSettings}>
+          {data.map(({ node, format, collection }: { format: string, collection: string, node: { name: string, relativePath?: string, childImageSharp: { gatsbyImageData: IGatsbyImageData } } }, index: number) => (
+            <div className='!flex flex-col justify-center items-center' key={node.relativePath ?? node.name ?? index}>
               <div
                 className={`w-3/4 h-auto transition-transform duration-1000 ${opened ? `scale-70 translate-y-0` : `scale-90 -translate-y-5`}`}
               >
@@ -82,9 +84,12 @@ const Showcase = ({ data, opened }: { data: any[], opened: boolean }) => {
           ))}
         </Slider>
       </div>
-      {/* </Section> */}
     </>
   )
 }
 
-export default Showcase
+export default React.memo(Showcase, (prev, next) =>
+  prev.opened === next.opened && prev.data === next.data
+)
+
+// export default Showcase

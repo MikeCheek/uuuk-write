@@ -94,7 +94,18 @@ const NewHero = () => {
   };
 
   // Filter data according to selected filters
-  const filteredEdges = data.allFile.modEdges.filter(e => selectedFilters.has(e.collection.toUpperCase()) && selectedFilters.has(e.format.toUpperCase()));
+  const filteredEdges = data.allFile.modEdges.filter(e => selectedFilters.has(e.collection.toUpperCase()) && selectedFilters.has(e.format.toUpperCase()))
+    .sort((a, b) => {
+      const reversedFilters = Array.from(selectedFilters).map(f => f.toUpperCase()).reverse();
+      for (const filt of reversedFilters) {
+        const aMatches = a.collection.toUpperCase() === filt || a.format.toUpperCase() === filt;
+        const bMatches = b.collection.toUpperCase() === filt || b.format.toUpperCase() === filt;
+        if (aMatches !== bMatches) return aMatches ? -1 : 1;
+      }
+      if (a.format !== b.format) return a.format.localeCompare(b.format);
+      if (a.collection !== b.collection) return a.collection.localeCompare(b.collection);
+      return a.node.name.localeCompare(b.node.name);
+    });
 
   const collections = filters.filter(f => !f.startsWith("A"))
   const formats = filters.filter(f => f.startsWith("A"))
