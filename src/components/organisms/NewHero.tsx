@@ -77,7 +77,7 @@ const NewHero = () => {
 
   const filters = Array.from(new Set([
     ...data.allFile.modEdges.map(e => e.collection.toUpperCase()).filter(c => c),
-    ...data.allFile.modEdges.map(e => e.format.toUpperCase()).filter(f => f)
+    ...data.allFile.modEdges.map(e => e.format.toUpperCase()).filter(f => f).reverse()
   ]));
 
   const [selectedFilters, setSelectedFilters] = useState(new Set(filters));
