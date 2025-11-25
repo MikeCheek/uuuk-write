@@ -3,7 +3,7 @@ import Instagram from '../../assets/instagram.svg'
 
 const Banner = () => {
   return (
-    <div className='w-full h-40 md:h-52 bg-redBrick text-white flex flex-col items-center justify-center md:justify-center px-4 md:px-8 gap-4 md:gap-8'>
+    <div className='w-full h-40 md:h-52 bg-redBrick text-white font-bold flex flex-col items-center justify-center md:justify-center px-4 md:px-8 gap-4 md:gap-8'>
       <div className="w-full overflow-hidden relative">
         <>
           <span

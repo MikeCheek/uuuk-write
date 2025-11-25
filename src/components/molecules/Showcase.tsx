@@ -4,8 +4,9 @@ import Slider from 'react-slick'
 import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import OrderNow from '../atoms/OrderNow';
 
-const Showcase = ({ data, opened }: { data: any[], opened: boolean }) => {
+const Showcase = ({ data, opened, openModal }: { data: any[], opened: boolean, openModal: () => void }) => {
   const { t } = useTranslation()
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -87,7 +88,7 @@ const Showcase = ({ data, opened }: { data: any[], opened: boolean }) => {
   return (
     <>
       <div className='w-screen relative'>
-        {/* left/right gradient hints */}
+        {/* left/right gradient */}
         <div className="absolute left-0 top-0 bottom-0 w-20 pointer-events-none z-10">
           <div className="h-full bg-gradient-to-r from-black to-transparent" />
         </div>
@@ -115,7 +116,9 @@ const Showcase = ({ data, opened }: { data: any[], opened: boolean }) => {
             </div>
           ))}
         </Slider>
+
       </div>
+      {opened ? <div className='mt-4 absolute bottom-8 left-1/2 -translate-x-1/2'><OrderNow onClick={openModal} small /></div> : <></>}
     </>
   )
 }
