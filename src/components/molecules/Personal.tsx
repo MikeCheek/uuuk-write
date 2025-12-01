@@ -3,8 +3,9 @@ import Section from './Section'
 import ShowOnView from './ShowOnView'
 import { StaticImage } from 'gatsby-plugin-image'
 import HighlightedText from '../atoms/HighlightedText'
+import Typography from '../atoms/Typography'
 
-const Hero2_3 = () => {
+const Personal = () => {
   return (
     <Section id={`section2_3`} bgColor='bg-darkBrown' shapeColor='text-white' preset='center'>
       <ShowOnView className="flex flex-col md:flex-row items-center justify-center md:!items-end md:!justify-end">
@@ -19,14 +20,19 @@ const Hero2_3 = () => {
           layout="fixed"
         />
 
-        <div className='text-beige md:mx-10 md:max-w-[50vw] [perspective:400px] w-[80vw] md:w-auto'>
-          <h2 className='text-7xl font-bold mb-8 uppercase -ml-32 md:-ml-40 [transform:rotateY(-35deg)_rotateZ(0deg)] '>Personale</h2>
-          <p className='text-lg'>Cambia la cover <HighlightedText text="Plug & Play" /> per rappresentare ciò a cui tieni</p>
-          <p className='text-lg'>L'occhio vuole la sua parte</p>
+        <div className='text-beige md:mx-10 md:max-w-[50vw] w-[80vw] md:w-auto'>
+          <Typography variant="h2" render="div" className="[perspective:400px]" >
+            <h2 className='text-6xl md:text-8xl font-bold mb-8 uppercase -ml-24 md:-ml-40 [transform:rotateY(-30deg)_rotateZ(0deg)]  text-beige'>Personale</h2>
+          </Typography>
+          <Typography variant="p" >
+            Cambia la cover <HighlightedText text="Plug & Play" /> per rappresentare ciò a cui tieni
+            <br />
+            L'occhio vuole la sua parte
+          </Typography>
         </div>
       </ShowOnView>
     </Section>
   )
 }
 
-export default Hero2_3
+export default Personal

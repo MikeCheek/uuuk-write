@@ -3,19 +3,21 @@ import { graphql, type HeadProps } from "gatsby"
 import Seo from '../components/atoms/Seo';
 import Layout from '../components/organisms/Layout';
 import NewHero from '../components/organisms/NewHero';
-import Hero2 from '../components/molecules/Hero2';
+import UUUKForever from '../components/molecules/UUUKForever';
 import Footer from '../components/molecules/Footer';
-import Hero2_3 from '../components/molecules/Hero2_3';
+import Personal from '../components/molecules/Personal';
 import Banner from '../components/atoms/Banner';
+import Infinite from '../components/molecules/Infinite';
 
 const IndexPage = () => {
 
   return (
     <Layout>
       <NewHero />
-      <Hero2 />
+      <UUUKForever />
       <Banner />
-      <Hero2_3 />
+      <Personal />
+      <Infinite />
       <Footer />
     </Layout>
   )
