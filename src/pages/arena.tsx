@@ -1,10 +1,13 @@
-import React from 'react';
-import { useState, useId } from 'react';
+import React, { CSSProperties } from 'react';
+import { useState, useId, useMemo } from 'react';
 
 // Define types for customization options
 type AgendaFormat = 'A5' | 'A6' | 'A7';
 type PageInterior = 'Lined' | 'Dotted' | 'Blank';
-type GraphicOption = 'None' | 'Circles' | 'Stripes' | 'Floral';
+type Collection = 'M(O_O)D' | 'Triadic';
+type MoodTemplate = 'Angry' | 'Bored' | 'Excited' | 'Happy' | 'Sad' | 'Shock' | 'None';
+type TriadicTemplate = 'Flusso' | 'Occhio' | 'Punto' | 'None';
+type CoverImageTemplate = MoodTemplate | TriadicTemplate;
 
 interface ColorOption {
   name: string;
@@ -19,7 +22,7 @@ interface Module {
   pageInterior: PageInterior;
 }
 
-// Available options
+// --- Available Options ---
 const formats: AgendaFormat[] = ['A5', 'A6', 'A7'];
 const colors: ColorOption[] = [
   { name: 'Sky', class: 'bg-sky-500', textClass: 'text-sky-500' },
@@ -29,31 +32,109 @@ const colors: ColorOption[] = [
   { name: 'Slate', class: 'bg-slate-700', textClass: 'text-slate-700' },
   { name: 'White', class: 'bg-white', textClass: 'text-gray-900' },
 ];
-const pageInteriors: PageInterior[] = ['Lined', 'Dotted', 'Blank'];
-const graphics: GraphicOption[] = ['None', 'Circles', 'Stripes', 'Floral'];
 
-const MAX_MODULES = 5;
+const imageAssets = {
+  'M(O_O)D': {
+    'A6': {
+      'Angry': require('../images/collezioni/M(O_O)D/A6/Angry.png'),
+      'Bored': require('../images/collezioni/M(O_O)D/A6/Bored.png'),
+      'Excited': require('../images/collezioni/M(O_O)D/A6/Excited.png'),
+      'Happy': require('../images/collezioni/M(O_O)D/A6/Happy.png'),
+      'Sad': require('../images/collezioni/M(O_O)D/A6/Sad.png'),
+      'Shock': require('../images/collezioni/M(O_O)D/A6/Shock.png'),
+      'None': '',
+    },
+    'A7': {
+      'Angry': require('../images/collezioni/M(O_O)D/A7/Angry.png'),
+      'Bored': require('../images/collezioni/M(O_O)D/A7/Bored.png'),
+      'Excited': require('../images/collezioni/M(O_O)D/A7/Excited.png'),
+      'Happy': require('../images/collezioni/M(O_O)D/A7/Happy.png'),
+      'Sad': require('../images/collezioni/M(O_O)D/A7/Sad.png'),
+      'Shock': require('../images/collezioni/M(O_O)D/A7/Shock.png'),
+      'None': '',
+    }
+  },
+  'Triadic': {
+    'A6': {
+      'Flusso': require('../images/collezioni/Triadic/A6/Flusso.png'),
+      'Occhio': require('../images/collezioni/Triadic/A6/Occhio.png'),
+      'Punto': require('../images/collezioni/Triadic/A6/Punto.png'),
+      'None': '',
+    },
+    'A7': {
+      'Flusso': require('../images/collezioni/Triadic/A7/Flusso.png'),
+      'Occhio': require('../images/collezioni/Triadic/A7/Occhio.png'),
+      'Punto': require('../images/collezioni/Triadic/A7/Punto.png'),
+      'None': '',
+
+    }
+  }
+};
+
+const pageInteriors: PageInterior[] = ['Lined', 'Dotted', 'Blank'];
+const collections: Collection[] = imageAssets ? Object.keys(imageAssets) as Collection[] : [];
+const moodTemplates: MoodTemplate[] = imageAssets ? Object.keys(imageAssets['M(O_O)D']['A6']) as MoodTemplate[] : [];
+const triadicTemplates: TriadicTemplate[] = imageAssets ? Object.keys(imageAssets['Triadic']['A6']) as TriadicTemplate[] : [];
+
+const MAX_MODULES = 3;
 
 const steps = [
   'Format', 'Front Cover', 'Modules', 'Back Cover', 'Review'
 ];
 
+const getCoverTemplateImagePath = (format: AgendaFormat, collection: Collection, template: CoverImageTemplate): string => {
+  if (template === 'None') return '';
+
+  const formatFolder = format === 'A5' ? 'A6' : format; // A5 uses A6 folder structure
+
+  try {
+    // Narrow by collection so TypeScript knows which template union is valid
+    if (collection === 'M(O_O)D') {
+      const key = template as MoodTemplate;
+      const assets = imageAssets['M(O_O)D'] as any as Record<string, Record<MoodTemplate | 'None', { "default": string }>>;
+      return assets[formatFolder][key]["default"];
+    } else {
+      const key = template as TriadicTemplate;
+      const assets = imageAssets['Triadic'] as any as Record<string, Record<TriadicTemplate | 'None', { "default": string }>>;
+      return assets[formatFolder][key]["default"];
+    }
+  } catch (e) {
+    console.error(`Image not found for: ${collection}/${formatFolder}/${template}`);
+    return '';
+  }
+};
+
+const getTemplatesForCollection = (collection: Collection): CoverImageTemplate[] => {
+  if (collection === 'M(O_O)D') return moodTemplates;
+  if (collection === 'Triadic') return triadicTemplates;
+  return []; // Should not happen
+};
+
+// --- Main Component ---
 const Arena = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [format, setFormat] = useState<AgendaFormat>('A5');
+
+  // Front Cover States
   const [frontCoverColor, setFrontCoverColor] = useState<ColorOption>(colors[0]);
-  const [frontCoverGraphic, setFrontCoverGraphic] = useState<GraphicOption>('None');
+  const [frontCoverCollection, setFrontCoverCollection] = useState<Collection>('M(O_O)D'); // NEW STATE
+  const [frontCoverTemplate, setFrontCoverTemplate] = useState<CoverImageTemplate>('None');
+  const [frontCoverText, setFrontCoverText] = useState<string>('My Awesome Agenda');
+
+  // Module States
   const [modules, setModules] = useState<Module[]>([
     { id: useId(), sidebarColor: colors[4], sidebarText: 'Section 1', pageInterior: 'Lined' }
   ]);
-  const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0); // Index of module being edited
-  const [backCoverColor, setBackCoverColor] = useState<ColorOption>(colors[0]);
-  const [backCoverGraphic, setBackCoverGraphic] = useState<GraphicOption>('None');
+  const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
 
+  // Back Cover States
+  const [backCoverColor, setBackCoverColor] = useState<ColorOption>(colors[0]);
+  const [backCoverText, setBackCoverText] = useState<string>('Notes and Dreams'); // New state for text
+
+  // --- Handlers ---
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
-      // Reset active module index when leaving the Modules step
       if (steps[currentStep] === 'Modules') {
         setActiveModuleIndex(0);
       }
@@ -63,36 +144,34 @@ const Arena = () => {
   const handlePrev = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
-      // Reset active module index when leaving the Modules step
       if (steps[currentStep] === 'Back Cover') {
-        setActiveModuleIndex(modules.length - 1); // Go to last module when coming back
+        setActiveModuleIndex(modules.length - 1);
       }
     }
   };
 
   const handleAddToCart = () => {
     alert('Agenda added to cart! (Not really, this is a demo)');
-    // Reset or navigate away
   };
 
+  // Module Handlers (remain mostly the same)
   const addModule = () => {
     if (modules.length < MAX_MODULES) {
       const newModule: Module = {
-        id: Date.now().toString(), // Simple unique ID generation
-        sidebarColor: colors[Math.floor(Math.random() * (colors.length - 1))], // Random color (excluding white)
+        id: Date.now().toString(),
+        sidebarColor: colors[Math.floor(Math.random() * (colors.length - 1))],
         sidebarText: `Section ${modules.length + 1}`,
         pageInterior: 'Lined',
       };
       setModules([...modules, newModule]);
-      setActiveModuleIndex(modules.length); // Activate the new module
+      setActiveModuleIndex(modules.length);
     }
   };
 
   const removeModule = (indexToRemove: number) => {
-    if (modules.length > 1) { // Cannot remove the last module
+    if (modules.length > 1) {
       const newModules = modules.filter((_, index) => index !== indexToRemove);
       setModules(newModules);
-      // Adjust active index if necessary
       if (activeModuleIndex >= indexToRemove) {
         setActiveModuleIndex(Math.max(0, activeModuleIndex - 1));
       }
@@ -105,66 +184,70 @@ const Arena = () => {
     setModules(newModules);
   };
 
-
-  const renderGraphicPlaceholder = (graphic: GraphicOption) => {
-    switch (graphic) {
-      case 'Circles':
-        return <div className="absolute inset-0 flex items-center justify-center space-x-1 opacity-30">
-          <div className="w-3 h-3 rounded-full bg-current"></div>
-          <div className="w-4 h-4 rounded-full bg-current"></div>
-          <div className="w-3 h-3 rounded-full bg-current"></div>
-        </div>;
-      case 'Stripes':
-        return <div className="absolute inset-0 flex flex-col justify-around opacity-30">
-          <div className="h-1 bg-current w-full"></div>
-          <div className="h-1 bg-current w-full"></div>
-          <div className="h-1 bg-current w-full"></div>
-        </div>;
-      case 'Floral':
-        return <div className="absolute inset-0 flex items-center justify-center opacity-30 text-2xl">🌸</div>;
-      case 'None':
-      default:
-        return null;
-    }
-  };
-
   const getPreviewSizeClasses = () => {
-    const baseSpineWidth = 1; // Base width for a single spine segment in rem
-    const totalSpineWidthRem = modules.length * baseSpineWidth * 0.25; // e.g., 5 modules = 1.25rem = w-5
+    const baseSpineWidth = 1;
+    const totalSpineWidthRem = modules.length * baseSpineWidth * 0.25;
 
-    // Tailwind doesn't support arbitrary widths directly in class names like w-[1.25rem] without JIT arbitrary values.
-    // We'll use inline style for the dynamic spine width in the preview.
-    // For container size based on format:
     switch (format) {
-      case 'A7': return { container: 'w-24 h-36', text: 'text-[6px]', spineWidthRem: totalSpineWidthRem * 0.7 }; // Smaller text for smaller format
-      case 'A6': return { container: 'w-32 h-48', text: 'text-[8px]', spineWidthRem: totalSpineWidthRem * 0.85 };
+      case 'A7': return { container: 'w-24 h-36', text: 'text-[6px]', spineWidthRem: totalSpineWidthRem * 0.7, coverTextSize: 'text-xs' };
+      case 'A6': return { container: 'w-32 h-48', text: 'text-[8px]', spineWidthRem: totalSpineWidthRem * 0.85, coverTextSize: 'text-sm' };
       case 'A5':
-      default: return { container: 'w-40 h-56', text: 'text-[10px]', spineWidthRem: totalSpineWidthRem };
+      default: return { container: 'w-40 h-56', text: 'text-[10px]', spineWidthRem: totalSpineWidthRem, coverTextSize: 'text-base' };
     }
   };
+
+  const availableTemplates = useMemo(() => {
+    return getTemplatesForCollection(frontCoverCollection);
+  }, [frontCoverCollection]);
 
   const previewSize = getPreviewSizeClasses();
-  const activeModule = modules[activeModuleIndex]; // Currently edited module
+  const activeModule = modules[activeModuleIndex];
+  const coverZOffset = Math.min(modules.length * 1.5, 10);
+  const templateImagePath = getCoverTemplateImagePath(format, frontCoverCollection, frontCoverTemplate);
 
-  // Calculate Z-offset for covers based on module count to simulate thickness
-  const coverZOffset = Math.min(modules.length * 1.5, 10); // Cap the offset
+  // --- Dynamic 3D Transform Logic ---
+  const previewTransform = useMemo<CSSProperties>(() => {
+    // Base rotation for the 3D effect
+    const baseRotation = 'rotateX(10deg)';
+    let stepRotation = 'rotateY(-25deg)'; // Default: Show front cover + spine
 
+    switch (steps[currentStep]) {
+      case 'Format':
+      case 'Front Cover':
+      case 'Modules':
+      case 'Review':
+        stepRotation = 'rotateY(-25deg)'; // Show front and spine
+        break;
+      case 'Back Cover':
+        stepRotation = 'rotateY(160deg)'; // Rotate to show back cover clearly
+        break;
+      default:
+        stepRotation = 'rotateY(-25deg)';
+    }
+
+    return {
+      transform: `${baseRotation} ${stepRotation}`,
+      transformStyle: 'preserve-3d',
+    };
+  }, [currentStep]);
+
+  // --- JSX Structure ---
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-4 md:p-8 flex flex-col items-center font-sans">
-      <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">Customize Your Modular Agenda!</h1>
+    <div className="min-h-screen bg-black p-4 md:p-8 flex flex-col items-center font-sans">
+      <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">Customize Your UUUK! 📓</h1>
 
       {/* Progress Bar */}
       <div className="w-full max-w-2xl mb-8">
         <div className="flex justify-between mb-1">
           {steps.map((step, index) => (
-            <span key={step} className={`text-xs font-medium ${index <= currentStep ? 'text-indigo-600' : 'text-gray-400'}`}>
+            <span key={step} className={`text-xs font-medium ${index <= currentStep ? 'text-yellow-400' : 'text-gray-400'}`}>
               {step}
             </span>
           ))}
         </div>
-        <div className="w-full bg-gray-300 rounded-full h-2.5">
+        <div className="w-full bg-gray-700 rounded-full h-2.5">
           <div
-            className="bg-indigo-600 h-2.5 rounded-full transition-all duration-500 ease-out"
+            className="bg-yellow-400 h-2.5 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
           ></div>
         </div>
@@ -173,7 +256,8 @@ const Arena = () => {
       <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl">
         {/* Customization Options Panel */}
         <div className="lg:w-1/2 bg-white p-6 rounded-xl shadow-lg">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Step {currentStep + 1}: {steps[currentStep]}</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-black">Step {currentStep + 1}: {steps[currentStep]}</h2>
+          <hr className="mb-4" />
 
           {/* Step 1: Format */}
           {currentStep === 0 && (
@@ -184,7 +268,7 @@ const Arena = () => {
                   <button
                     key={f}
                     onClick={() => setFormat(f)}
-                    className={`px-4 py-2 rounded-lg border-2 transition-all ${format === f ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 hover:border-gray-400'}`}
+                    className={`px-4 py-2 rounded-lg border-2 transition-all ${format === f ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 hover:border-indigo-300'}`}
                   >
                     {f}
                   </button>
@@ -193,41 +277,76 @@ const Arena = () => {
             </div>
           )}
 
-          {/* Step 2: Front Cover */}
+          {/* Step 2: Front Cover (Template, Color, Graphic, Text) */}
           {currentStep === 1 && (
-            <div className="space-y-4">
+            <div className="space-y-6">
+              {/* Cover Text */}
               <div>
-                <p className="text-gray-600 mb-2">Front Cover Color:</p>
+                <label htmlFor="frontCoverText" className="block text-gray-600 mb-1 font-medium">Front Cover Text (Optional):</label>
+                <input
+                  type="text"
+                  id="frontCoverText"
+                  value={frontCoverText}
+                  onChange={(e) => setFrontCoverText(e.target.value)}
+                  maxLength={30}
+                  placeholder="e.g. My Custom Agenda"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+
+              {/* Collection Chooser (NEW) */}
+              <div>
+                <p className="text-gray-600 mb-2 font-medium">1. Choose Collection:</p>
+                <div className="flex flex-wrap gap-3">
+                  {collections.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => {
+                        setFrontCoverCollection(c);
+                        setFrontCoverTemplate('None' as CoverImageTemplate); // Reset template on collection change
+                      }}
+                      className={`px-3 py-1 rounded-lg border-2 transition-all text-sm ${frontCoverCollection === c ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 bg-gray-100 hover:border-indigo-300'}`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cover Template (UPDATED) */}
+              <div>
+                <p className="text-gray-600 mb-2 font-medium">2. Cover Image Template:</p>
+                <div className="flex flex-wrap gap-3">
+                  {availableTemplates.map((t) => ( // Use availableTemplates here
+                    <button
+                      key={t}
+                      onClick={() => setFrontCoverTemplate(t)}
+                      className={`px-3 py-1 rounded-lg border-2 transition-all text-sm ${frontCoverTemplate === t ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 bg-gray-100 hover:border-indigo-300'}`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Color */}
+              <div>
+                <p className="text-gray-600 mb-2 font-medium">Front Cover Color:</p>
                 <div className="flex flex-wrap gap-3">
                   {colors.map((c) => (
                     <button
                       key={c.name}
                       onClick={() => setFrontCoverColor(c)}
-                      className={`w-10 h-10 rounded-full border-2 transition-all ${c.class} ${frontCoverColor.name === c.name ? 'ring-2 ring-offset-2 ring-indigo-500 border-white' : 'border-transparent hover:border-gray-400'}`}
+                      className={`w-10 h-10 rounded-full border-2 transition-all ${c.class} ${frontCoverColor.name === c.name ? 'ring-2 ring-offset-2 ring-indigo-500 border-white' : 'border-transparent hover:border-gray-300'}`}
                       title={c.name}
                     />
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="text-gray-600 mb-2">Front Cover Graphic:</p>
-                <div className="flex flex-wrap gap-3">
-                  {graphics.map((g) => (
-                    <button
-                      key={g}
-                      onClick={() => setFrontCoverGraphic(g)}
-                      className={`w-16 h-16 rounded-lg border-2 flex items-center justify-center text-sm transition-all relative overflow-hidden ${frontCoverGraphic === g ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 bg-gray-100 hover:border-gray-400'}`}
-                    >
-                      {g === 'None' ? 'None' : <div className={`w-full h-full ${frontCoverColor.textClass}`}>{renderGraphicPlaceholder(g)}</div>}
-                      <span className={`absolute bottom-1 right-1 text-[10px] font-medium ${frontCoverGraphic === g ? 'text-indigo-700' : 'text-gray-500'}`}>{g}</span>
-                    </button>
                   ))}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Step 3: Modules */}
+          {/* Step 3: Modules (Same logic) */}
           {currentStep === 2 && activeModule && (
             <div className="space-y-6">
               <div className="flex items-center gap-2 flex-wrap border-b pb-4 mb-4">
@@ -250,12 +369,13 @@ const Arena = () => {
                 </button>
               </div>
 
-              <h3 className="text-lg font-semibold text-gray-700">Editing Module {activeModuleIndex + 1}</h3>
+              <h3 className="text-lg font-semibold text-black">Editing Module {activeModuleIndex + 1}</h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Sidebar Customization */}
                 <div className="space-y-4">
                   <p className="text-gray-600 font-medium">Sidebar Settings:</p>
+                  {/* Color, Text, Remove buttons here (omitted for brevity, assume original logic) */}
                   <div>
                     <p className="text-gray-600 mb-2 text-sm">Color:</p>
                     <div className="flex flex-wrap gap-2">
@@ -263,7 +383,7 @@ const Arena = () => {
                         <button
                           key={c.name}
                           onClick={() => updateModule(activeModuleIndex, { sidebarColor: c })}
-                          className={`w-8 h-8 rounded-full border-2 transition-all ${c.class} ${activeModule.sidebarColor.name === c.name ? 'ring-2 ring-offset-1 ring-indigo-500 border-white' : 'border-transparent hover:border-gray-400'}`}
+                          className={`w-8 h-8 rounded-full border-2 transition-all ${c.class} ${activeModule.sidebarColor.name === c.name ? 'ring-2 ring-offset-1 ring-indigo-500 border-white' : 'border-transparent hover:border-gray-300'}`}
                           title={c.name}
                         />
                       ))}
@@ -276,7 +396,7 @@ const Arena = () => {
                       id={`sidebarText-${activeModule.id}`}
                       value={activeModule.sidebarText}
                       onChange={(e) => updateModule(activeModuleIndex, { sidebarText: e.target.value })}
-                      maxLength={15} // Shorter text for sidebar
+                      maxLength={15}
                       className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                     />
                   </div>
@@ -293,7 +413,7 @@ const Arena = () => {
                   )}
                 </div>
 
-                {/* Page Interior Customization */}
+                {/* Page Interior Customization (omitted for brevity, assume original logic) */}
                 <div className="space-y-4">
                   <p className="text-gray-600 font-medium">Page Interior:</p>
                   <div className="flex flex-col gap-2">
@@ -301,13 +421,12 @@ const Arena = () => {
                       <button
                         key={p}
                         onClick={() => updateModule(activeModuleIndex, { pageInterior: p })}
-                        className={`px-3 py-1.5 text-left rounded-lg border-2 transition-all text-sm ${activeModule.pageInterior === p ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 hover:border-gray-400'}`}
+                        className={`px-3 py-1.5 text-left rounded-lg border-2 transition-all text-sm ${activeModule.pageInterior === p ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 hover:border-indigo-300'}`}
                       >
                         {p}
                       </button>
                     ))}
                   </div>
-                  {/* Simple preview of page interior */}
                   <div className="w-full h-24 bg-white border border-gray-300 rounded p-2 mt-2 overflow-hidden">
                     {activeModule.pageInterior === 'Lined' && <div className="space-y-2 h-full border-l border-red-200 pl-2"><div className="h-px bg-blue-200"></div><div className="h-px bg-blue-200"></div><div className="h-px bg-blue-200"></div><div className="h-px bg-blue-200"></div><div className="h-px bg-blue-200"></div></div>}
                     {activeModule.pageInterior === 'Dotted' && <div className="h-full bg-[radial-gradient(#d1d5db_0.5px,transparent_0.5px)] [background-size:10px_10px]"></div>}
@@ -318,46 +437,47 @@ const Arena = () => {
             </div>
           )}
 
-          {/* Step 4: Back Cover */}
+          {/* Step 4: Back Cover (Color, Graphic, Text) */}
           {currentStep === 3 && (
-            <div className="space-y-4">
+            <div className="space-y-6">
+              {/* Back Cover Text */}
               <div>
-                <p className="text-gray-600 mb-2">Back Cover Color:</p>
+                <label htmlFor="backCoverText" className="block text-gray-600 mb-1 font-medium">Back Cover Text (Optional):</label>
+                <input
+                  type="text"
+                  id="backCoverText"
+                  value={backCoverText}
+                  onChange={(e) => setBackCoverText(e.target.value)}
+                  maxLength={30}
+                  placeholder="e.g. Important Dates"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+
+              {/* Color */}
+              <div>
+                <p className="text-gray-600 mb-2 font-medium">Back Cover Color:</p>
                 <div className="flex flex-wrap gap-3">
                   {colors.map((c) => (
                     <button
                       key={c.name}
                       onClick={() => setBackCoverColor(c)}
-                      className={`w-10 h-10 rounded-full border-2 transition-all ${c.class} ${backCoverColor.name === c.name ? 'ring-2 ring-offset-2 ring-indigo-500 border-white' : 'border-transparent hover:border-gray-400'}`}
+                      className={`w-10 h-10 rounded-full border-2 transition-all ${c.class} ${backCoverColor.name === c.name ? 'ring-2 ring-offset-2 ring-indigo-500 border-white' : 'border-transparent hover:border-gray-300'}`}
                       title={c.name}
                     />
                   ))}
                 </div>
               </div>
-              <div>
-                <p className="text-gray-600 mb-2">Back Cover Graphic:</p>
-                <div className="flex flex-wrap gap-3">
-                  {graphics.map((g) => (
-                    <button
-                      key={g}
-                      onClick={() => setBackCoverGraphic(g)}
-                      className={`w-16 h-16 rounded-lg border-2 flex items-center justify-center text-sm transition-all relative overflow-hidden ${backCoverGraphic === g ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 bg-gray-100 hover:border-gray-400'}`}
-                    >
-                      {g === 'None' ? 'None' : <div className={`w-full h-full ${backCoverColor.textClass}`}>{renderGraphicPlaceholder(g)}</div>}
-                      <span className={`absolute bottom-1 right-1 text-[10px] font-medium ${backCoverGraphic === g ? 'text-indigo-700' : 'text-gray-500'}`}>{g}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+
             </div>
           )}
 
-          {/* Step 5: Review */}
+          {/* Step 5: Review (Updated to include new fields) */}
           {currentStep === 4 && (
-            <div className="space-y-4 text-gray-700">
-              <h3 className="text-xl font-semibold mb-3">Review Your Creation!</h3>
+            <div className="space-y-4 text-black">
+              <h3 className="text-xl font-semibold mb-3">Review Your Creation! ✨</h3>
               <p><strong>Format:</strong> {format}</p>
-              <p><strong>Front Cover:</strong> {frontCoverColor.name} Color, {frontCoverGraphic} Graphic</p>
+              <p><strong>Front Cover:</strong> {frontCoverColor.name} Color, "{frontCoverCollection}" Collection, {frontCoverTemplate} Template. Text: "{frontCoverText}"</p>
               <div className="pl-4 border-l-2 border-gray-200 space-y-2">
                 <p className="font-semibold">Modules ({modules.length}):</p>
                 {modules.map((mod, index) => (
@@ -368,7 +488,7 @@ const Arena = () => {
                   </div>
                 ))}
               </div>
-              <p><strong>Back Cover:</strong> {backCoverColor.name} Color, {backCoverGraphic} Graphic</p>
+              <p><strong>Back Cover:</strong> {backCoverColor.name} Color, Text: "{backCoverText}"</p>
               <p className="mt-4 text-lg font-medium">Ready to add this masterpiece to your cart?</p>
             </div>
           )}
@@ -378,16 +498,16 @@ const Arena = () => {
             <button
               onClick={handlePrev}
               disabled={currentStep === 0}
-              className="px-4 py-2 rounded-lg bg-gray-300 text-gray-700 hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 rounded-lg bg-gray-300 text-black hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Previous
             </button>
             {currentStep < steps.length - 1 ? (
               <button
                 onClick={handleNext}
-                className="px-6 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors font-semibold"
+                className="px-6 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors font-semibold"
               >
-                Next: {steps[currentStep + 1]}
+                Next
               </button>
             ) : (
               <button
@@ -403,37 +523,51 @@ const Arena = () => {
           </div>
         </div>
 
-        {/* 3D Preview Panel */}
-        <div className="lg:w-1/2 flex flex-col items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 p-6 rounded-xl shadow-lg min-h-[400px]">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-700">Live Preview ({format})</h2>
+        {/* 3D Preview Panel (Updated for rotation, text, and image template) */}
+        <div className="lg:w-1/2 flex flex-col items-center justify-center bg-gray-800 p-6 rounded-xl shadow-lg min-h-[400px]">
+          <h2 className="text-2xl font-semibold mb-6 text-white">Live Preview ({format})</h2>
           <div style={{ perspective: '1000px' }}>
             <div
-              className={`relative transition-all duration-500 ease-out ${previewSize.container}`}
-              style={{ transformStyle: 'preserve-3d', transform: 'rotateY(-25deg) rotateX(10deg)' }}
+              className={`relative transition-transform duration-700 ease-out ${previewSize.container}`}
+              style={previewTransform} // Dynamic rotation
             >
               {/* Front Cover */}
               <div
-                className={`absolute inset-0 rounded-lg shadow-md transition-colors duration-300 ${frontCoverColor.class} ${frontCoverColor.name === 'White' ? 'border border-gray-200' : ''} overflow-hidden ${frontCoverColor.textClass}`}
-                style={{ transform: `translateZ(${coverZOffset}px)` }} // Bring forward based on thickness
+                className={`absolute inset-0 rounded-lg shadow-2xl transition-colors duration-300 ${frontCoverColor.class} ${frontCoverColor.name === 'White' ? 'border border-gray-200' : ''} overflow-hidden ${frontCoverColor.textClass}`}
+                style={{ transform: `translateZ(${coverZOffset}px)` }}
               >
-                {renderGraphicPlaceholder(frontCoverGraphic)}
+                {/* Image Template (if selected) */}
+                {frontCoverTemplate !== 'None' && (
+                  // Using a div with background image for simpler sizing/positioning
+                  <div
+                    className="absolute inset-0 bg-contain bg-center bg-no-repeat"
+                    style={{ backgroundImage: `url('${templateImagePath}')` }}
+                    title={`Cover Image: ${frontCoverTemplate}`}
+                  ></div>
+                )}
+
+                {/* Cover Text */}
+                <div className={`absolute inset-0 flex items-center justify-center p-2 text-center text-black ${previewSize.coverTextSize} font-bold`}>
+                  <p className="p-1 rounded bg-white bg-opacity-80 backdrop-blur-sm shadow-md">
+                    {frontCoverText}
+                  </p>
+                </div>
               </div>
 
-              {/* Multiple Sidebars/Spines */}
-              {/* Render spines from back to front */}
+              {/* Multiple Sidebars/Spines (Same logic) */}
               {modules.map((mod, index) => (
                 <div
                   key={mod.id}
                   className={`absolute top-0 left-0 bottom-0 rounded-l-lg shadow-inner transition-colors duration-300 ${mod.sidebarColor.class}`}
-                  // Each spine segment is thin, positioned side-by-side along Z axis
                   style={{
-                    width: `${previewSize.spineWidthRem / modules.length}rem`, // Divide total width
-                    transform: `rotateY(-90deg) translateX(-50%) translateZ(${-index * (previewSize.spineWidthRem / modules.length * 16)}px)`, // Offset each spine segment back along Z (1rem = 16px approx)
-                    transformOrigin: 'left center'
+                    width: `${previewSize.spineWidthRem / modules.length}rem`,
+                    transform: `rotateY(-90deg) translateX(-50%) translateZ(${index * (previewSize.spineWidthRem / modules.length * 16)}px) translateY(0.5px)`, // Offset each spine segment forward along Z
+                    transformOrigin: 'left center',
+                    zIndex: index + 1, // Ensure layers stack correctly
                   }}
                 >
-                  {/* Show text only on the first (outermost) spine for clarity */}
-                  {index === 0 && (
+                  {/* Show text only on the last (outermost) spine for clarity */}
+                  {index === modules.length - 1 && (
                     <span
                       className={`absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-white font-medium whitespace-nowrap ${previewSize.text}`}
                       style={{ transform: 'rotate(90deg)', writingMode: 'vertical-rl', textOrientation: 'mixed', lineHeight: `${previewSize.spineWidthRem / modules.length}rem` }}
@@ -442,15 +576,24 @@ const Arena = () => {
                     </span>
                   )}
                 </div>
-              )).reverse()} {/* Reverse to render back-most spine first */}
+              )).reverse()}
 
-
-              {/* Pages/Back Cover Hint */}
+              {/* Back Cover */}
               <div
-                className={`absolute inset-0 rounded-r-lg shadow-md transition-colors duration-300 ${backCoverColor.class} ${backCoverColor.name === 'White' ? 'border border-gray-200' : ''} overflow-hidden ${backCoverColor.textClass}`}
-                style={{ transform: `translateZ(${-coverZOffset}px) translateX(2px)`, filter: 'brightness(0.95)' }} // Push back based on thickness
+                className={`absolute inset-0 rounded-lg shadow-2xl transition-colors duration-300 ${backCoverColor.class} ${backCoverColor.name === 'White' ? 'border border-gray-200' : ''} overflow-hidden ${backCoverColor.textClass}`}
+                style={{
+                  transform: `rotateY(-180deg) translateZ(${coverZOffset}px)`, // Rotate 180 degrees to face back, and move out by cover thickness
+                  zIndex: -1
+                }}
               >
-                {renderGraphicPlaceholder(backCoverGraphic)}
+                {/* Cover Text - Rotated to be readable from the back */}
+                <div className={`absolute inset-0 flex items-center justify-center p-2 text-center text-black ${previewSize.coverTextSize} font-bold`}
+                  style={{ transform: 'rotateY(180deg)' }}>
+                  <p className="p-1 rounded bg-white bg-opacity-80 backdrop-blur-sm shadow-md scale-x-[-1]">
+                    {backCoverText}
+                  </p>
+                </div>
+
                 {/* Page edge simulation */}
                 <div className="absolute top-1 bottom-1 right-0 w-1 bg-white opacity-80 rounded-r-sm"></div>
                 <div className="absolute top-2 bottom-2 right-1 w-px bg-gray-300 opacity-60"></div>
@@ -459,7 +602,7 @@ const Arena = () => {
 
             </div>
           </div>
-          <p className="mt-8 text-sm text-gray-500 italic">Note: This is a simplified 3D representation.</p>
+          <p className="mt-8 text-sm text-gray-500 italic">Preview rotates based on the active step.</p>
         </div>
       </div>
     </div>
