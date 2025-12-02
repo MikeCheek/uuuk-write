@@ -26,7 +26,7 @@ const Showcase = ({ data, opened, openModal }: { data: any[], opened: boolean, o
     pauseOnHover: true,
     waitForAnimate: false,
     slidesToScroll: 1,
-    autoplay: true,
+    autoplay: !opened,
     autoplaySpeed: 3000,
     cssEase: 'linear' as const,
     swipeToSlide: false,
