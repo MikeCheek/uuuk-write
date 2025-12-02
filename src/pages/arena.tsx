@@ -36,35 +36,35 @@ const colors: ColorOption[] = [
 const imageAssets = {
   'M(O_O)D': {
     'A6': {
-      'Angry': require('../images/collezioni/M(O_O)D/A6/Angry.png'),
-      'Bored': require('../images/collezioni/M(O_O)D/A6/Bored.png'),
-      'Excited': require('../images/collezioni/M(O_O)D/A6/Excited.png'),
-      'Happy': require('../images/collezioni/M(O_O)D/A6/Happy.png'),
-      'Sad': require('../images/collezioni/M(O_O)D/A6/Sad.png'),
-      'Shock': require('../images/collezioni/M(O_O)D/A6/Shock.png'),
+      'Angry': '/images/collezioni/M(O_O)D/A6/Angry.png',
+      'Bored': '/images/collezioni/M(O_O)D/A6/Bored.png',
+      'Excited': '/images/collezioni/M(O_O)D/A6/Excited.png',
+      'Happy': '/images/collezioni/M(O_O)D/A6/Happy.png',
+      'Sad': '/images/collezioni/M(O_O)D/A6/Sad.png',
+      'Shock': '/images/collezioni/M(O_O)D/A6/Shock.png',
       'None': '',
     },
     'A7': {
-      'Angry': require('../images/collezioni/M(O_O)D/A7/Angry.png'),
-      'Bored': require('../images/collezioni/M(O_O)D/A7/Bored.png'),
-      'Excited': require('../images/collezioni/M(O_O)D/A7/Excited.png'),
-      'Happy': require('../images/collezioni/M(O_O)D/A7/Happy.png'),
-      'Sad': require('../images/collezioni/M(O_O)D/A7/Sad.png'),
-      'Shock': require('../images/collezioni/M(O_O)D/A7/Shock.png'),
+      'Angry': '/images/collezioni/M(O_O)D/A7/Angry.png',
+      'Bored': '/images/collezioni/M(O_O)D/A7/Bored.png',
+      'Excited': '/images/collezioni/M(O_O)D/A7/Excited.png',
+      'Happy': '/images/collezioni/M(O_O)D/A7/Happy.png',
+      'Sad': '/images/collezioni/M(O_O)D/A7/Sad.png',
+      'Shock': '/images/collezioni/M(O_O)D/A7/Shock.png',
       'None': '',
     }
   },
   'Triadic': {
     'A6': {
-      'Flusso': require('../images/collezioni/Triadic/A6/Flusso.png'),
-      'Occhio': require('../images/collezioni/Triadic/A6/Occhio.png'),
-      'Punto': require('../images/collezioni/Triadic/A6/Punto.png'),
+      'Flusso': '/images/collezioni/Triadic/A6/Flusso.png',
+      'Occhio': '/images/collezioni/Triadic/A6/Occhio.png',
+      'Punto': '/images/collezioni/Triadic/A6/Punto.png',
       'None': '',
     },
     'A7': {
-      'Flusso': require('../images/collezioni/Triadic/A7/Flusso.png'),
-      'Occhio': require('../images/collezioni/Triadic/A7/Occhio.png'),
-      'Punto': require('../images/collezioni/Triadic/A7/Punto.png'),
+      'Flusso': '/images/collezioni/Triadic/A7/Flusso.png',
+      'Occhio': '/images/collezioni/Triadic/A7/Occhio.png',
+      'Punto': '/images/collezioni/Triadic/A7/Punto.png',
       'None': '',
 
     }
@@ -91,12 +91,12 @@ const getCoverTemplateImagePath = (format: AgendaFormat, collection: Collection,
     // Narrow by collection so TypeScript knows which template union is valid
     if (collection === 'M(O_O)D') {
       const key = template as MoodTemplate;
-      const assets = imageAssets['M(O_O)D'] as any as Record<string, Record<MoodTemplate | 'None', { "default": string }>>;
-      return assets[formatFolder][key]["default"];
+      const assets = imageAssets['M(O_O)D'] as Record<string, Record<MoodTemplate | 'None', string>>;
+      return assets[formatFolder][key];
     } else {
       const key = template as TriadicTemplate;
-      const assets = imageAssets['Triadic'] as any as Record<string, Record<TriadicTemplate | 'None', { "default": string }>>;
-      return assets[formatFolder][key]["default"];
+      const assets = imageAssets['Triadic'] as Record<string, Record<TriadicTemplate | 'None', string>>;
+      return assets[formatFolder][key];
     }
   } catch (e) {
     console.error(`Image not found for: ${collection}/${formatFolder}/${template}`);
