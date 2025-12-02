@@ -29,8 +29,8 @@ const colors: ColorOption[] = [
   { name: 'Rose', class: 'bg-rose-500', textClass: 'text-rose-500' },
   { name: 'Emerald', class: 'bg-emerald-500', textClass: 'text-emerald-500' },
   { name: 'Amber', class: 'bg-amber-500', textClass: 'text-amber-500' },
-  { name: 'Slate', class: 'bg-slate-700', textClass: 'text-slate-700' },
   { name: 'White', class: 'bg-white', textClass: 'text-gray-900' },
+  { name: 'Black', class: 'bg-black', textClass: 'text-white' },
 ];
 
 const imageAssets = {
@@ -56,15 +56,15 @@ const imageAssets = {
   },
   'Triadic': {
     'A6': {
-      'Flusso': '/images/collezioni/Triadic/A6/Flusso.png',
-      'Occhio': '/images/collezioni/Triadic/A6/Occhio.png',
-      'Punto': '/images/collezioni/Triadic/A6/Punto.png',
+      'Flusso': '/images/collezioni/Triadic/Flusso.png',
+      'Occhio': '/images/collezioni/Triadic/Occhio.png',
+      'Punto': '/images/collezioni/Triadic/Punto.png',
       'None': '',
     },
     'A7': {
-      'Flusso': '/images/collezioni/Triadic/A7/Flusso.png',
-      'Occhio': '/images/collezioni/Triadic/A7/Occhio.png',
-      'Punto': '/images/collezioni/Triadic/A7/Punto.png',
+      'Flusso': '/images/collezioni/Triadic/Flusso.png',
+      'Occhio': '/images/collezioni/Triadic/Occhio.png',
+      'Punto': '/images/collezioni/Triadic/Punto.png',
       'None': '',
 
     }
@@ -72,7 +72,7 @@ const imageAssets = {
 };
 
 const pageInteriors: PageInterior[] = ['Lined', 'Dotted', 'Blank'];
-const collections: Collection[] = imageAssets ? Object.keys(imageAssets) as Collection[] : [];
+const collections: Collection[] = imageAssets ? Object.keys(imageAssets).reverse() as Collection[] : [];
 const moodTemplates: MoodTemplate[] = imageAssets ? Object.keys(imageAssets['M(O_O)D']['A6']) as MoodTemplate[] : [];
 const triadicTemplates: TriadicTemplate[] = imageAssets ? Object.keys(imageAssets['Triadic']['A6']) as TriadicTemplate[] : [];
 
@@ -117,7 +117,7 @@ const Arena = () => {
 
   // Front Cover States
   const [frontCoverColor, setFrontCoverColor] = useState<ColorOption>(colors[0]);
-  const [frontCoverCollection, setFrontCoverCollection] = useState<Collection>('M(O_O)D'); // NEW STATE
+  const [frontCoverCollection, setFrontCoverCollection] = useState<Collection>('Triadic'); // NEW STATE
   const [frontCoverTemplate, setFrontCoverTemplate] = useState<CoverImageTemplate>('None');
   const [frontCoverText, setFrontCoverText] = useState<string>('My Awesome Agenda');
 
@@ -185,7 +185,7 @@ const Arena = () => {
   };
 
   const getPreviewSizeClasses = () => {
-    const baseSpineWidth = 1;
+    const baseSpineWidth = 2;
     const totalSpineWidthRem = modules.length * baseSpineWidth * 0.25;
 
     switch (format) {
@@ -215,6 +215,8 @@ const Arena = () => {
       case 'Format':
       case 'Front Cover':
       case 'Modules':
+        stepRotation = 'rotateY(80deg)';
+        break;
       case 'Review':
         stepRotation = 'rotateY(-25deg)'; // Show front and spine
         break;
@@ -337,7 +339,7 @@ const Arena = () => {
                     <button
                       key={c.name}
                       onClick={() => setFrontCoverColor(c)}
-                      className={`w-10 h-10 rounded-full border-2 transition-all ${c.class} ${frontCoverColor.name === c.name ? 'ring-2 ring-offset-2 ring-indigo-500 border-white' : 'border-transparent hover:border-gray-300'}`}
+                      className={`w-10 h-10 rounded-full border-2 transition-all ${c.class} ${frontCoverColor.name === c.name ? 'ring-2 ring-offset-2 ring-indigo-500 border-white' : 'border-black border-[1px] hover:border-gray-300'}`}
                       title={c.name}
                     />
                   ))}
