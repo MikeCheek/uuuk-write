@@ -9,6 +9,10 @@ type MoodTemplate = 'Angry' | 'Bored' | 'Excited' | 'Happy' | 'Sad' | 'Shock' | 
 type TriadicTemplate = 'Flusso' | 'Occhio' | 'Punto' | 'None';
 type CoverImageTemplate = MoodTemplate | TriadicTemplate;
 
+// --- NEW TEXT CUSTOMIZATION TYPES ---
+type FontSize = 'Small' | 'Medium' | 'Large';
+type TextPosition = 'Top' | 'Center' | 'Bottom';
+
 interface ColorOption {
   name: string;
   class: string;
@@ -32,6 +36,9 @@ const colors: ColorOption[] = [
   { name: 'White', class: 'bg-white', textClass: 'text-gray-900' },
   { name: 'Black', class: 'bg-black', textClass: 'text-white' },
 ];
+
+const fontSizes: FontSize[] = ['Small', 'Medium', 'Large'];
+const textPositions: TextPosition[] = ['Top', 'Center', 'Bottom'];
 
 const imageAssets = {
   'M(O_O)D': {
@@ -110,6 +117,26 @@ const getTemplatesForCollection = (collection: Collection): CoverImageTemplate[]
   return []; // Should not happen
 };
 
+// --- Helper for Text Position Classes ---
+const getPositionClasses = (position: TextPosition): string => {
+  switch (position) {
+    case 'Top': return 'items-start justify-center p-4';
+    case 'Center': return 'items-center justify-center p-2';
+    case 'Bottom': return 'items-end justify-center p-4';
+    default: return 'items-center justify-center p-2';
+  }
+}
+
+// --- Helper for Font Size Classes ---
+const getFontSizeClass = (size: FontSize): string => {
+  switch (size) {
+    case 'Small': return 'text-[6px]';
+    case 'Medium': return 'text-[8px]';
+    case 'Large': return 'text-[10px]';
+    default: return 'text-[10px]';
+  }
+}
+
 // --- Main Component ---
 const Arena = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -117,9 +144,12 @@ const Arena = () => {
 
   // Front Cover States
   const [frontCoverColor, setFrontCoverColor] = useState<ColorOption>(colors[0]);
-  const [frontCoverCollection, setFrontCoverCollection] = useState<Collection>('Triadic'); // NEW STATE
+  const [frontCoverCollection, setFrontCoverCollection] = useState<Collection>('Triadic');
   const [frontCoverTemplate, setFrontCoverTemplate] = useState<CoverImageTemplate>('None');
   const [frontCoverText, setFrontCoverText] = useState<string>('My Awesome Agenda');
+  // --- NEW FRONT COVER TEXT STATES ---
+  const [frontCoverFontSize, setFrontCoverFontSize] = useState<FontSize>('Medium');
+  const [frontCoverPosition, setFrontCoverPosition] = useState<TextPosition>('Center');
 
   // Module States
   const [modules, setModules] = useState<Module[]>([
@@ -129,9 +159,13 @@ const Arena = () => {
 
   // Back Cover States
   const [backCoverColor, setBackCoverColor] = useState<ColorOption>(colors[0]);
-  const [backCoverText, setBackCoverText] = useState<string>('Notes and Dreams'); // New state for text
+  const [backCoverText, setBackCoverText] = useState<string>('Notes and Dreams');
+  // --- NEW BACK COVER TEXT STATES ---
+  const [backCoverFontSize, setBackCoverFontSize] = useState<FontSize>('Medium');
+  const [backCoverPosition, setBackCoverPosition] = useState<TextPosition>('Center');
 
-  // --- Handlers ---
+
+  // --- Handlers (omitted for brevity, remain mostly the same) ---
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -154,7 +188,7 @@ const Arena = () => {
     alert('Agenda added to cart! (Not really, this is a demo)');
   };
 
-  // Module Handlers (remain mostly the same)
+  // Module Handlers (omitted for brevity, remain mostly the same)
   const addModule = () => {
     if (modules.length < MAX_MODULES) {
       const newModule: Module = {
@@ -184,6 +218,8 @@ const Arena = () => {
     setModules(newModules);
   };
 
+  // --- END Handlers ---
+
   const getPreviewSizeClasses = () => {
     const baseSpineWidth = 2;
     const totalSpineWidthRem = modules.length * baseSpineWidth * 0.25;
@@ -205,27 +241,22 @@ const Arena = () => {
   const coverZOffset = Math.min(modules.length * 1.5, 10);
   const templateImagePath = getCoverTemplateImagePath(format, frontCoverCollection, frontCoverTemplate);
 
-  // --- Dynamic 3D Transform Logic ---
+  // --- Dynamic 3D Transform Logic (omitted for brevity, remains the same) ---
   const previewTransform = useMemo<CSSProperties>(() => {
-    // Base rotation for the 3D effect
     const baseRotation = 'rotateX(10deg)';
-    let stepRotation = 'rotateY(-25deg)'; // Default: Show front cover + spine
+    let stepRotation = 'rotateY(-25deg)';
 
     switch (steps[currentStep]) {
       case 'Format':
-        stepRotation = 'rotateY(-25deg)';
-        break;
       case 'Front Cover':
+      case 'Review':
         stepRotation = 'rotateY(-25deg)';
         break;
       case 'Modules':
         stepRotation = 'rotateY(80deg)';
         break;
-      case 'Review':
-        stepRotation = 'rotateY(-25deg)'; // Show front and spine
-        break;
       case 'Back Cover':
-        stepRotation = 'rotateY(160deg)'; // Rotate to show back cover clearly
+        stepRotation = 'rotateY(160deg)';
         break;
       default:
         stepRotation = 'rotateY(-25deg)';
@@ -242,7 +273,7 @@ const Arena = () => {
     <div className="min-h-screen bg-black p-4 md:p-8 flex flex-col items-center font-sans">
       <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">Customize Your UUUK! 📓</h1>
 
-      {/* Progress Bar */}
+      {/* Progress Bar (omitted for brevity) */}
       <div className="w-full max-w-2xl mb-8">
         <div className="flex justify-between mb-1">
           {steps.map((step, index) => (
@@ -265,7 +296,7 @@ const Arena = () => {
           <h2 className="text-2xl font-semibold mb-4 text-black">Step {currentStep + 1}: {steps[currentStep]}</h2>
           <hr className="mb-4" />
 
-          {/* Step 1: Format */}
+          {/* Step 1: Format (omitted for brevity) */}
           {currentStep === 0 && (
             <div className="space-y-4">
               <p className="text-gray-600">Choose your agenda size:</p>
@@ -300,7 +331,42 @@ const Arena = () => {
                 />
               </div>
 
-              {/* Collection Chooser (NEW) */}
+              {/* Text Customization Section (NEW) */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Font Size Chooser */}
+                <div>
+                  <p className="text-gray-600 mb-2 font-medium">Text Size:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {fontSizes.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setFrontCoverFontSize(size)}
+                        className={`px-3 py-1 rounded-lg border-2 transition-all text-sm ${frontCoverFontSize === size ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 bg-gray-100 hover:border-indigo-300'}`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Text Position Chooser */}
+                <div>
+                  <p className="text-gray-600 mb-2 font-medium">Text Position:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {textPositions.map((position) => (
+                      <button
+                        key={position}
+                        onClick={() => setFrontCoverPosition(position)}
+                        className={`px-3 py-1 rounded-lg border-2 transition-all text-sm ${frontCoverPosition === position ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 bg-gray-100 hover:border-indigo-300'}`}
+                      >
+                        {position}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Collection Chooser (omitted for brevity) */}
               <div>
                 <p className="text-gray-600 mb-2 font-medium">1. Choose Collection:</p>
                 <div className="flex flex-wrap gap-3">
@@ -309,7 +375,7 @@ const Arena = () => {
                       key={c}
                       onClick={() => {
                         setFrontCoverCollection(c);
-                        setFrontCoverTemplate('None' as CoverImageTemplate); // Reset template on collection change
+                        setFrontCoverTemplate('None' as CoverImageTemplate);
                       }}
                       className={`px-3 py-1 rounded-lg border-2 transition-all text-sm ${frontCoverCollection === c ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 bg-gray-100 hover:border-indigo-300'}`}
                     >
@@ -319,11 +385,11 @@ const Arena = () => {
                 </div>
               </div>
 
-              {/* Cover Template (UPDATED) */}
+              {/* Cover Template (omitted for brevity) */}
               <div>
                 <p className="text-gray-600 mb-2 font-medium">2. Cover Image Template:</p>
                 <div className="flex flex-wrap gap-3">
-                  {availableTemplates.map((t) => ( // Use availableTemplates here
+                  {availableTemplates.map((t) => (
                     <button
                       key={t}
                       onClick={() => setFrontCoverTemplate(t)}
@@ -335,7 +401,7 @@ const Arena = () => {
                 </div>
               </div>
 
-              {/* Color */}
+              {/* Color (omitted for brevity) */}
               <div>
                 <p className="text-gray-600 mb-2 font-medium">Front Cover Color:</p>
                 <div className="flex flex-wrap gap-3">
@@ -352,9 +418,10 @@ const Arena = () => {
             </div>
           )}
 
-          {/* Step 3: Modules (Same logic) */}
+          {/* Step 3: Modules (omitted for brevity, remains the same) */}
           {currentStep === 2 && activeModule && (
             <div className="space-y-6">
+              {/* Module selection/addition/removal buttons (omitted for brevity) */}
               <div className="flex items-center gap-2 flex-wrap border-b pb-4 mb-4">
                 <span className="text-gray-600 font-medium">Modules:</span>
                 {modules.map((mod, index) => (
@@ -378,10 +445,9 @@ const Arena = () => {
               <h3 className="text-lg font-semibold text-black">Editing Module {activeModuleIndex + 1}</h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Sidebar Customization */}
+                {/* Sidebar Customization (omitted for brevity) */}
                 <div className="space-y-4">
                   <p className="text-gray-600 font-medium">Sidebar Settings:</p>
-                  {/* Color, Text, Remove buttons here (omitted for brevity, assume original logic) */}
                   <div>
                     <p className="text-gray-600 mb-2 text-sm">Color:</p>
                     <div className="flex flex-wrap gap-2">
@@ -419,7 +485,7 @@ const Arena = () => {
                   )}
                 </div>
 
-                {/* Page Interior Customization (omitted for brevity, assume original logic) */}
+                {/* Page Interior Customization (omitted for brevity) */}
                 <div className="space-y-4">
                   <p className="text-gray-600 font-medium">Page Interior:</p>
                   <div className="flex flex-col gap-2">
@@ -443,6 +509,7 @@ const Arena = () => {
             </div>
           )}
 
+
           {/* Step 4: Back Cover (Color, Graphic, Text) */}
           {currentStep === 3 && (
             <div className="space-y-6">
@@ -460,7 +527,42 @@ const Arena = () => {
                 />
               </div>
 
-              {/* Color */}
+              {/* Text Customization Section (NEW) */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Font Size Chooser */}
+                <div>
+                  <p className="text-gray-600 mb-2 font-medium">Text Size:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {fontSizes.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setBackCoverFontSize(size)}
+                        className={`px-3 py-1 rounded-lg border-2 transition-all text-sm ${backCoverFontSize === size ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 bg-gray-100 hover:border-indigo-300'}`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Text Position Chooser */}
+                <div>
+                  <p className="text-gray-600 mb-2 font-medium">Text Position:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {textPositions.map((position) => (
+                      <button
+                        key={position}
+                        onClick={() => setBackCoverPosition(position)}
+                        className={`px-3 py-1 rounded-lg border-2 transition-all text-sm ${backCoverPosition === position ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 bg-gray-100 hover:border-indigo-300'}`}
+                      >
+                        {position}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Color (omitted for brevity) */}
               <div>
                 <p className="text-gray-600 mb-2 font-medium">Back Cover Color:</p>
                 <div className="flex flex-wrap gap-3">
@@ -483,23 +585,42 @@ const Arena = () => {
             <div className="space-y-4 text-black">
               <h3 className="text-xl font-semibold mb-3">Review Your Creation! ✨</h3>
               <p><strong>Format:</strong> {format}</p>
-              <p><strong>Front Cover:</strong> {frontCoverColor.name} Color, "{frontCoverCollection}" Collection, {frontCoverTemplate} Template. Text: "{frontCoverText}"</p>
+
+              <div className="border-l-2 border-indigo-200 pl-3">
+                <p><strong>Front Cover:</strong></p>
+                <ul className="list-disc list-inside pl-4 text-sm space-y-1">
+                  <li>Color: {frontCoverColor.name}</li>
+                  <li>Collection/Template: "{frontCoverCollection}" / {frontCoverTemplate}</li>
+                  <li>Text: "{frontCoverText}"</li>
+                  <li>**Text Size:** {frontCoverFontSize}</li>
+                  <li>**Text Position:** {frontCoverPosition}</li>
+                </ul>
+              </div>
+
               <div className="pl-4 border-l-2 border-gray-200 space-y-2">
                 <p className="font-semibold">Modules ({modules.length}):</p>
                 {modules.map((mod, index) => (
                   <div key={mod.id} className="text-sm">
-                    <p><strong>Module {index + 1}:</strong></p>
-                    <p className="pl-2">Sidebar: {mod.sidebarColor.name} Color, Text: "{mod.sidebarText}"</p>
-                    <p className="pl-2">Pages: {mod.pageInterior}</p>
+                    <p><strong>Module {index + 1}:</strong> Sidebar: {mod.sidebarColor.name} Color, Text: "{mod.sidebarText}" | Pages: {mod.pageInterior}</p>
                   </div>
                 ))}
               </div>
-              <p><strong>Back Cover:</strong> {backCoverColor.name} Color, Text: "{backCoverText}"</p>
+
+              <div className="border-l-2 border-rose-200 pl-3">
+                <p><strong>Back Cover:</strong></p>
+                <ul className="list-disc list-inside pl-4 text-sm space-y-1">
+                  <li>Color: {backCoverColor.name}</li>
+                  <li>Text: "{backCoverText}"</li>
+                  <li>**Text Size:** {backCoverFontSize}</li>
+                  <li>**Text Position:** {backCoverPosition}</li>
+                </ul>
+              </div>
+
               <p className="mt-4 text-lg font-medium">Ready to add this masterpiece to your cart?</p>
             </div>
           )}
 
-          {/* Navigation Buttons */}
+          {/* Navigation Buttons (omitted for brevity) */}
           <div className="mt-8 flex justify-between items-center">
             <button
               onClick={handlePrev}
@@ -529,7 +650,7 @@ const Arena = () => {
           </div>
         </div>
 
-        {/* 3D Preview Panel (Updated for rotation, text, and image template) */}
+        {/* 3D Preview Panel (Updated for text size/position) */}
         <div className="lg:w-1/2 flex flex-col items-center justify-center bg-gray-800 p-6 rounded-xl shadow-lg min-h-[400px]">
           <h2 className="text-2xl font-semibold mb-6 text-white">Live Preview ({format})</h2>
           <div style={{ perspective: '1000px' }}>
@@ -544,7 +665,6 @@ const Arena = () => {
               >
                 {/* Image Template (if selected) */}
                 {frontCoverTemplate !== 'None' && (
-                  // Using a div with background image for simpler sizing/positioning
                   <div
                     className="absolute inset-0 bg-contain bg-center bg-no-repeat"
                     style={{ backgroundImage: `url('${templateImagePath}')` }}
@@ -552,27 +672,26 @@ const Arena = () => {
                   ></div>
                 )}
 
-                {/* Cover Text */}
-                <div className={`absolute inset-0 flex items-center justify-center p-2 text-center text-black ${previewSize.coverTextSize} font-bold`}>
-                  <p className="p-1 rounded bg-white bg-opacity-80 backdrop-blur-sm shadow-md">
+                {/* Cover Text (UPDATED CLASSES) */}
+                <div className={`absolute inset-0 flex text-center text-black ${getPositionClasses(frontCoverPosition)}`}>
+                  <p className={`p-1 rounded bg-transparent font-bold ${getFontSizeClass(frontCoverFontSize)}`}>
                     {frontCoverText}
                   </p>
                 </div>
               </div>
 
-              {/* Multiple Sidebars/Spines (Same logic) */}
+              {/* Multiple Sidebars/Spines (omitted for brevity) */}
               {modules.map((mod, index) => (
                 <div
                   key={mod.id}
                   className={`absolute top-0 left-0 bottom-0 rounded-l-lg shadow-inner transition-colors duration-300 ${mod.sidebarColor.class}`}
                   style={{
                     width: `${previewSize.spineWidthRem / modules.length}rem`,
-                    transform: `rotateY(-90deg) translateX(-50%) translateZ(${index * (previewSize.spineWidthRem / modules.length * 16)}px) translateY(0.5px)`, // Offset each spine segment forward along Z
+                    transform: `rotateY(-90deg) translateX(-50%) translateZ(${index * (previewSize.spineWidthRem / modules.length * 16)}px) translateY(0.5px)`,
                     transformOrigin: 'left center',
-                    zIndex: index + 1, // Ensure layers stack correctly
+                    zIndex: index + 1,
                   }}
                 >
-                  {/* Show text only on the last (outermost) spine for clarity */}
                   {index === modules.length - 1 && (
                     <span
                       className={`absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-white font-medium whitespace-nowrap ${previewSize.text}`}
@@ -588,14 +707,14 @@ const Arena = () => {
               <div
                 className={`absolute inset-0 rounded-lg shadow-2xl transition-colors duration-300 ${backCoverColor.class} ${backCoverColor.name === 'White' ? 'border border-gray-200' : ''} overflow-hidden ${backCoverColor.textClass}`}
                 style={{
-                  transform: `rotateY(-180deg) translateZ(${coverZOffset}px)`, // Rotate 180 degrees to face back, and move out by cover thickness
+                  transform: `rotateY(-180deg) translateZ(${coverZOffset}px)`,
                   zIndex: -1
                 }}
               >
-                {/* Cover Text - Rotated to be readable from the back */}
-                <div className={`absolute inset-0 flex items-center justify-center p-2 text-center text-black ${previewSize.coverTextSize} font-bold`}
+                {/* Cover Text - Rotated to be readable from the back (UPDATED CLASSES) */}
+                <div className={`absolute inset-0 flex text-center text-black ${getPositionClasses(backCoverPosition)}`}
                   style={{ transform: 'rotateY(180deg)' }}>
-                  <p className="p-1 rounded bg-white bg-opacity-80 backdrop-blur-sm shadow-md scale-x-[-1]">
+                  <p className={`p-1 rounded bg-transparent scale-x-[-1] font-bold ${getFontSizeClass(backCoverFontSize)}`}>
                     {backCoverText}
                   </p>
                 </div>
