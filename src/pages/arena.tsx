@@ -213,7 +213,11 @@ const Arena = () => {
 
     switch (steps[currentStep]) {
       case 'Format':
+        stepRotation = 'rotateY(-25deg)';
+        break;
       case 'Front Cover':
+        stepRotation = 'rotateY(-25deg)';
+        break;
       case 'Modules':
         stepRotation = 'rotateY(80deg)';
         break;
