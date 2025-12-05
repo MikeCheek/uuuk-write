@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { graphql, useStaticQuery } from 'gatsby'
 import Showcase from '../molecules/Showcase'
-import Actions from '../atoms/OrderNow'
+import Button from '../atoms/Button'
 import Typography from '../atoms/Typography'
 import Modal from '../atoms/Modal'
 import Logo from '../atoms/Logo'
@@ -164,7 +164,7 @@ const NewHero = () => {
       <Typography variant="h1" className="uppercase mb-4 md:mb-0 mt-20 text-beige font-roboto font-medium [text-shadow:_0_10px_10px_#1a1615ee] w-full text-center opacity-100">
         Write your story
       </Typography>
-      <Actions onClick={() => setModalOpen(true)} />
+      <Button onClick={() => setModalOpen(true)} />
       <div className={`w-full h-screen flex items-center justify-center absolute top-0 left-0 transition-all duration-200 ${galleryOpen ? 'z-10 opacity-100 bg-black' : '-z-10 opacity-40 bg-transparent'}`}>
         <Showcase data={filteredEdges} opened={galleryOpen} openModal={() => setModalOpen(true)} />
       </div>

@@ -33,11 +33,11 @@ export interface Module {
 // --- Available Options ---
 export const formats: AgendaFormat[] = ['A5', 'A6', 'A7']
 export const colors: ColorOption[] = [
+  { name: 'White', class: 'bg-white', textClass: 'text-white' },
   { name: 'Sky', class: 'bg-sky-500', textClass: 'text-sky-500' },
-  { name: 'Rose', class: 'bg-rose-500', textClass: 'text-rose-500' },
+  { name: 'Red', class: 'bg-red', textClass: 'text-red' },
   { name: 'Emerald', class: 'bg-emerald-500', textClass: 'text-emerald-500' },
-  { name: 'Amber', class: 'bg-amber-500', textClass: 'text-amber-500' },
-  { name: 'White', class: 'bg-white', textClass: 'text-gray-900' },
+  { name: 'Beige', class: 'bg-beige', textClass: 'text-beige' },
   { name: 'Black', class: 'bg-black', textClass: 'text-white' }
 ]
 
@@ -99,5 +99,6 @@ export const steps = [
   'Front Cover',
   'Modules',
   'Back Cover',
-  'Review'
+  'Review',
+  'Buy'
 ]

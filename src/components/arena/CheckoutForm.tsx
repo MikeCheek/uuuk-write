@@ -38,10 +38,10 @@ const CheckoutForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-6">
       <ShippingAddressElement />
       <PaymentElement />
-      <button>Paga ora</button>
+      <button className='bg-blue py-2 px-4 rounded-lg text-white'>Paga ora</button>
     </form>
   )
 };

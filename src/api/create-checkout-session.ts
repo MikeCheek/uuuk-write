@@ -14,7 +14,7 @@ export default async function handler (
     try {
       const session = await stripe.checkout.sessions.create({
         ui_mode: 'custom',
-        customer_email: 'customer@example.com',
+        // customer_email: 'customer@example.com',
         line_items: [
           {
             price: req.body.PRICE_ID,
@@ -22,7 +22,7 @@ export default async function handler (
           }
         ],
         mode: 'payment',
-        return_url: `${req.body.SITE_URL}/complete?session_id={CHECKOUT_SESSION_ID}`
+        return_url: `${req.body.SITE_URL}/grazie?session_id={CHECKOUT_SESSION_ID}`
       })
 
       res.send({ clientSecret: session.client_secret })

@@ -10,21 +10,21 @@ const stripePromise = loadStripe(
 const Checkout = () => {
   const [error, setError] = useState<string | null>(null)
 
-  const promise = useMemo(() => {
+  const promise = useMemo(async () => {
     const data = {
       PRICE_ID: 'price_1SaxTJLZC3eASp0tJ5eoNT0U', // A6 - Triadic - Occhio
       SITE_URL: window.location.origin
     }
     try {
-      return fetch('/api/create-checkout-session', {
+      const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(data),
-      })
-        .then((res) => res.json())
-        .then((data) => data.clientSecret)
+      });
+      const data_1 = await res.json();
+      return data_1.clientSecret;
 
     } catch (e) {
       setError('Failed to create checkout session.')

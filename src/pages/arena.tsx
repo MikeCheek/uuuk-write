@@ -60,33 +60,6 @@ const Arena = () => {
     }
   };
 
-  const handleBuyNow = () => {
-    // Implement payment of chosen product here with stripe
-    const productDetails = {
-      format,
-      frontCover: {
-        color: frontCoverColor.name,
-        collection: frontCoverCollection,
-        template: frontCoverTemplate,
-        text: frontCoverText,
-        textSize: frontCoverFontSize,
-        textPosition: frontCoverPosition,
-      },
-      modules: modules.map((mod) => ({
-        sidebarColor: mod.sidebarColor.name,
-        sidebarText: mod.sidebarText,
-        pageInterior: mod.pageInterior,
-      })),
-      backCover: {
-        color: backCoverColor.name,
-        text: backCoverText,
-        textSize: backCoverFontSize,
-        textPosition: backCoverPosition,
-      },
-    };
-    alert(`Proceeding to buy with the following details:\n${JSON.stringify(productDetails, null, 2)}`);
-  };
-
   // Module Handlers
   const addModule = () => {
     if (modules.length < MAX_MODULES) {
@@ -296,15 +269,6 @@ const Arena = () => {
                 Next
               </button>
             ) : (
-              // <button
-              //   onClick={handleBuyNow}
-              //   className="px-6 py-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors font-semibold flex items-center gap-2 fixed bottom-4 right-4"
-              // >
-              //   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              //     <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-              //   </svg>
-              //   Acquista
-              // </button>
               <Checkout />
             )}
           </div>
