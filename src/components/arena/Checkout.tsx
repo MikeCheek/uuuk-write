@@ -12,7 +12,8 @@ const Checkout = () => {
 
   const promise = useMemo(() => {
     const data = {
-      PRICE_ID: 'price_1SaxTJLZC3eASp0tJ5eoNT0U' // A6 - Triadic - Occhio
+      PRICE_ID: 'price_1SaxTJLZC3eASp0tJ5eoNT0U', // A6 - Triadic - Occhio
+      SITE_URL: window.location.origin
     }
     try {
       return fetch('/api/create-checkout-session', {

@@ -8,7 +8,7 @@ export default async function handler (
     apiVersion: '2025-11-17.clover'
   })
 
-  const YOUR_DOMAIN = 'https://localhost:8000' //siteUrl
+  // const YOUR_DOMAIN = 'https://localhost:8000' //siteUrl
 
   if (req.method === `POST`) {
     try {
@@ -22,7 +22,7 @@ export default async function handler (
           }
         ],
         mode: 'payment',
-        return_url: `${YOUR_DOMAIN}/complete?session_id={CHECKOUT_SESSION_ID}`
+        return_url: `${req.body.SITE_URL}/complete?session_id={CHECKOUT_SESSION_ID}`
       })
 
       res.send({ clientSecret: session.client_secret })
