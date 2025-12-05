@@ -19,6 +19,8 @@ type QueryResult = {
   }
 }
 
+const siteUrl = `https://uuuk.netlify.app/`
+
 const useSiteMetadata = (): {
   metadata: SiteMetadata
   featuredImage: QueryResult['featuredImage']
@@ -45,3 +47,4 @@ const useSiteMetadata = (): {
 }
 
 export default useSiteMetadata
+export { siteUrl }

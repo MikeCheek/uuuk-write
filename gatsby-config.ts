@@ -1,7 +1,7 @@
 import type { GatsbyConfig } from 'gatsby'
+import { siteUrl } from './src/utilities/useSiteMetadata'
 const path = require('path')
 
-const siteUrl = `https://uuuk.netlify.app/`
 const config: GatsbyConfig = {
   siteMetadata: {
     title: `UUUK | Write your story`,

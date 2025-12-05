@@ -19,6 +19,8 @@
     "@react-spring/three": "^9.7.5",
     "@react-three/drei": "^9.121.5",
     "@react-three/fiber": "^8.17.14",
+    "@stripe/react-stripe-js": "^5.4.1",
+    "@stripe/stripe-js": "^8.5.3",
     "@svgr/webpack": "^8.1.0",
     "@types/react-slick": "^0.23.13",
     "@types/three": "^0.173.0",
@@ -43,6 +45,7 @@
     "react-lottie": "^1.2.10",
     "react-slick": "^0.30.3",
     "slick-carousel": "^1.8.1",
+    "stripe": "^20.0.0",
     "three": "^0.173.0"
   },
   "devDependencies": {
