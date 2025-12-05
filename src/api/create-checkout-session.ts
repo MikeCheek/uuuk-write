@@ -1,5 +1,4 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby'
-import { siteUrl } from '../utilities/useSiteMetadata'
 
 export default async function handler (
   req: GatsbyFunctionRequest,
@@ -12,7 +11,6 @@ export default async function handler (
   const YOUR_DOMAIN = 'https://localhost:8000' //siteUrl
 
   if (req.method === `POST`) {
-    console.log('######## PRICE ID:', req.body.PRICE_ID)
     try {
       const session = await stripe.checkout.sessions.create({
         ui_mode: 'custom',

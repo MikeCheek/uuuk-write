@@ -46,7 +46,6 @@ const Model = (props: JSX.IntrinsicElements['group']) => {
   };
 
   React.useEffect(() => {
-    console.log('Actions:', actions.Action);
     if (actions) {
       Object.keys(actions).forEach(actionName => {
         actions[actionName as ActionName]?.reset().play(); // Play all available actions on load
