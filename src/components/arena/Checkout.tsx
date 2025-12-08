@@ -7,12 +7,15 @@ const stripePromise = loadStripe(
   process.env.GATSBY_STRIPE_PUBLISHABLE_KEY || ""
 )
 
+const testPrice = "price_1SaxTJLZC3eASp0tJ5eoNT0U"
+const livePrice = "price_1SawXxPpEYHfVWarxTKLKnDv"
+
 const Checkout = () => {
   const [error, setError] = useState<string | null>(null)
 
   const promise = useMemo(async () => {
     const data = {
-      PRICE_ID: 'price_1SaxTJLZC3eASp0tJ5eoNT0U', // A6 - Triadic - Occhio
+      PRICE_ID: process.env.NODE_ENV === 'development' ? testPrice : livePrice,
       SITE_URL: window.location.origin
     }
     try {
