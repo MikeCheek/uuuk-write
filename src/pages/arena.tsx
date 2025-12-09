@@ -115,7 +115,7 @@ const Arena = () => {
 
   // --- Dynamic 3D Transform Logic ---
   const previewTransform = useMemo<CSSProperties>(() => {
-    const baseRotation = 'rotateX(10deg)';
+    let baseRotation = 'rotateX(10deg)';
     let stepRotation = 'rotateY(-25deg)';
 
     switch (steps[currentStep]) {
@@ -125,7 +125,12 @@ const Arena = () => {
         stepRotation = 'rotateY(-25deg)';
         break;
       case 'Modules':
-        stepRotation = 'rotateY(80deg)';
+        if (format === 'A7') {
+          stepRotation = 'rotateY(0deg)';
+          baseRotation = 'rotateX(-45deg)';
+        }
+        else
+          stepRotation = 'rotateY(80deg)';
         break;
       case 'Back Cover':
         stepRotation = 'rotateY(160deg)';
@@ -305,27 +310,66 @@ const Arena = () => {
               </div>
 
               {/* Multiple Sidebars/Spines */}
-              {modules.map((mod, index) => (
-                <div
-                  key={mod.id}
-                  className={`absolute top-0 left-0 bottom-0 rounded-l-lg shadow-inner transition-colors duration-300 ${mod.sidebarColor.class}`}
-                  style={{
-                    width: `${previewSize.spineWidthRem / modules.length}rem`,
-                    transform: `rotateY(-90deg) translateX(-50%) translateZ(${index * (previewSize.spineWidthRem / modules.length * 16)}px) translateY(0.5px)`,
-                    transformOrigin: 'left center',
+              {modules.map((mod, index) => {
+                const moduleWidthRem = previewSize.spineWidthRem / modules.length;
+
+                let spineClasses = '';
+                let spineTransform = '';
+                let spineTextTransform = '';
+                let spineStyle = {};
+
+                if (format === 'A7') {
+                  // A7: Modules on the TOP edge
+                  // Height becomes the spine thickness, width becomes the full cover width
+                  spineClasses = `absolute top-0 left-0 right-0 rounded-t-lg shadow-inner transition-colors duration-300 ${mod.sidebarColor.class}`;
+                  spineTransform = `rotateX(90deg) translateY(-50%) translateZ(${(modules.length - 1 - index) * (moduleWidthRem * 16)}px) translateX(0.5px)`;
+                  spineStyle = {
+                    height: `${moduleWidthRem}rem`, // Spine thickness is now height
+                    width: '100%',
+                    transformOrigin: 'top center',
+                    transform: spineTransform,
                     zIndex: index + 1,
-                  }}
-                >
-                  {index === modules.length - 1 && (
-                    <span
-                      className={`absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-white font-medium whitespace-nowrap ${previewSize.text}`}
-                      style={{ transform: 'rotate(90deg)', writingMode: 'vertical-rl', textOrientation: 'mixed', lineHeight: `${previewSize.spineWidthRem / modules.length}rem` }}
-                    >
-                      {mod.sidebarText}
-                    </span>
-                  )}
-                </div>
-              )).reverse()}
+                  };
+                  spineTextTransform = `rotate(0deg)`; // Text remains horizontal
+                } else {
+                  // A5 / A6: Modules on the LEFT side (Spine)
+                  spineClasses = `absolute top-0 left-0 bottom-0 rounded-l-lg shadow-inner transition-colors duration-300 ${mod.sidebarColor.class}`;
+                  spineTransform = `rotateY(-90deg) translateX(-50%) translateZ(${index * (moduleWidthRem * 16)}px) translateY(0.5px)`;
+                  spineStyle = {
+                    width: `${moduleWidthRem}rem`, // Spine thickness is width
+                    height: '100%',
+                    transformOrigin: 'left center',
+                    transform: spineTransform,
+                    zIndex: index + 1,
+                  };
+                  spineTextTransform = 'rotate(180deg)'; // Text is rotated for spine
+                }
+
+                return (
+                  <div
+                    key={mod.id}
+                    className={spineClasses}
+                    style={spineStyle}
+                  >
+                    {/* Text is only displayed on the last (visible) module */}
+                    {index === modules.length - 1 && (
+                      <span
+                        className={`absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-white font-medium whitespace-nowrap ${previewSize.text}`}
+                        style={{
+                          transform: spineTextTransform,
+                          writingMode: format === 'A7' ? 'unset' : 'vertical-rl',
+                          textOrientation: format === 'A7' ? 'unset' : 'mixed',
+                          // Adjust line height only for A5/A6 vertical text
+                          lineHeight: format !== 'A7' ? `${moduleWidthRem}rem` : 'initial',
+                          top: format === 'A7' ? '0' : 'initial',
+                        }}
+                      >
+                        {mod.sidebarText}
+                      </span>
+                    )}
+                  </div>
+                );
+              }).reverse()}
 
               {/* Back Cover */}
               <div
