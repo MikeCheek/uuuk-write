@@ -1,10 +1,12 @@
 import { StaticImage } from 'gatsby-plugin-image'
 import React from 'react'
 
-const Logo = () => {
+const Logo = (
+  { size, className }: { size?: number; className?: string }
+) => {
   return (
     <div
-      className="fixed mix-blend-difference top-2 left-4 z-50 w-fit cursor-none"
+      className={`fixed mix-blend-difference top-2 left-4 z-50 w-fit cursor-none ${className || ''}`}
       role="button"
       tabIndex={0}
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -12,8 +14,8 @@ const Logo = () => {
       <StaticImage
         src="../../images/logo.png"
         alt="UUUK Logo"
-        width={60}
-        height={60}
+        width={size || 60}
+        height={size || 60}
         imgStyle={{
           // approximate colorize filter to tint the white logo to #ecddbe
           filter:

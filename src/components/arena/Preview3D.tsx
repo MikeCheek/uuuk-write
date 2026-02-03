@@ -1,6 +1,7 @@
 import React from 'react'
 import { getFontSizeClass, getPositionClasses } from '../../utilities/arenaHelpers';
 import { AgendaFormat, ColorOption, CoverImageTemplate, FontSize, Module, TextPosition } from '../../utilities/arenaSettings';
+import Logo from '../atoms/Logo';
 
 const Preview3D = (
   {
@@ -161,7 +162,7 @@ const Preview3D = (
 
           {/* Back Cover */}
           <div
-            className={`absolute inset-0 rounded-lg shadow-2xl transition-colors duration-300 ${backCoverColor.name === 'Bianco' ? 'border border-gray-200' : ''} overflow-hidden `}
+            className={`absolute inset-0 rounded-lg shadow-2xl transition-colors duration-300 ${backCoverColor.name === 'Bianco' ? 'border border-gray-200' : ''} overflow-hidden flex items-center justify-center`}
             style={{
               transform: `rotateY(-180deg) translateZ(${dynamicCoverOffset}px)`, // Pushed back by half thickness
               zIndex: -1,
@@ -177,6 +178,7 @@ const Preview3D = (
             </div>
             {/* Page edges */}
             <div className="absolute top-1 bottom-1 right-0 w-1 bg-white opacity-80 rounded-r-sm"></div>
+            <Logo size={20} className="sticky w-[40px]" />
             <div className="absolute top-2 bottom-2 right-1 w-px bg-gray-300 opacity-60"></div>
           </div>
 
