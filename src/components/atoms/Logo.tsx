@@ -16,6 +16,7 @@ const Logo = (
         alt="UUUK Logo"
         width={size ?? 60}
         height={size ?? 60}
+        className={className || ''}
         imgStyle={{
           // approximate colorize filter to tint the white logo to #ecddbe
           filter:

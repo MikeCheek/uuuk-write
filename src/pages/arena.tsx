@@ -1,49 +1,104 @@
 import type { Module } from '../utilities/arenaSettings';
-import React, { CSSProperties } from 'react';
-import { useState, useId, useMemo } from 'react';
+import React, { CSSProperties, useState, useId, useMemo, useEffect } from 'react';
+import { ShoppingCart, X, RotateCcw, Play } from 'lucide-react'; // Suggested icon library
 import {
   AgendaFormat, ColorOption, colors, Collection, CoverImageTemplate, FontSize, TextPosition, MAX_MODULES, formats, fontSizes, textPositions, collections, pageInteriors, steps
 } from '../utilities/arenaSettings';
 import {
   getCoverTemplateImagePath, getTemplatesForCollection, getPositionClasses, getFontSizeClass
 } from '../utilities/arenaHelpers';
+import ProgressBar from '../components/arena/ProgressBar';
+import BackCover from '../components/arena/BackCover';
+import Checkout from '../components/arena/Checkout';
 import Format from '../components/arena/Format';
 import FrontCover from '../components/arena/FrontCover';
 import Modules from '../components/arena/Modules';
-import BackCover from '../components/arena/BackCover';
-import ProgressBar from '../components/arena/ProgressBar';
-import Checkout from '../components/arena/Checkout';
-import Layout from '../components/organisms/Layout';
-import Review from '../components/arena/Review';
 import Preview3D from '../components/arena/Preview3D';
+import Review from '../components/arena/Review';
+import Modal from '../components/atoms/Modal';
+import Layout from '../components/organisms/Layout';
 
-// --- Main Component ---
+const LOCAL_STORAGE_KEY = 'uuuk_agenda_draft';
+
 const Arena = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [format, setFormat] = useState<AgendaFormat>('A5');
-
-  // Front Cover States
   const [frontCoverColor, setFrontCoverColor] = useState<ColorOption>(colors[0]);
   const [frontCoverCollection, setFrontCoverCollection] = useState<Collection>('Triadic');
   const [frontCoverTemplate, setFrontCoverTemplate] = useState<CoverImageTemplate>('None');
   const [frontCoverText, setFrontCoverText] = useState<string>('');
-  // --- NEW FRONT COVER TEXT STATES ---
   const [frontCoverFontSize, setFrontCoverFontSize] = useState<FontSize>('Medio');
   const [frontCoverPosition, setFrontCoverPosition] = useState<TextPosition>('Centro');
-
-  // Module States
   const [modules, setModules] = useState<Module[]>([
-    { id: useId(), sidebarColor: colors[4], sidebarText: 'Idee', pageInterior: 'Righe' }
+    { id: 'initial-mod', sidebarColor: colors[4], sidebarText: 'Idee', pageInterior: 'Righe' }
   ]);
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
-
-  // Back Cover States
   const [backCoverColor, setBackCoverColor] = useState<ColorOption>(colors[0]);
   const [backCoverText, setBackCoverText] = useState<string>('');
-  // --- NEW BACK COVER TEXT STATES ---
   const [backCoverFontSize, setBackCoverFontSize] = useState<FontSize>('Medio');
   const [backCoverPosition, setBackCoverPosition] = useState<TextPosition>('Centro');
-  // --- Handlers ---
+
+  // New UI States
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showResumeModal, setShowResumeModal] = useState(false);
+  const [pendingDraft, setPendingDraft] = useState<any>(null);
+
+  // 1. ORGANIZE DATA IN METADATA OBJECT
+  const metadata = useMemo(() => ({
+    format,
+    frontCover: { color: frontCoverColor, collection: frontCoverCollection, template: frontCoverTemplate, text: frontCoverText, fontSize: frontCoverFontSize, position: frontCoverPosition },
+    modules,
+    backCover: { color: backCoverColor, text: backCoverText, fontSize: backCoverFontSize, position: backCoverPosition },
+    lastUpdated: new Date().toISOString(),
+    currentStep
+  }), [format, frontCoverColor, frontCoverCollection, frontCoverTemplate, frontCoverText, frontCoverFontSize, frontCoverPosition, modules, backCoverColor, backCoverText, backCoverFontSize, backCoverPosition, currentStep]);
+
+  // 2. LOCALSTORAGE: LOAD ON MOUNT
+  useEffect(() => {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved) {
+      setPendingDraft(JSON.parse(saved));
+      setShowResumeModal(true);
+    }
+  }, []);
+
+  // 3. LOCALSTORAGE: SAVE ON CHANGE
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(metadata));
+  }, [metadata]);
+
+  const handleResume = () => {
+    if (pendingDraft) {
+      setFormat(pendingDraft.format);
+      setFrontCoverColor(pendingDraft.frontCover.color);
+      setFrontCoverCollection(pendingDraft.frontCover.collection);
+      setFrontCoverTemplate(pendingDraft.frontCover.template);
+      setFrontCoverText(pendingDraft.frontCover.text);
+      setFrontCoverFontSize(pendingDraft.frontCover.fontSize);
+      setFrontCoverPosition(pendingDraft.frontCover.position);
+      setModules(pendingDraft.modules);
+      setBackCoverColor(pendingDraft.backCover.color);
+      setBackCoverText(pendingDraft.backCover.text);
+      setBackCoverFontSize(pendingDraft.backCover.fontSize);
+      setBackCoverPosition(pendingDraft.backCover.position);
+      setCurrentStep(pendingDraft.currentStep || 0);
+    }
+    setShowResumeModal(false);
+  };
+
+  const handleRestart = () => {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    setShowResumeModal(false);
+  };
+
+  // Helper for Sidebar content
+  const SummaryItem = ({ label, value }: { label: string, value: string }) => (
+    <div className="mb-4 border-b border-gray-700 pb-2">
+      <span className="text-xs text-gray-400 block uppercase tracking-widest">{label}</span>
+      <span className="text-white font-medium">{value}</span>
+    </div>
+  );
+
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -153,9 +208,78 @@ const Arena = () => {
     };
   }, [currentStep]);
 
-  // --- JSX Structure ---
+
   return (
     <Layout showCustomCursor={false}>
+      {/* RESUME MODAL */}
+      <Modal show={showResumeModal} onClose={() => setShowResumeModal(false)}>
+        <div className="flex flex-col items-center text-center p-4">
+          <h3 className="text-2xl font-bold text-beige mb-4 uppercase">Bentornato!</h3>
+          <p className="text-white mb-8">Abbiamo trovato una sessione non completata. Vuoi riprendere da dove avevi lasciato?</p>
+          <div className="flex gap-4">
+            <button onClick={handleRestart} className="flex items-center gap-2 px-6 py-3 rounded-lg bg-red/20 text-red border border-red hover:bg-red hover:text-white transition-all">
+              <RotateCcw size={18} /> Ricomincia
+            </button>
+            <button onClick={handleResume} className="flex items-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg transition-all">
+              <Play size={18} /> Riprendi
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* SHOPPING CART BUTTON */}
+      <button
+        onClick={() => setIsSidebarOpen(true)}
+        className="fixed top-6 right-6 z-50 p-3 bg-yellow rounded-full shadow-strong hover:scale-110 transition-transform text-black"
+      >
+        <ShoppingCart size={24} />
+        {/* <span className="absolute -top-1 -right-1 bg-red text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
+          {modules.length + 2}
+        </span> */}
+      </button>
+
+      {/* CART SIDEBAR */}
+      <div className={`fixed top-0 right-0 h-full w-80 bg-gray-900 z-[1001] shadow-2xl transform transition-transform duration-500 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="p-6 h-full flex flex-col">
+          <div className="flex justify-between items-center mb-8">
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <ShoppingCart size={20} className="text-yellow" /> Dettagli Agenda
+            </h3>
+            <button onClick={() => setIsSidebarOpen(false)} className="text-gray-400 hover:text-white">
+              <X size={24} />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-700">
+            <SummaryItem label="Formato" value={format} />
+            <SummaryItem label="Colore Copertina" value={frontCoverColor.name} />
+            <SummaryItem label="Collezione" value={frontCoverCollection} />
+            <SummaryItem label="Sidebar Selezionate" value={`${modules.length} Sidebar`} />
+            <div className="pl-4 border-l-2 border-purple/30 mb-6">
+              {modules.map((m, i) => (
+                <div key={m.id} className="text-sm text-gray-300 mb-1">
+                  {i + 1}. {m.sidebarText} ({m.pageInterior})
+                </div>
+              ))}
+            </div>
+            <SummaryItem label="Testo Posteriore" value={backCoverText || 'Nessuno'} />
+          </div>
+
+          <button
+            disabled={currentStep === steps.length - 1}
+            onClick={() => { setIsSidebarOpen(false); setCurrentStep(steps.length - 1); }}
+            className="w-full py-4 bg-indigo-500 text-white rounded-xl font-bold hover:bg-indigo-600 transition-colors mt-4"
+          >
+            Vai al Checkout
+          </button>
+        </div>
+      </div>
+
+      {/* Overlay when sidebar open */}
+      {isSidebarOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1000]" onClick={() => setIsSidebarOpen(false)} />
+      )}
+
       <div className="min-h-screen bg-black p-4 md:p-8 flex flex-col items-center font-sans">
         <h1 className="text-4xl md:text-6xl font-heading font-extrabold mb-8 animate-fadeIn">
           <span className="text-beige">Build Your </span>
@@ -250,40 +374,26 @@ const Arena = () => {
                 backCoverPosition={backCoverPosition}
               />
             )}
+          </div>
 
-            {/* Navigation Buttons */}
-            <div className="mt-8 flex justify-between items-center">
+          <div className="mt-8 flex justify-between items-center">
+            <button
+              onClick={handlePrev}
+              disabled={currentStep === 0}
+              className="px-4 py-2 rounded-lg bg-gray-300 text-black hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors fixed bottom-4 left-4"
+            >
+              Indietro
+            </button>
+            {currentStep < steps.length - 1 ? (
               <button
-                onClick={handlePrev}
-                disabled={currentStep === 0}
-                className="px-4 py-2 rounded-lg bg-gray-300 text-black hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors fixed bottom-4 left-4"
+                onClick={handleNext}
+                className="px-6 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors font-semibold fixed bottom-4 right-4"
               >
-                Indietro
+                Avanti
               </button>
-              {currentStep < steps.length - 1 ? (
-                <button
-                  onClick={handleNext}
-                  className="px-6 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors font-semibold fixed bottom-4 right-4"
-                >
-                  Avanti
-                </button>
-              ) : (
-                <Checkout metadata={{
-                  format,
-                  frontCoverColor,
-                  frontCoverCollection,
-                  frontCoverTemplate,
-                  frontCoverText,
-                  frontCoverFontSize,
-                  frontCoverPosition,
-                  modules,
-                  backCoverColor,
-                  backCoverText,
-                  backCoverFontSize,
-                  backCoverPosition,
-                }} />
-              )}
-            </div>
+            ) : (
+              <Checkout metadata={metadata} />
+            )}
           </div>
 
           {/* 3D Preview Panel (Updated for text size/position) */}
