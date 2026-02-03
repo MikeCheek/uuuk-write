@@ -178,7 +178,7 @@ const Preview3D = (
             </div>
             {/* Page edges */}
             <div className="absolute top-1 bottom-1 right-0 w-1 bg-white opacity-80 rounded-r-sm"></div>
-            <Logo size={20} className="sticky w-[40px]" />
+            <Logo className="sticky w-[40px]" />
             <div className="absolute top-2 bottom-2 right-1 w-px bg-gray-300 opacity-60"></div>
           </div>
 

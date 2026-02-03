@@ -2,7 +2,7 @@ import { StaticImage } from 'gatsby-plugin-image'
 import React from 'react'
 
 const Logo = (
-  { size, className }: { size?: number; className?: string }
+  { className }: { className?: string }
 ) => {
   return (
     <div
@@ -14,8 +14,8 @@ const Logo = (
       <StaticImage
         src="../../images/logo.png"
         alt="UUUK Logo"
-        width={size ?? 60}
-        height={size ?? 60}
+        width={60}
+        height={60}
         className={className || ''}
         imgStyle={{
           // approximate colorize filter to tint the white logo to #ecddbe

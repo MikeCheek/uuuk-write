@@ -376,6 +376,12 @@ const Arena = () => {
                 backCoverPosition={backCoverPosition}
               />
             )}
+
+            {
+              currentStep === steps.length - 1 ? (
+                <Checkout metadata={metadata} />
+              ) : <></>
+            }
           </div>
 
           {/* 3D Preview Panel (Updated for text size/position) */}
@@ -415,9 +421,7 @@ const Arena = () => {
           >
             Avanti
           </button>
-        ) : (
-          <Checkout metadata={metadata} />
-        )}
+        ) : <></>}
       </div>
       <p className="text-beige w-full text-center pb-10 animate-fadeIn">⚠️ Questa pagina è ancora in fase di sviluppo. Gli ordini effettuati qui non verranno presi in considerazione e non saremo responsabili per eventuali problemi derivanti dall'utilizzo. ⚠️</p>
     </Layout>
