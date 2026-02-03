@@ -14,8 +14,8 @@ const Logo = (
       <StaticImage
         src="../../images/logo.png"
         alt="UUUK Logo"
-        width={size || 60}
-        height={size || 60}
+        width={size ?? 60}
+        height={size ?? 60}
         imgStyle={{
           // approximate colorize filter to tint the white logo to #ecddbe
           filter:

@@ -29,12 +29,12 @@ const Modules = (
     <div className="space-y-6">
       {/* Module selection/addition/removal buttons (omitted for brevity) */}
       <div className="flex items-center gap-2 flex-wrap border-b pb-4 mb-4">
-        <span className="text-gray-600 font-medium">Sidebars:</span>
+        <span className="text-gray-300 font-medium">Sidebars:</span>
         {modules.map((mod, index) => (
           <button
             key={mod.id}
             onClick={() => setActiveModuleIndex(index)}
-            className={`px-3 py-1 rounded-md text-sm border ${activeModuleIndex === index ? 'bg-indigo-100 text-indigo-700 border-indigo-300 font-semibold' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'}`}
+            className={`px-3 py-1 rounded-md text-sm border ${activeModuleIndex === index ? 'bg-indigo-100 text-indigo-700 border-indigo-300 font-semibold' : 'bg-gray-100 text-gray-300 border-gray-300 hover:bg-gray-200'}`}
           >
             Sidebar {index + 1}
           </button>
@@ -48,14 +48,14 @@ const Modules = (
         </button>
       </div>
 
-      <h3 className="text-lg font-semibold text-black">Personalizza Sidebar {activeModuleIndex + 1}</h3>
+      <h3 className="text-lg font-semibold text-white">Personalizza Sidebar {activeModuleIndex + 1}</h3>
 
       <div className="grid gap-6">
         {/* Sidebar Customization (omitted for brevity) */}
         <div className="space-y-4">
-          {/* <p className="text-gray-600 font-medium">Sidebar Settings:</p> */}
+          {/* <p className="text-gray-300 font-medium">Sidebar Settings:</p> */}
           <div>
-            <p className="text-gray-600 mb-2 text-sm">Colore:</p>
+            <p className="text-gray-300 mb-2 text-sm">Colore:</p>
             <div className="flex flex-wrap gap-2">
               {colors.map((c) => (
                 <ColorButton key={c.name} name={c.name}
@@ -66,7 +66,7 @@ const Modules = (
             </div>
           </div>
           <div>
-            <label htmlFor={`sidebarText-${activeModule.id}`} className="block text-gray-600 mb-1 text-sm">Testo:</label>
+            <label htmlFor={`sidebarText-${activeModule.id}`} className="block text-gray-300 mb-1 text-sm">Testo:</label>
             <input
               type="text"
               id={`sidebarText-${activeModule.id}`}
@@ -91,7 +91,7 @@ const Modules = (
 
         {/*
         <div className="space-y-4">
-          <p className="text-gray-600 font-medium">Page Interior:</p>
+          <p className="text-gray-300 font-medium">Page Interior:</p>
           <div className="flex flex-col gap-2">
             {pageInteriors.map((p) => (
               <button

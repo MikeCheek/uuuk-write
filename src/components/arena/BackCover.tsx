@@ -36,7 +36,7 @@ const BackCover = (
     <div className="space-y-6">
 
       <div>
-        <p className="text-gray-600 mb-2 font-medium">Colore Copertina Posteriore:</p>
+        <p className="text-gray-300 mb-2 font-medium">Colore Copertina Posteriore:</p>
         <div className="flex flex-wrap gap-3">
           {colors.map((c) => (
             <ColorButton key={c.name} name={c.name}
@@ -61,7 +61,7 @@ const BackCover = (
           <div className="grid grid-cols-2 gap-4">
             {/* Font Size Chooser */}
             <div>
-              <p className="text-gray-600 mb-2 font-medium">Dimensione Testo:</p>
+              <p className="text-gray-300 mb-2 font-medium">Dimensione Testo:</p>
               <div className="flex flex-wrap gap-2">
                 {fontSizes.map((size) => (
                   <TextButton
@@ -76,7 +76,7 @@ const BackCover = (
 
             {/* Text Position Chooser */}
             <div>
-              <p className="text-gray-600 mb-2 font-medium">Posizione Testo:</p>
+              <p className="text-gray-300 mb-2 font-medium">Posizione Testo:</p>
               <div className="flex flex-wrap gap-2">
                 {textPositions.map((position) => (
                   <TextButton

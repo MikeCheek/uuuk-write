@@ -19,7 +19,7 @@ const ColorButton = (
     <button
       key={name}
       onClick={onClick}
-      className={`w-10 h-10 rounded-full border-2 transition-all ${active ? 'ring-2 ring-offset-2 ring-indigo-500 border-white' : 'border-black border-[1px] hover:border-gray-300'}`}
+      className={`w-10 h-10 rounded-full border-2 transition-all ${active ? 'ring-2 ring-offset-2 ring-blue border-white' : 'border-black border-[1px] hover:border-gray-300'}`}
       title={name}
       style={{ backgroundColor: color }}
     />

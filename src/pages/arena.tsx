@@ -157,15 +157,20 @@ const Arena = () => {
   return (
     <Layout showCustomCursor={false}>
       <div className="min-h-screen bg-black p-4 md:p-8 flex flex-col items-center font-sans">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">Customize Your UUUK! 📓</h1>
+        <h1 className="text-4xl md:text-6xl font-heading font-extrabold mb-8 animate-fadeIn">
+          <span className="text-beige">Build Your </span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue via-purple to-magenta drop-shadow-sm">
+            UUUK
+          </span>
+        </h1>
 
         {/* Progress Bar */}
         <ProgressBar steps={steps} currentStep={currentStep} />
 
-        <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl">
+        <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl animate-fadeIn">
           {/* Customization Options Panel */}
-          <div className="lg:w-1/2 bg-white p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-black">Step {currentStep + 1}: {steps[currentStep]}</h2>
+          <div className="lg:w-1/2 bg-gray-800 p-6 rounded-xl shadow-lg">
+            <h2 className="text-2xl font-semibold mb-4 text-white">Step {currentStep + 1}: {steps[currentStep]}</h2>
             <hr className="mb-4" />
 
             {/* Step 1: Format */}
@@ -303,7 +308,7 @@ const Arena = () => {
           </div>
         </div>
       </div>
-      <p className="text-beige w-full text-center pb-10">⚠️ Questa pagina è ancora in fase di sviluppo. Gli ordini effettuati qui non verranno presi in considerazione e non saremo responsabili per eventuali problemi derivanti dall'utilizzo. ⚠️</p>
+      <p className="text-beige w-full text-center pb-10 animate-fadeIn">⚠️ Questa pagina è ancora in fase di sviluppo. Gli ordini effettuati qui non verranno presi in considerazione e non saremo responsabili per eventuali problemi derivanti dall'utilizzo. ⚠️</p>
     </Layout>
   );
 };

@@ -5,7 +5,7 @@ import TextButton from './TextButton'
 const Format = ({ formats, setFormat, format }: { formats: AgendaFormat[], setFormat: (format: AgendaFormat) => void, format: AgendaFormat }) => {
   return (
     <div className="space-y-4">
-      <p className="text-gray-600">Scegli il formato della tua agenda:</p>
+      <p className="text-gray-300">Scegli il formato della tua agenda:</p>
       <div className="flex gap-4">
         {formats.map((f) => (
           <TextButton

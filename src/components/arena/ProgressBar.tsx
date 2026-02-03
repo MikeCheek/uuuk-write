@@ -10,7 +10,7 @@ const ProgressBar = (
   }
 ) => {
   return (
-    <div className="w-full max-w-2xl mb-8">
+    <div className="w-full max-w-2xl mb-8 animate-fadeIn">
       <div className="flex justify-between mb-1">
         {steps.map((step, index) => (
           <span key={step} className={`text-xs font-medium ${index <= currentStep ? 'text-brown' : 'text-gray-400'}`}>

@@ -32,7 +32,7 @@ const Review = (
     }
 ) => {
   return (
-    <div className="space-y-4 text-black">
+    <div className="space-y-4 text-gray-100">
       <h3 className="text-xl font-semibold mb-3">Riassunto delle modifiche ✨</h3>
       <p><strong>Formato:</strong> {format}</p>
 

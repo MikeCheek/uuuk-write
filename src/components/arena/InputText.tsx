@@ -16,7 +16,7 @@ const InputText = (
 ) => {
   return (
     <>
-      <label htmlFor={id} className="block text-gray-600 mb-1 font-medium">{label}</label>
+      <label htmlFor={id} className="block text-gray-300 mb-1 font-medium">{label}</label>
       <input
         type="text"
         id={id}

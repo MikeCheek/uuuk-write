@@ -47,7 +47,7 @@ const FrontCover = (
     <div className="space-y-6">
       {/* Collection Chooser */}
       <div>
-        <p className="text-gray-600 mb-2 font-medium">1. Scegli la collezione:</p>
+        <p className="text-gray-300 mb-2 font-medium">1. Scegli la collezione:</p>
         <div className="flex flex-wrap gap-3">
           {collections.map((c) => (
             <TextButton
@@ -62,7 +62,7 @@ const FrontCover = (
 
       {/* Cover Template */}
       <div>
-        <p className="text-gray-600 mb-2 font-medium">2. Modello immagine copertina:</p>
+        <p className="text-gray-300 mb-2 font-medium">2. Modello immagine copertina:</p>
         <div className="flex flex-wrap gap-3">
           {availableTemplates.map((t) => (
             <TextButton
@@ -77,7 +77,7 @@ const FrontCover = (
 
       {/* Color (omitted for brevity) */}
       <div>
-        <p className="text-gray-600 mb-2 font-medium">Colore Copertina Anteriore:</p>
+        <p className="text-gray-300 mb-2 font-medium">Colore Copertina Anteriore:</p>
         <div className="flex flex-wrap gap-3">
           {colors.map((c) => (
             <ColorButton key={c.name} name={c.name}
@@ -103,7 +103,7 @@ const FrontCover = (
           <div className="grid grid-cols-2 gap-4">
             {/* Font Size Chooser */}
             <div>
-              <p className="text-gray-600 mb-2 font-medium">Dimensione Testo:</p>
+              <p className="text-gray-300 mb-2 font-medium">Dimensione Testo:</p>
               <div className="flex flex-wrap gap-2">
                 {fontSizes.map((size) => (
                   <TextButton
@@ -118,7 +118,7 @@ const FrontCover = (
 
             {/* Text Position Chooser */}
             <div>
-              <p className="text-gray-600 mb-2 font-medium">Posizione Testo:</p>
+              <p className="text-gray-300 mb-2 font-medium">Posizione Testo:</p>
               <div className="flex flex-wrap gap-2">
                 {textPositions.map((position) => (
                   <TextButton
