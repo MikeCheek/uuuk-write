@@ -118,7 +118,7 @@ const Showcase = ({ data, opened, openModal }: { data: any[], opened: boolean, o
         </Slider>
 
       </div>
-      {opened ? <div className='mt-4 absolute bottom-8 left-1/2 -translate-x-1/2'><OrderNow onClick={openModal} small /></div> : <></>}
+      {opened ? <div className='mt-4 absolute bottom-12 md:bottom-8 left-1/2 -translate-x-1/2'><OrderNow onClick={openModal} small /></div> : <></>}
     </>
   )
 }

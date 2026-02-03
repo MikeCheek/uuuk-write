@@ -10,13 +10,14 @@ const stripePromise = loadStripe(
 const testPrice = "price_1SaxTJLZC3eASp0tJ5eoNT0U"
 const livePrice = "price_1SawXxPpEYHfVWarxTKLKnDv"
 
-const Checkout = () => {
+const Checkout = ({ metadata }: { metadata: Record<string, any> }) => {
   const [error, setError] = useState<string | null>(null)
 
   const promise = useMemo(async () => {
     const data = {
       PRICE_ID: process.env.NODE_ENV === 'development' ? testPrice : livePrice,
-      SITE_URL: window.location.origin
+      SITE_URL: window.location.origin,
+      metadata: metadata
     }
     try {
       const res = await fetch('/api/create-checkout-session', {
@@ -33,7 +34,7 @@ const Checkout = () => {
       setError('Failed to create checkout session.')
       return Promise.reject('Failed to create checkout session.')
     }
-  }, []);
+  }, [metadata]);
 
 
   return error ?

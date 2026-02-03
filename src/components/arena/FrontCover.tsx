@@ -1,5 +1,8 @@
 import React from 'react'
 import { Collection, ColorOption, CoverImageTemplate, FontSize, TextPosition } from '../../utilities/arenaSettings';
+import ColorButton from './ColorButton';
+import TextButton from './TextButton';
+import InputText from './InputText';
 
 const FrontCover = (
   {
@@ -42,105 +45,96 @@ const FrontCover = (
 ) => {
   return (
     <div className="space-y-6">
-      {/* Cover Text */}
+      {/* Collection Chooser */}
       <div>
-        <label htmlFor="frontCoverText" className="block text-gray-600 mb-1 font-medium">Front Cover Text (Optional):</label>
-        <input
-          type="text"
-          id="frontCoverText"
-          value={frontCoverText}
-          onChange={(e) => setFrontCoverText(e.target.value)}
-          maxLength={30}
-          placeholder="e.g. My Custom Agenda"
-          className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-        />
-      </div>
-
-      {/* Text Customization Section (NEW) */}
-      <div className="grid grid-cols-2 gap-4">
-        {/* Font Size Chooser */}
-        <div>
-          <p className="text-gray-600 mb-2 font-medium">Text Size:</p>
-          <div className="flex flex-wrap gap-2">
-            {fontSizes.map((size) => (
-              <button
-                key={size}
-                onClick={() => setFrontCoverFontSize(size)}
-                className={`px-3 py-1 rounded-lg border-2 transition-all text-sm ${frontCoverFontSize === size ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 bg-gray-100 hover:border-indigo-300'}`}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Text Position Chooser */}
-        <div>
-          <p className="text-gray-600 mb-2 font-medium">Text Position:</p>
-          <div className="flex flex-wrap gap-2">
-            {textPositions.map((position) => (
-              <button
-                key={position}
-                onClick={() => setFrontCoverPosition(position)}
-                className={`px-3 py-1 rounded-lg border-2 transition-all text-sm ${frontCoverPosition === position ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 bg-gray-100 hover:border-indigo-300'}`}
-              >
-                {position}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Collection Chooser (omitted for brevity) */}
-      <div>
-        <p className="text-gray-600 mb-2 font-medium">1. Choose Collection:</p>
+        <p className="text-gray-600 mb-2 font-medium">1. Scegli la collezione:</p>
         <div className="flex flex-wrap gap-3">
           {collections.map((c) => (
-            <button
+            <TextButton
               key={c}
-              onClick={() => {
-                setFrontCoverCollection(c);
-                setFrontCoverTemplate('None' as CoverImageTemplate);
-              }}
-              className={`px-3 py-1 rounded-lg border-2 transition-all text-sm ${frontCoverCollection === c ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 bg-gray-100 hover:border-indigo-300'}`}
-            >
-              {c}
-            </button>
+              text={c}
+              onClick={() => { setFrontCoverCollection(c); setFrontCoverTemplate('None' as CoverImageTemplate); }}
+              active={frontCoverCollection === c}
+            />
           ))}
         </div>
       </div>
 
-      {/* Cover Template (omitted for brevity) */}
+      {/* Cover Template */}
       <div>
-        <p className="text-gray-600 mb-2 font-medium">2. Cover Image Template:</p>
+        <p className="text-gray-600 mb-2 font-medium">2. Modello immagine copertina:</p>
         <div className="flex flex-wrap gap-3">
           {availableTemplates.map((t) => (
-            <button
+            <TextButton
               key={t}
+              text={t}
               onClick={() => setFrontCoverTemplate(t)}
-              className={`px-3 py-1 rounded-lg border-2 transition-all text-sm ${frontCoverTemplate === t ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 bg-gray-100 hover:border-indigo-300'}`}
-            >
-              {t}
-            </button>
+              active={frontCoverTemplate === t}
+            />
           ))}
         </div>
       </div>
 
       {/* Color (omitted for brevity) */}
       <div>
-        <p className="text-gray-600 mb-2 font-medium">Front Cover Color:</p>
+        <p className="text-gray-600 mb-2 font-medium">Colore Copertina Anteriore:</p>
         <div className="flex flex-wrap gap-3">
           {colors.map((c) => (
-            <button
-              key={c.name}
-              onClick={() => setFrontCoverColor(c)}
-              className={`w-10 h-10 rounded-full border-2 transition-all ${c.class} ${frontCoverColor.name === c.name ? 'ring-2 ring-offset-2 ring-indigo-500 border-white' : 'border-black border-[1px] hover:border-gray-300'}`}
-              title={c.name}
-            />
+            <ColorButton key={c.name} name={c.name}
+              color={c.color}
+              active={frontCoverColor.name === c.name}
+              onClick={() => setFrontCoverColor(c)} />
           ))}
         </div>
       </div>
-    </div>
+
+
+      {/* Front Cover Text */}
+      <div>
+        <InputText
+          label="Testo Copertina Anteriore (Opzionale):"
+          id="frontCoverText"
+          value={frontCoverText}
+          onChange={(e) => setFrontCoverText(e.target.value)} />
+      </div>
+
+      {
+        frontCoverText.trim() !== '' && (
+          <div className="grid grid-cols-2 gap-4">
+            {/* Font Size Chooser */}
+            <div>
+              <p className="text-gray-600 mb-2 font-medium">Dimensione Testo:</p>
+              <div className="flex flex-wrap gap-2">
+                {fontSizes.map((size) => (
+                  <TextButton
+                    key={size}
+                    text={size}
+                    onClick={() => setFrontCoverFontSize(size)}
+                    active={frontCoverFontSize === size}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Text Position Chooser */}
+            <div>
+              <p className="text-gray-600 mb-2 font-medium">Posizione Testo:</p>
+              <div className="flex flex-wrap gap-2">
+                {textPositions.map((position) => (
+                  <TextButton
+                    key={position}
+                    text={position}
+                    onClick={() => setFrontCoverPosition(position)}
+                    active={frontCoverPosition === position}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+    </div >
   )
 }
 

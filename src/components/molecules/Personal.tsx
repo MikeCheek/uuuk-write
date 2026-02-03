@@ -14,7 +14,7 @@ const Personal = () => {
           alt="Triadics Cover Options"
           width={800}
           height={400}
-          className="max-h-[20vh] md:max-h-[50vh] mb-16 md:mb-auto"
+          className="max-h-[20vh] md:max-h-[50vh] md:max-w-[40vw] mb-16 md:mb-auto"
           objectFit="contain"
           objectPosition="center"
           layout="fixed"

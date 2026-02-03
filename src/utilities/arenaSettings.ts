@@ -1,6 +1,6 @@
 // Define types for customization options
 export type AgendaFormat = 'A5' | 'A6' | 'A7'
-export type PageInterior = 'Lined' | 'Dotted' | 'Blank'
+export type PageInterior = 'Righe' | 'Punti' | 'Vuoto'
 export type Collection = 'M(O_O)D' | 'Triadic'
 export type MoodTemplate =
   | 'Angry'
@@ -14,13 +14,12 @@ export type TriadicTemplate = 'Flusso' | 'Occhio' | 'Punto' | 'None'
 export type CoverImageTemplate = MoodTemplate | TriadicTemplate
 
 // --- NEW TEXT CUSTOMIZATION TYPES ---
-export type FontSize = 'Small' | 'Medium' | 'Large'
-export type TextPosition = 'Top' | 'Center' | 'Bottom'
+export type FontSize = 'Piccolo' | 'Medio' | 'Grande'
+export type TextPosition = 'Sopra' | 'Centro' | 'Sotto'
 
 export interface ColorOption {
   name: string
-  class: string
-  textClass: string
+  color: string
 }
 
 export interface Module {
@@ -33,16 +32,16 @@ export interface Module {
 // --- Available Options ---
 export const formats: AgendaFormat[] = ['A5', 'A6', 'A7']
 export const colors: ColorOption[] = [
-  { name: 'White', class: 'bg-white', textClass: 'text-white' },
-  { name: 'Sky', class: 'bg-sky-500', textClass: 'text-sky-500' },
-  { name: 'Red', class: 'bg-red', textClass: 'text-red' },
-  { name: 'Emerald', class: 'bg-emerald-500', textClass: 'text-emerald-500' },
-  { name: 'Beige', class: 'bg-beige', textClass: 'text-beige' },
-  { name: 'Black', class: 'bg-black', textClass: 'text-white' }
+  { name: 'Bianco', color: '#ffffff' },
+  { name: 'Azzurro', color: '#87ceeb' },
+  { name: 'Rosso', color: '#ff6961' },
+  { name: 'Smeraldo', color: '#50c878' },
+  { name: 'Beige', color: '#ecddbe' },
+  { name: 'Nero', color: '#1a1615' }
 ]
 
-export const fontSizes: FontSize[] = ['Small', 'Medium', 'Large']
-export const textPositions: TextPosition[] = ['Top', 'Center', 'Bottom']
+export const fontSizes: FontSize[] = ['Piccolo', 'Medio', 'Grande']
+export const textPositions: TextPosition[] = ['Sopra', 'Centro', 'Sotto']
 
 export const imageAssets = {
   'M(O_O)D': {
@@ -81,7 +80,7 @@ export const imageAssets = {
   }
 }
 
-export const pageInteriors: PageInterior[] = ['Lined', 'Dotted', 'Blank']
+export const pageInteriors: PageInterior[] = ['Righe', 'Punti', 'Vuoto']
 export const collections: Collection[] = imageAssets
   ? (Object.keys(imageAssets).reverse() as Collection[])
   : []
@@ -95,10 +94,10 @@ export const triadicTemplates: TriadicTemplate[] = imageAssets
 export const MAX_MODULES = 3
 
 export const steps = [
-  'Format',
-  'Front Cover',
-  'Modules',
-  'Back Cover',
-  'Review',
-  'Buy'
+  'Formato',
+  'Copertina Anteriore',
+  'Sidebars',
+  'Copertina Posteriore',
+  'Revisione',
+  'Acquista'
 ]

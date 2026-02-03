@@ -10,13 +10,33 @@
   cursor: none !important;
 } */
 
-html{
+html {
   @apply scrollbar-thin scrollbar-track-black scrollbar-thumb-brown bg-black overflow-x-hidden;
 }
 
-img{
+img {
   height: 100% !important;
   width: 100% !important;
+}
+
+@keyframes marqueeLoop {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  will-change: transform;
+  animation: marqueeLoop 40s linear infinite;
+}
+/* Ensure the two copies sit inline so the loop is seamless */
+.marquee-track > .marquee-item {
+  display: inline-block;
+  padding-right: 2rem;
 }
 
 @keyframes drawPath {
@@ -40,7 +60,7 @@ img{
   animation: drawPath 10s ease-in-out infinite;
 }
 
-.animated-marker{
+.animated-marker {
   animation: drawErase 10s ease-in-out infinite;
   animation-delay: 2s;
 }

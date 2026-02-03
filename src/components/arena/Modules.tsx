@@ -1,5 +1,6 @@
 import React from 'react'
 import { ColorOption, MAX_MODULES, Module, PageInterior } from '../../utilities/arenaSettings'
+import ColorButton from './ColorButton';
 
 const Modules = (
   {
@@ -28,14 +29,14 @@ const Modules = (
     <div className="space-y-6">
       {/* Module selection/addition/removal buttons (omitted for brevity) */}
       <div className="flex items-center gap-2 flex-wrap border-b pb-4 mb-4">
-        <span className="text-gray-600 font-medium">Modules:</span>
+        <span className="text-gray-600 font-medium">Sidebars:</span>
         {modules.map((mod, index) => (
           <button
             key={mod.id}
             onClick={() => setActiveModuleIndex(index)}
             className={`px-3 py-1 rounded-md text-sm border ${activeModuleIndex === index ? 'bg-indigo-100 text-indigo-700 border-indigo-300 font-semibold' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'}`}
           >
-            Module {index + 1}
+            Sidebar {index + 1}
           </button>
         ))}
         <button
@@ -43,31 +44,29 @@ const Modules = (
           disabled={modules.length >= MAX_MODULES}
           className="px-3 py-1 rounded-md bg-emerald-500 text-white text-sm hover:bg-emerald-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
-          + Add
+          + Aggiungi
         </button>
       </div>
 
-      <h3 className="text-lg font-semibold text-black">Editing Module {activeModuleIndex + 1}</h3>
+      <h3 className="text-lg font-semibold text-black">Personalizza Sidebar {activeModuleIndex + 1}</h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid gap-6">
         {/* Sidebar Customization (omitted for brevity) */}
         <div className="space-y-4">
-          <p className="text-gray-600 font-medium">Sidebar Settings:</p>
+          {/* <p className="text-gray-600 font-medium">Sidebar Settings:</p> */}
           <div>
-            <p className="text-gray-600 mb-2 text-sm">Color:</p>
+            <p className="text-gray-600 mb-2 text-sm">Colore:</p>
             <div className="flex flex-wrap gap-2">
               {colors.map((c) => (
-                <button
-                  key={c.name}
-                  onClick={() => updateModule(activeModuleIndex, { sidebarColor: c })}
-                  className={`w-8 h-8 rounded-full border-2 transition-all ${c.class} ${activeModule.sidebarColor.name === c.name ? 'ring-2 ring-offset-1 ring-indigo-500 border-white' : 'border-transparent hover:border-gray-300'}`}
-                  title={c.name}
-                />
+                <ColorButton key={c.name} name={c.name}
+                  color={c.color}
+                  active={activeModule.sidebarColor.name === c.name}
+                  onClick={() => updateModule(activeModuleIndex, { sidebarColor: c })} />
               ))}
             </div>
           </div>
           <div>
-            <label htmlFor={`sidebarText-${activeModule.id}`} className="block text-gray-600 mb-1 text-sm">Text:</label>
+            <label htmlFor={`sidebarText-${activeModule.id}`} className="block text-gray-600 mb-1 text-sm">Testo:</label>
             <input
               type="text"
               id={`sidebarText-${activeModule.id}`}
@@ -85,12 +84,12 @@ const Modules = (
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
-              Remove Module {activeModuleIndex + 1}
+              Elimina Sidebar {activeModuleIndex + 1}
             </button>
           )}
         </div>
 
-        {/* Page Interior Customization (omitted for brevity) */}
+        {/*
         <div className="space-y-4">
           <p className="text-gray-600 font-medium">Page Interior:</p>
           <div className="flex flex-col gap-2">
@@ -109,7 +108,7 @@ const Modules = (
             {activeModule.pageInterior === 'Dotted' && <div className="h-full bg-[radial-gradient(#d1d5db_0.5px,transparent_0.5px)] [background-size:10px_10px]"></div>}
             {activeModule.pageInterior === 'Blank' && <div className="h-full"></div>}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )

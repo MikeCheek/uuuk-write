@@ -14,6 +14,8 @@ import BackCover from '../components/arena/BackCover';
 import ProgressBar from '../components/arena/ProgressBar';
 import Checkout from '../components/arena/Checkout';
 import Layout from '../components/organisms/Layout';
+import Review from '../components/arena/Review';
+import Preview3D from '../components/arena/Preview3D';
 
 // --- Main Component ---
 const Arena = () => {
@@ -24,29 +26,28 @@ const Arena = () => {
   const [frontCoverColor, setFrontCoverColor] = useState<ColorOption>(colors[0]);
   const [frontCoverCollection, setFrontCoverCollection] = useState<Collection>('Triadic');
   const [frontCoverTemplate, setFrontCoverTemplate] = useState<CoverImageTemplate>('None');
-  const [frontCoverText, setFrontCoverText] = useState<string>('My Awesome Agenda');
+  const [frontCoverText, setFrontCoverText] = useState<string>('');
   // --- NEW FRONT COVER TEXT STATES ---
-  const [frontCoverFontSize, setFrontCoverFontSize] = useState<FontSize>('Medium');
-  const [frontCoverPosition, setFrontCoverPosition] = useState<TextPosition>('Center');
+  const [frontCoverFontSize, setFrontCoverFontSize] = useState<FontSize>('Medio');
+  const [frontCoverPosition, setFrontCoverPosition] = useState<TextPosition>('Centro');
 
   // Module States
   const [modules, setModules] = useState<Module[]>([
-    { id: useId(), sidebarColor: colors[4], sidebarText: 'Section 1', pageInterior: 'Lined' }
+    { id: useId(), sidebarColor: colors[4], sidebarText: 'Idee', pageInterior: 'Righe' }
   ]);
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
 
   // Back Cover States
   const [backCoverColor, setBackCoverColor] = useState<ColorOption>(colors[0]);
-  const [backCoverText, setBackCoverText] = useState<string>('Notes and Dreams');
+  const [backCoverText, setBackCoverText] = useState<string>('');
   // --- NEW BACK COVER TEXT STATES ---
-  const [backCoverFontSize, setBackCoverFontSize] = useState<FontSize>('Medium');
-  const [backCoverPosition, setBackCoverPosition] = useState<TextPosition>('Center');
-
+  const [backCoverFontSize, setBackCoverFontSize] = useState<FontSize>('Medio');
+  const [backCoverPosition, setBackCoverPosition] = useState<TextPosition>('Centro');
   // --- Handlers ---
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
-      if (steps[currentStep] === 'Modules') {
+      if (steps[currentStep] === 'Sidebars') {
         setActiveModuleIndex(0);
       }
     }
@@ -55,7 +56,7 @@ const Arena = () => {
   const handlePrev = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
-      if (steps[currentStep] === 'Back Cover') {
+      if (steps[currentStep] === 'Copertina Posteriore') {
         setActiveModuleIndex(modules.length - 1);
       }
     }
@@ -68,7 +69,7 @@ const Arena = () => {
         id: Date.now().toString(),
         sidebarColor: colors[Math.floor(Math.random() * (colors.length - 1))],
         sidebarText: `Section ${modules.length + 1}`,
-        pageInterior: 'Lined',
+        pageInterior: 'Righe',
       };
       setModules([...modules, newModule]);
       setActiveModuleIndex(modules.length);
@@ -95,11 +96,17 @@ const Arena = () => {
 
   const getPreviewSizeClasses = () => {
     const baseSpineWidth = 2;
-    const totalSpineWidthRem = modules.length * baseSpineWidth * 0.25;
+    const totalSpineWidthRem = modules.length * baseSpineWidth * 0.35;
 
     switch (format) {
-      case 'A7': return { container: 'w-24 h-36', text: 'text-[6px]', spineWidthRem: totalSpineWidthRem * 0.7, coverTextSize: 'text-xs' };
-      case 'A6': return { container: 'w-32 h-48', text: 'text-[8px]', spineWidthRem: totalSpineWidthRem * 0.85, coverTextSize: 'text-sm' };
+      case 'A7': return {
+        container: 'w-24 h-36', text: 'text-[6px]', spineWidthRem: totalSpineWidthRem, //* 0.7, 
+        coverTextSize: 'text-xs'
+      };
+      case 'A6': return {
+        container: 'w-32 h-48', text: 'text-[8px]', spineWidthRem: totalSpineWidthRem, //* 0.85, 
+        coverTextSize: 'text-sm'
+      };
       case 'A5':
       default: return { container: 'w-40 h-56', text: 'text-[10px]', spineWidthRem: totalSpineWidthRem, coverTextSize: 'text-base' };
     }
@@ -120,12 +127,12 @@ const Arena = () => {
     let stepRotation = 'rotateY(-25deg)';
 
     switch (steps[currentStep]) {
-      case 'Format':
-      case 'Front Cover':
-      case 'Review':
+      case 'Formato':
+      case 'Copertina Anteriore':
+      case 'Revisione':
         stepRotation = 'rotateY(-25deg)';
         break;
-      case 'Modules':
+      case 'Sidebars':
         if (format === 'A7') {
           stepRotation = 'rotateY(0deg)';
           baseRotation = 'rotateX(-45deg)';
@@ -133,7 +140,7 @@ const Arena = () => {
         else
           stepRotation = 'rotateY(80deg)';
         break;
-      case 'Back Cover':
+      case 'Copertina Posteriore':
         stepRotation = 'rotateY(160deg)';
         break;
       default:
@@ -223,40 +230,20 @@ const Arena = () => {
 
             {/* Step 5: Review (Updated to include new fields) */}
             {currentStep === 4 && (
-              <div className="space-y-4 text-black">
-                <h3 className="text-xl font-semibold mb-3">Review Your Creation! ✨</h3>
-                <p><strong>Format:</strong> {format}</p>
-
-                <div className="border-l-2 border-indigo-200 pl-3">
-                  <p><strong>Front Cover:</strong></p>
-                  <ul className="list-disc list-inside pl-4 text-sm space-y-1">
-                    <li>Color: {frontCoverColor.name}</li>
-                    <li>Collection/Template: "{frontCoverCollection}" / {frontCoverTemplate}</li>
-                    <li>Text: "{frontCoverText}"</li>
-                    <li>**Text Size:** {frontCoverFontSize}</li>
-                    <li>**Text Position:** {frontCoverPosition}</li>
-                  </ul>
-                </div>
-
-                <div className="pl-4 border-l-2 border-gray-200 space-y-2">
-                  <p className="font-semibold">Modules ({modules.length}):</p>
-                  {modules.map((mod, index) => (
-                    <div key={mod.id} className="text-sm">
-                      <p><strong>Module {index + 1}:</strong> Sidebar: {mod.sidebarColor.name} Color, Text: "{mod.sidebarText}" | Pages: {mod.pageInterior}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="border-l-2 border-rose-200 pl-3">
-                  <p><strong>Back Cover:</strong></p>
-                  <ul className="list-disc list-inside pl-4 text-sm space-y-1">
-                    <li>Color: {backCoverColor.name}</li>
-                    <li>Text: "{backCoverText}"</li>
-                    <li>**Text Size:** {backCoverFontSize}</li>
-                    <li>**Text Position:** {backCoverPosition}</li>
-                  </ul>
-                </div>
-              </div>
+              <Review
+                format={format}
+                frontCoverColor={frontCoverColor}
+                frontCoverCollection={frontCoverCollection}
+                frontCoverTemplate={frontCoverTemplate}
+                frontCoverText={frontCoverText}
+                frontCoverFontSize={frontCoverFontSize}
+                frontCoverPosition={frontCoverPosition}
+                modules={modules}
+                backCoverColor={backCoverColor}
+                backCoverText={backCoverText}
+                backCoverFontSize={backCoverFontSize}
+                backCoverPosition={backCoverPosition}
+              />
             )}
 
             {/* Navigation Buttons */}
@@ -276,131 +263,47 @@ const Arena = () => {
                   Next
                 </button>
               ) : (
-                <Checkout />
+                <Checkout metadata={{
+                  format,
+                  frontCoverColor,
+                  frontCoverCollection,
+                  frontCoverTemplate,
+                  frontCoverText,
+                  frontCoverFontSize,
+                  frontCoverPosition,
+                  modules,
+                  backCoverColor,
+                  backCoverText,
+                  backCoverFontSize,
+                  backCoverPosition,
+                }} />
               )}
             </div>
           </div>
 
           {/* 3D Preview Panel (Updated for text size/position) */}
           <div className="lg:w-1/2 flex flex-col items-center justify-center bg-gray-800 p-6 rounded-xl shadow-lg min-h-[400px]">
-            <h2 className="text-2xl font-semibold mb-6 text-white">Live Preview ({format})</h2>
-            <div style={{ perspective: '1000px' }}>
-              <div
-                className={`relative transition-transform duration-700 ease-out ${previewSize.container}`}
-                style={previewTransform} // Dynamic rotation
-              >
-                {/* Front Cover */}
-                <div
-                  className={`absolute inset-0 rounded-lg shadow-2xl transition-colors duration-300 ${frontCoverColor.class} ${frontCoverColor.name === 'White' ? 'border border-gray-200' : ''} overflow-hidden ${frontCoverColor.textClass}`}
-                  style={{ transform: `translateZ(${coverZOffset}px)` }}
-                >
-                  {/* Image Template (if selected) */}
-                  {frontCoverTemplate !== 'None' && (
-                    <div
-                      className="absolute inset-0 bg-contain bg-center bg-no-repeat"
-                      style={{ backgroundImage: `url('${templateImagePath}')` }}
-                      title={`Cover Image: ${frontCoverTemplate}`}
-                    ></div>
-                  )}
-
-                  {/* Cover Text (UPDATED CLASSES) */}
-                  <div className={`absolute inset-0 flex text-center text-black ${getPositionClasses(frontCoverPosition)}`}>
-                    <p className={`p-1 rounded bg-transparent font-bold ${getFontSizeClass(frontCoverFontSize)}`}>
-                      {frontCoverText}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Multiple Sidebars/Spines */}
-                {modules.map((mod, index) => {
-                  const moduleWidthRem = previewSize.spineWidthRem / modules.length;
-
-                  let spineClasses = '';
-                  let spineTransform = '';
-                  let spineTextTransform = '';
-                  let spineStyle = {};
-
-                  if (format === 'A7') {
-                    // A7: Modules on the TOP edge
-                    // Height becomes the spine thickness, width becomes the full cover width
-                    spineClasses = `absolute top-0 left-0 right-0 rounded-t-lg shadow-inner transition-colors duration-300 ${mod.sidebarColor.class}`;
-                    spineTransform = `rotateX(90deg) translateY(-50%) translateZ(${(modules.length - 1 - index) * (moduleWidthRem * 16)}px) translateX(0.5px)`;
-                    spineStyle = {
-                      height: `${moduleWidthRem}rem`, // Spine thickness is now height
-                      width: '100%',
-                      transformOrigin: 'top center',
-                      transform: spineTransform,
-                      zIndex: index + 1,
-                    };
-                    spineTextTransform = `rotate(0deg)`; // Text remains horizontal
-                  } else {
-                    // A5 / A6: Modules on the LEFT side (Spine)
-                    spineClasses = `absolute top-0 left-0 bottom-0 rounded-l-lg shadow-inner transition-colors duration-300 ${mod.sidebarColor.class}`;
-                    spineTransform = `rotateY(-90deg) translateX(-50%) translateZ(${index * (moduleWidthRem * 16)}px) translateY(0.5px)`;
-                    spineStyle = {
-                      width: `${moduleWidthRem}rem`, // Spine thickness is width
-                      height: '100%',
-                      transformOrigin: 'left center',
-                      transform: spineTransform,
-                      zIndex: index + 1,
-                    };
-                    spineTextTransform = 'rotate(180deg)'; // Text is rotated for spine
-                  }
-
-                  return (
-                    <div
-                      key={mod.id}
-                      className={spineClasses}
-                      style={spineStyle}
-                    >
-                      {/* Text is only displayed on the last (visible) module */}
-                      {index === modules.length - 1 && (
-                        <span
-                          className={`absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-white font-medium whitespace-nowrap ${previewSize.text}`}
-                          style={{
-                            transform: spineTextTransform,
-                            writingMode: format === 'A7' ? 'unset' : 'vertical-rl',
-                            textOrientation: format === 'A7' ? 'unset' : 'mixed',
-                            // Adjust line height only for A5/A6 vertical text
-                            lineHeight: format !== 'A7' ? `${moduleWidthRem}rem` : 'initial',
-                            top: format === 'A7' ? '0' : 'initial',
-                          }}
-                        >
-                          {mod.sidebarText}
-                        </span>
-                      )}
-                    </div>
-                  );
-                }).reverse()}
-
-                {/* Back Cover */}
-                <div
-                  className={`absolute inset-0 rounded-lg shadow-2xl transition-colors duration-300 ${backCoverColor.class} ${backCoverColor.name === 'White' ? 'border border-gray-200' : ''} overflow-hidden ${backCoverColor.textClass}`}
-                  style={{
-                    transform: `rotateY(-180deg) translateZ(${coverZOffset}px)`,
-                    zIndex: -1
-                  }}
-                >
-                  {/* Cover Text - Rotated to be readable from the back (UPDATED CLASSES) */}
-                  <div className={`absolute inset-0 flex text-center text-black ${getPositionClasses(backCoverPosition)}`}
-                    style={{ transform: 'rotateY(180deg)' }}>
-                    <p className={`p-1 rounded bg-transparent scale-x-[-1] font-bold ${getFontSizeClass(backCoverFontSize)}`}>
-                      {backCoverText}
-                    </p>
-                  </div>
-
-                  {/* Page edge simulation */}
-                  <div className="absolute top-1 bottom-1 right-0 w-1 bg-white opacity-80 rounded-r-sm"></div>
-                  <div className="absolute top-2 bottom-2 right-1 w-px bg-gray-300 opacity-60"></div>
-                  <div className="absolute top-2 bottom-2 right-[6px] w-px bg-gray-300 opacity-50"></div>
-                </div>
-
-              </div>
-            </div>
-            <p className="mt-8 text-sm text-gray-500 italic">Preview rotates based on the active step.</p>
+            <Preview3D
+              modules={modules}
+              format={format}
+              previewTransform={previewTransform}
+              previewSize={previewSize}
+              coverZOffset={coverZOffset}
+              frontCoverColor={frontCoverColor}
+              backCoverColor={backCoverColor}
+              frontCoverTemplate={frontCoverTemplate}
+              templateImagePath={templateImagePath}
+              frontCoverText={frontCoverText}
+              frontCoverFontSize={frontCoverFontSize}
+              frontCoverPosition={frontCoverPosition}
+              backCoverText={backCoverText}
+              backCoverFontSize={backCoverFontSize}
+              backCoverPosition={backCoverPosition}
+            />
           </div>
         </div>
       </div>
+      <p className="text-beige w-full text-center pb-10">⚠️ Questa pagina è ancora in fase di sviluppo. Gli ordini effettuati qui non verranno presi in considerazione e non saremo responsabili per eventuali problemi derivanti dall'utilizzo. ⚠️</p>
     </Layout>
   );
 };

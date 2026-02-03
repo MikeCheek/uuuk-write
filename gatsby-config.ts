@@ -28,6 +28,7 @@ const config: GatsbyConfig = {
     },
     'gatsby-plugin-sharp',
     'gatsby-transformer-sharp',
+    'gatsby-plugin-robots-txt',
     {
       resolve: 'gatsby-source-filesystem',
       options: {
@@ -77,7 +78,29 @@ const config: GatsbyConfig = {
       resolve: 'gatsby-plugin-react-svg',
       options: {
         rule: {
-          include: path.resolve(__dirname, 'src/assets')
+          include: path.resolve(__dirname, 'src/assets'),
+          options: {
+            svgo: false,
+            // Add SVGR options to avoid defaultProps
+            svgr: {
+              icon: true,
+              native: false,
+              svgo: false,
+              // Don't use defaultProps - use native default parameters instead
+              exportType: 'default',
+              ref: true,
+              memo: false,
+              replaceAttrValues: {},
+              expandProps: 'end',
+              titleProp: false,
+              descProp: false,
+              jsx: {
+                babelConfig: {
+                  plugins: []
+                }
+              }
+            }
+          }
         }
       }
     }

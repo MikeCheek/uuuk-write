@@ -56,11 +56,11 @@ export const getTemplatesForCollection = (
 // --- Helper for Text Position Classes ---
 export const getPositionClasses = (position: TextPosition): string => {
   switch (position) {
-    case 'Top':
+    case 'Sopra':
       return 'items-start justify-center p-4'
-    case 'Center':
+    case 'Centro':
       return 'items-center justify-center p-2'
-    case 'Bottom':
+    case 'Sotto':
       return 'items-end justify-center p-4'
     default:
       return 'items-center justify-center p-2'
@@ -70,11 +70,11 @@ export const getPositionClasses = (position: TextPosition): string => {
 // --- Helper for Font Size Classes ---
 export const getFontSizeClass = (size: FontSize): string => {
   switch (size) {
-    case 'Small':
+    case 'Piccolo':
       return 'text-[6px]'
-    case 'Medium':
+    case 'Medio':
       return 'text-[8px]'
-    case 'Large':
+    case 'Grande':
       return 'text-[10px]'
     default:
       return 'text-[10px]'

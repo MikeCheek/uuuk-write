@@ -16,23 +16,6 @@ const Banner = () => {
           />
         </>
         <div className="w-full overflow-hidden">
-          <style>{`
-            @keyframes marqueeLoop {
-              0%   { transform: translateX(0); }
-              100% { transform: translateX(-50%); }
-            }
-            .marquee-track {
-              display: inline-flex;
-              white-space: nowrap;
-              will-change: transform;
-              animation: marqueeLoop 40s linear infinite;
-            }
-            /* Ensure the two copies sit inline so the loop is seamless */
-            .marquee-track > .marquee-item {
-              display: inline-block;
-              padding-right: 2rem;
-            }
-          `}</style>
 
           {/* two identical copies for a seamless loop; starts fully visible (translateX(0)) */}
           <div className="marquee-track">
