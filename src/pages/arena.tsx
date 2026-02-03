@@ -258,14 +258,14 @@ const Arena = () => {
                 disabled={currentStep === 0}
                 className="px-4 py-2 rounded-lg bg-gray-300 text-black hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors fixed bottom-4 left-4"
               >
-                Previous
+                Indietro
               </button>
               {currentStep < steps.length - 1 ? (
                 <button
                   onClick={handleNext}
                   className="px-6 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors font-semibold fixed bottom-4 right-4"
                 >
-                  Next
+                  Avanti
                 </button>
               ) : (
                 <Checkout metadata={{
