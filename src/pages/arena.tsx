@@ -253,7 +253,9 @@ const Arena = () => {
           <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-700">
             <SummaryItem label="Formato" value={format} />
             <SummaryItem label="Colore Copertina" value={frontCoverColor.name} />
+            <SummaryItem label="Testo Copertina" value={frontCoverText || 'Nessuno'} />
             <SummaryItem label="Collezione" value={frontCoverCollection} />
+            <SummaryItem label="Template Copertina" value={frontCoverTemplate} />
             <SummaryItem label="Sidebar Selezionate" value={`${modules.length} Sidebar`} />
             <div className="pl-4 border-l-2 border-purple/30 mb-6">
               {modules.map((m, i) => (
@@ -376,26 +378,6 @@ const Arena = () => {
             )}
           </div>
 
-          <div className="mt-8 flex justify-between items-center">
-            <button
-              onClick={handlePrev}
-              disabled={currentStep === 0}
-              className="px-4 py-2 rounded-lg bg-gray-300 text-black hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors fixed bottom-4 left-4"
-            >
-              Indietro
-            </button>
-            {currentStep < steps.length - 1 ? (
-              <button
-                onClick={handleNext}
-                className="px-6 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors font-semibold fixed bottom-4 right-4"
-              >
-                Avanti
-              </button>
-            ) : (
-              <Checkout metadata={metadata} />
-            )}
-          </div>
-
           {/* 3D Preview Panel (Updated for text size/position) */}
           <div className="lg:w-1/2 flex flex-col items-center justify-center bg-gray-800 p-6 rounded-xl shadow-lg min-h-[400px]">
             <Preview3D
@@ -417,6 +399,25 @@ const Arena = () => {
             />
           </div>
         </div>
+      </div>
+      <div className="py-16 flex justify-between items-center">
+        <button
+          onClick={handlePrev}
+          disabled={currentStep === 0}
+          className="px-4 py-2 rounded-lg bg-gray-300 text-black hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors fixed bottom-4 left-4"
+        >
+          Indietro
+        </button>
+        {currentStep < steps.length - 1 ? (
+          <button
+            onClick={handleNext}
+            className="px-6 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors font-semibold fixed bottom-4 right-4"
+          >
+            Avanti
+          </button>
+        ) : (
+          <Checkout metadata={metadata} />
+        )}
       </div>
       <p className="text-beige w-full text-center pb-10 animate-fadeIn">⚠️ Questa pagina è ancora in fase di sviluppo. Gli ordini effettuati qui non verranno presi in considerazione e non saremo responsabili per eventuali problemi derivanti dall'utilizzo. ⚠️</p>
     </Layout>
