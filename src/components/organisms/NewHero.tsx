@@ -121,7 +121,7 @@ const NewHero = () => {
         onClose={() => setModalOpen(false)}
       >
       </Modal>
-      <Logo />
+      <Logo className='w-[60px]' />
       <ButtonTop onClick={toggleGallery} text={galleryOpen ? "X" : "Galleria"}
         onClickScrolled={() => setModalOpen(true)} textScrolled='Ordina ora' />
 
