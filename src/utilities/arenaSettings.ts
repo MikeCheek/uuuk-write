@@ -66,15 +66,15 @@ export const imageAssets = {
   },
   Triadic: {
     A6: {
-      Flusso: '/images/collezioni/Triadic/Flusso.png',
-      Occhio: '/images/collezioni/Triadic/Occhio.png',
-      Punto: '/images/collezioni/Triadic/Punto.png',
+      Flusso: '/images/collezioni/TRIADIC/Flusso.png',
+      Occhio: '/images/collezioni/TRIADIC/Occhio.png',
+      Punto: '/images/collezioni/TRIADIC/Punto.png',
       None: ''
     },
     A7: {
-      Flusso: '/images/collezioni/Triadic/Flusso.png',
-      Occhio: '/images/collezioni/Triadic/Occhio.png',
-      Punto: '/images/collezioni/Triadic/Punto.png',
+      Flusso: '/images/collezioni/TRIADIC/Flusso.png',
+      Occhio: '/images/collezioni/TRIADIC/Occhio.png',
+      Punto: '/images/collezioni/TRIADIC/Punto.png',
       None: ''
     }
   }
