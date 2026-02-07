@@ -5,7 +5,8 @@ const Modal: React.FC<{
   show: boolean
   onClose: () => void
   children?: React.ReactNode
-}> = ({ show, onClose, children }) => {
+  showCursor?: boolean
+}> = ({ show, onClose, children, showCursor = false }) => {
   const ANIM_DURATION = 1000
   const [mounted, setMounted] = useState<boolean>(show)
   const [visible, setVisible] = useState<boolean>(false)
@@ -64,7 +65,7 @@ const Modal: React.FC<{
         <button
           onClick={onClose}
           aria-label="Close modal"
-          className='text-beige cursor-none border-none bg-transparent absolute top-0 right-2'
+          className={`text-beige ${showCursor ? 'cursor-pointer' : 'cursor-none'} border-none bg-transparent absolute top-0 right-2`}
           style={{
             fontSize: '4rem',
             lineHeight: 1,

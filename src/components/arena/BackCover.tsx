@@ -8,6 +8,8 @@ const BackCover = (
   {
     backCoverText,
     setBackCoverText,
+    backCoverTextColor,
+    setBackCoverTextColor,
     backCoverFontSize,
     setBackCoverFontSize,
     backCoverPosition,
@@ -20,6 +22,8 @@ const BackCover = (
   }: {
     backCoverText: string;
     setBackCoverText: (text: string) => void;
+    backCoverTextColor: ColorOption;
+    setBackCoverTextColor: (color: ColorOption) => void;
     backCoverFontSize: FontSize;
     setBackCoverFontSize: (size: FontSize) => void;
     backCoverPosition: TextPosition;
@@ -85,6 +89,19 @@ const BackCover = (
                     onClick={() => setBackCoverPosition(position)}
                     active={backCoverPosition === position}
                   />
+                ))}
+              </div>
+            </div>
+
+            {/* Text Color Chooser */}
+            <div>
+              <p className="text-gray-300 mb-2 font-medium">Colore Testo:</p>
+              <div className="flex flex-wrap gap-3">
+                {colors.map((c) => (
+                  <ColorButton key={c.name} name={c.name}
+                    color={c.color}
+                    active={backCoverTextColor.name === c.name}
+                    onClick={() => setBackCoverTextColor(c)} />
                 ))}
               </div>
             </div>

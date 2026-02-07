@@ -1,5 +1,5 @@
 import React from 'react'
-import { Collection, ColorOption, CoverImageTemplate, FontSize, TextPosition } from '../../utilities/arenaSettings';
+import { Collection, ColorOption, CoverImageTemplate, ExtendedTextPosition, extendedTextPositions, FontSize, TextPosition } from '../../utilities/arenaSettings';
 import ColorButton from './ColorButton';
 import TextButton from './TextButton';
 import InputText from './InputText';
@@ -8,6 +8,8 @@ const FrontCover = (
   {
     frontCoverText,
     setFrontCoverText,
+    frontCoverTextColor,
+    setFrontCoverTextColor,
     frontCoverFontSize,
     setFrontCoverFontSize,
     frontCoverPosition,
@@ -26,10 +28,12 @@ const FrontCover = (
   }: {
     frontCoverText: string;
     setFrontCoverText: (text: string) => void;
+    frontCoverTextColor: ColorOption;
+    setFrontCoverTextColor: (color: ColorOption) => void;
     frontCoverFontSize: FontSize;
     setFrontCoverFontSize: (size: FontSize) => void;
-    frontCoverPosition: TextPosition;
-    setFrontCoverPosition: (position: TextPosition) => void;
+    frontCoverPosition: ExtendedTextPosition;
+    setFrontCoverPosition: (position: ExtendedTextPosition) => void;
     frontCoverCollection: Collection;
     setFrontCoverCollection: (collection: Collection) => void;
     frontCoverTemplate: CoverImageTemplate;
@@ -37,7 +41,7 @@ const FrontCover = (
     frontCoverColor: ColorOption;
     setFrontCoverColor: (color: ColorOption) => void;
     fontSizes: FontSize[];
-    textPositions: TextPosition[];
+    textPositions: ExtendedTextPosition[];
     collections: Collection[];
     availableTemplates: CoverImageTemplate[];
     colors: ColorOption[];
@@ -90,48 +94,64 @@ const FrontCover = (
 
 
       {/* Front Cover Text */}
-      <div>
-        <InputText
-          label="Testo Copertina Anteriore (Opzionale):"
-          id="frontCoverText"
-          value={frontCoverText}
-          onChange={(e) => setFrontCoverText(e.target.value)} />
-      </div>
-
       {
-        frontCoverText.trim() !== '' && (
-          <div className="grid grid-cols-2 gap-4">
-            {/* Font Size Chooser */}
+        frontCoverTemplate === "None" && (
+          <>
             <div>
-              <p className="text-gray-300 mb-2 font-medium">Dimensione Testo:</p>
-              <div className="flex flex-wrap gap-2">
-                {fontSizes.map((size) => (
-                  <TextButton
-                    key={size}
-                    text={size}
-                    onClick={() => setFrontCoverFontSize(size)}
-                    active={frontCoverFontSize === size}
-                  />
-                ))}
-              </div>
+              <InputText
+                label="Testo Copertina Anteriore (Opzionale):"
+                id="frontCoverText"
+                value={frontCoverText}
+                onChange={(e) => setFrontCoverText(e.target.value)} />
             </div>
 
-            {/* Text Position Chooser */}
-            <div>
-              <p className="text-gray-300 mb-2 font-medium">Posizione Testo:</p>
-              <div className="flex flex-wrap gap-2">
-                {textPositions.map((position) => (
-                  <TextButton
-                    key={position}
-                    text={position}
-                    onClick={() => setFrontCoverPosition(position)}
-                    active={frontCoverPosition === position}
-                  />
-                ))}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Font Size Chooser */}
+              <div>
+                <p className="text-gray-300 mb-2 font-medium">Dimensione Testo:</p>
+                <div className="flex flex-wrap gap-2">
+                  {fontSizes.map((size) => (
+                    <TextButton
+                      key={size}
+                      text={size}
+                      onClick={() => setFrontCoverFontSize(size)}
+                      active={frontCoverFontSize === size}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Text Position Chooser */}
+              <div>
+                <p className="text-gray-300 mb-2 font-medium">Posizione Testo:</p>
+                <div className="flex flex-wrap gap-2">
+                  {extendedTextPositions.map((position) => (
+                    <TextButton
+                      key={position}
+                      text={position}
+                      onClick={() => setFrontCoverPosition(position)}
+                      active={frontCoverPosition === position}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Text Color Chooser */}
+              <div>
+                <p className="text-gray-300 mb-2 font-medium">Colore Testo:</p>
+                <div className="flex flex-wrap gap-3">
+                  {colors.map((c) => (
+                    <ColorButton key={c.name} name={c.name}
+                      color={c.color}
+                      active={frontCoverTextColor.name === c.name}
+                      onClick={() => setFrontCoverTextColor(c)} />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          </>
         )
+
       }
 
     </div >

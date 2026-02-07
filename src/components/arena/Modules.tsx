@@ -26,9 +26,24 @@ const Modules = (
 ) => {
   const activeModule = modules[activeModuleIndex];
 
+  const checkModuleLimit = () => {
+    if (modules.length >= MAX_MODULES
+      ||
+      (modules.filter(m => m.isDouble).length > 0 && modules.length >= MAX_MODULES - 1)) {
+      return true;
+    }
+    return false;
+  }
+
+  const checkDoublePresence = () => modules.filter(m => m.isDouble).length > 0
+
+  const checkDoubleAvailability = () =>
+    !checkDoublePresence() && modules.length < MAX_MODULES
+
+
+
   return (
     <div className="space-y-6">
-      {/* Module selection/addition/removal buttons (omitted for brevity) */}
       <div className="flex items-center gap-2 flex-wrap border-b pb-4 mb-4">
         <span className="text-gray-300 font-medium">Sidebars:</span>
         {modules.map((mod, index) => (
@@ -37,12 +52,12 @@ const Modules = (
             onClick={() => setActiveModuleIndex(index)}
             className={`px-3 py-1 rounded-md text-sm border ${activeModuleIndex === index ? 'bg-blue text-white border-blue font-semibold' : 'bg-gray-100 text-black border-gray-300 hover:bg-gray-200'}`}
           >
-            Sidebar {index + 1}
+            {mod.sidebarText} {mod.isDouble && '(2x)'}
           </button>
         ))}
         <button
           onClick={addModule}
-          disabled={modules.length >= MAX_MODULES}
+          disabled={checkModuleLimit()}
           className="px-3 py-1 rounded-md bg-emerald-600 text-white text-sm hover:bg-emerald-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           + Aggiungi
@@ -52,9 +67,19 @@ const Modules = (
       <h3 className="text-lg font-semibold text-white">Personalizza Sidebar {activeModuleIndex + 1}</h3>
 
       <div className="grid gap-6">
-        {/* Sidebar Customization (omitted for brevity) */}
         <div className="space-y-4">
-          {/* <p className="text-gray-300 font-medium">Sidebar Settings:</p> */}
+          <div>
+            <label className="flex items-center gap-2 text-gray-300 mb-3">
+              <input
+                type="checkbox"
+                checked={activeModule.isDouble || false}
+                onChange={(e) => updateModule(activeModuleIndex, { isDouble: e.target.checked })}
+                disabled={!checkDoubleAvailability() && !activeModule.isDouble}
+                className="w-4 h-4"
+              />
+              <span className="text-sm">Doppia (occupa 2 slot)</span>
+            </label>
+          </div>
           <div>
             <p className="text-gray-300 mb-2 text-sm">Colore:</p>
             <div className="flex flex-wrap gap-2">

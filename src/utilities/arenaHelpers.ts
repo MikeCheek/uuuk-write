@@ -8,7 +8,9 @@ import {
   moodTemplates,
   triadicTemplates,
   TextPosition,
-  FontSize
+  FontSize,
+  ExtendedTextPosition,
+  ColorOption
 } from './arenaSettings'
 
 export const getCoverTemplateImagePath = (
@@ -54,7 +56,9 @@ export const getTemplatesForCollection = (
 }
 
 // --- Helper for Text Position Classes ---
-export const getPositionClasses = (position: TextPosition): string => {
+export const getPositionClasses = (
+  position: TextPosition | ExtendedTextPosition
+): string => {
   switch (position) {
     case 'Sopra':
       return 'items-start justify-center p-4'
@@ -71,11 +75,11 @@ export const getPositionClasses = (position: TextPosition): string => {
 export const getFontSizeClass = (size: FontSize): string => {
   switch (size) {
     case 'Piccolo':
-      return 'text-[6px]'
-    case 'Medio':
       return 'text-[8px]'
-    case 'Grande':
+    case 'Medio':
       return 'text-[10px]'
+    case 'Grande':
+      return 'text-[12px]'
     default:
       return 'text-[10px]'
   }

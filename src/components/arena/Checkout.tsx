@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react"
 import { loadStripe, Stripe } from "@stripe/stripe-js"
 import { CheckoutProvider } from '@stripe/react-stripe-js/checkout';
 import CheckoutForm from "./CheckoutForm";
+import { Metadata } from "../../utilities/arenaSettings";
 
 const stripePromise = loadStripe(
   process.env.GATSBY_STRIPE_PUBLISHABLE_KEY || ""
@@ -10,7 +11,7 @@ const stripePromise = loadStripe(
 const testPrice = "price_1SaxTJLZC3eASp0tJ5eoNT0U"
 const livePrice = "price_1SawXxPpEYHfVWarxTKLKnDv"
 
-const Checkout = ({ metadata }: { metadata: Record<string, any> }) => {
+const Checkout = ({ metadata }: { metadata: Metadata }) => {
   const [error, setError] = useState<string | null>(null)
 
   const promise = useMemo(async () => {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { AgendaFormat, Collection, ColorOption, CoverImageTemplate, FontSize, Module, TextPosition } from '../../utilities/arenaSettings';
+import { AgendaFormat, Collection, ColorOption, CoverImageTemplate, ExtendedTextPosition, FontSize, Module, TextPosition } from '../../utilities/arenaSettings';
 
 const Review = (
   {
@@ -23,7 +23,7 @@ const Review = (
       frontCoverTemplate: CoverImageTemplate;
       frontCoverText: string;
       frontCoverFontSize: FontSize;
-      frontCoverPosition: TextPosition;
+      frontCoverPosition: ExtendedTextPosition;
       modules: Module[];
       backCoverColor: ColorOption;
       backCoverText: string;

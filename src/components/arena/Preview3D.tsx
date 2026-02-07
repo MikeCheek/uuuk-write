@@ -1,13 +1,13 @@
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'; // Added hooks
 import { getFontSizeClass, getPositionClasses } from '../../utilities/arenaHelpers';
-import { AgendaFormat, ColorOption, CoverImageTemplate, FontSize, Module, TextPosition } from '../../utilities/arenaSettings';
+import { AgendaFormat, ColorOption, CoverImageTemplate, ExtendedTextPosition, FontSize, Module, TextPosition } from '../../utilities/arenaSettings';
 import Logo from '../atoms/Logo';
 
 const Preview3D = (
   {
     modules,
     format,
-    previewTransform,
+    previewTransform, // Note: Ensure this doesn't already have a conflicting rotate() or it will be overwritten
     previewSize,
     coverZOffset,
     frontCoverColor,
@@ -20,6 +20,8 @@ const Preview3D = (
     backCoverText,
     backCoverFontSize,
     backCoverPosition,
+    frontCoverTextColor,
+    backCoverTextColor
   }:
     {
       modules: Module[];
@@ -38,58 +40,212 @@ const Preview3D = (
       templateImagePath: string;
       frontCoverText: string;
       frontCoverFontSize: FontSize;
-      frontCoverPosition: TextPosition;
+      frontCoverPosition: ExtendedTextPosition;
       backCoverText: string;
       backCoverFontSize: FontSize;
       backCoverPosition: TextPosition;
+      frontCoverTextColor: ColorOption;
+      backCoverTextColor: ColorOption;
     }
 ) => {
+  // --- INTERACTION STATE ---
+  const [rotation, setRotation] = useState({ x: 0, y: 0 }); // Initial generic angle
+  const [isDragging, setIsDragging] = useState(false);
+  const lastMousePos = useRef({ x: 0, y: 0 });
 
-  // 1. Calculate dimensions in pixels
-  const totalSpineWidthPx = previewSize.spineWidthRem * 18;
-  const moduleThicknessRem = previewSize.spineWidthRem / modules.length;
-  const moduleThicknessPx = totalSpineWidthPx / modules.length;
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    lastMousePos.current = { x: e.clientX, y: e.clientY };
+  };
 
-  // 2. Determine the offset for the covers (Half the total thickness)
-  const dynamicCoverOffset = totalSpineWidthPx / 2;
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+
+    const deltaX = e.clientX - lastMousePos.current.x;
+    const deltaY = e.clientY - lastMousePos.current.y;
+
+    setRotation((prev) => ({
+      x: prev.x - deltaY * 0.5, // Drag up/down rotates X axis (inverted feel usually better)
+      y: prev.y + deltaX * 0.5, // Drag left/right rotates Y axis
+    }));
+
+    lastMousePos.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    setRotation({ x: 0, y: 0 });
+  }, [previewTransform]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+
+      const deltaX = e.clientX - lastMousePos.current.x;
+      const deltaY = e.clientY - lastMousePos.current.y;
+
+      setRotation((prev) => ({
+        x: prev.x - deltaY * 0.4, // Sensitivity
+        y: prev.y + deltaX * 0.4,
+      }));
+
+      lastMousePos.current = { x: e.clientX, y: e.clientY };
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
+
+  // --- CALCULATIONS ---
+  const pxPerUnit = 18;
+  const baseTotalWidthPx = previewSize.spineWidthRem * pxPerUnit;
+  const singleModuleThicknessPx = baseTotalWidthPx / modules.length;
+  const singleModuleThicknessRem = previewSize.spineWidthRem / modules.length;
+
+  const totalRealWidthPx = modules.reduce((acc, mod) => {
+    return acc + (mod.isDouble ? singleModuleThicknessPx * 2 : singleModuleThicknessPx);
+  }, 0);
+
+  const dynamicCoverOffset = totalRealWidthPx / 2;
+  let runningZOffset = -dynamicCoverOffset;
+
+  // Page block textures
+  const pageTexture = 'repeating-linear-gradient(180deg, #fdfdfd 0px, #fdfdfd 1px, #f4f4f4 2px, #f4f4f4 3px)';
+  const pageTextureVertical = 'repeating-linear-gradient(90deg, #fdfdfd 0px, #fdfdfd 1px, #f4f4f4 2px, #f4f4f4 3px)';
+  const vInset = format === 'A7' ? 4 : 10;
+  const hInset = format === 'A7' ? 4 : 10;
 
   return (
     <>
       <h2 className="text-2xl font-semibold mb-6 text-white">Anteprima ({format})</h2>
-      <div style={{ perspective: '1000px' }}>
+
+      {/* 1. Added event handlers to the container 
+         2. Added cursor styles 
+      */}
+      <div
+        style={{ perspective: '1000px', cursor: isDragging ? 'grabbing' : 'grab', userSelect: 'none' }}
+        onMouseDown={handleMouseDown}
+      // onMouseMove={handleMouseMove}
+      // onMouseUp={handleMouseUp}
+      // onMouseLeave={handleMouseUp} // Stop dragging if mouse leaves area
+      >
         <div
-          className={`relative transition-transform duration-700 ease-out ${previewSize.container}`}
-          style={previewTransform}
+          className={`relative transition-transform duration-75 ease-out ${previewSize.container}`}
+          // Note: duration-700 changed to duration-75 or 0 for instant drag response
+          style={{
+            ...previewTransform,
+            // We append our dynamic rotation to whatever transform was passed in
+            transform: `${previewTransform?.transform || ''} rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`
+          }}
         >
+          {/* --- WHITE PAGES BLOCK --- */}
+          {format !== 'A7' && (
+            <div
+              className="absolute left-0"
+              style={{
+                top: `${vInset}px`,
+                height: `${totalRealWidthPx}px`,
+                width: `calc(100% - ${hInset}px)`,
+                transformOrigin: 'top',
+                transform: `translateZ(-${dynamicCoverOffset}px) rotateX(90deg)`,
+                background: pageTexture,
+                backfaceVisibility: 'hidden'
+              }}
+            />
+          )}
+
+          <div
+            className="absolute left-0"
+            style={{
+              bottom: `${vInset}px`,
+              height: `${totalRealWidthPx}px`,
+              width: `calc(100% - ${hInset}px)`,
+              transformOrigin: 'bottom',
+              transform: `translateZ(-${dynamicCoverOffset}px) rotateX(-90deg)`,
+              background: pageTexture,
+              backfaceVisibility: 'hidden'
+            }}
+          />
+
+          {/* Side view pages (only visible on A7 format) */}
+          <div
+            className="absolute"
+            style={{
+              right: `${hInset}px`,
+              top: `${vInset}px`,
+              bottom: `${vInset}px`,
+              width: `${totalRealWidthPx}px`,
+              transformOrigin: 'right',
+              transform: `translateZ(${-dynamicCoverOffset}px) rotateY(90deg)`,
+              background: pageTextureVertical,
+              backfaceVisibility: 'hidden'
+            }}
+          />
+
+          {format === 'A7' && (
+            <div
+              className="absolute"
+              style={{
+                left: `${hInset}px`,
+                top: `${vInset}px`,
+                bottom: `${vInset}px`,
+                width: `${totalRealWidthPx}px`,
+                transformOrigin: 'left',
+                transform: `translateZ(-${dynamicCoverOffset}px) rotateY(-90deg)`,
+                background: pageTextureVertical,
+                backfaceVisibility: 'hidden'
+              }}
+            />
+          )}
+          {/* --- END PAGES BLOCK --- */}
+
           {/* Front Cover */}
           <div
             className={`absolute inset-0 rounded-lg shadow-2xl transition-colors duration-300 ${frontCoverColor.name === 'White' ? 'border border-gray-200' : ''} overflow-hidden `}
             style={{
-              transform: `translateZ(${dynamicCoverOffset}px)`, // Pushed forward by half thickness
+              transform: `translateZ(${dynamicCoverOffset}px)`,
               backgroundColor: frontCoverColor.color,
-              color: frontCoverColor.color
+              color: frontCoverColor.color,
+              // backfaceVisibility: 'hidden' // Optional: hides it if viewed from inside
             }}
           >
-            {frontCoverTemplate !== 'None' && (
+            {frontCoverTemplate !== 'None' ? (
               <div
                 className="absolute inset-0 bg-contain bg-center bg-no-repeat"
                 style={{ backgroundImage: `url('${templateImagePath}')` }}
               ></div>
-            )}
-            <div className={`absolute inset-0 flex text-center text-black ${getPositionClasses(frontCoverPosition)}`}>
-              <p className={`p-1 rounded bg-transparent font-bold ${getFontSizeClass(frontCoverFontSize)}`}>
-                {frontCoverText}
-              </p>
-            </div>
+            )
+              :
+              <div className={`absolute inset-0 flex text-center ${getPositionClasses(frontCoverPosition)}`}
+                style={{ color: frontCoverTextColor?.color || 'black' }}
+              >
+                <p className={`p-1 rounded bg-transparent font-bold ${getFontSizeClass(frontCoverFontSize)}`}>
+                  {frontCoverText}
+                </p>
+              </div>
+            }
           </div>
 
-          {/* Multiple Sidebars/Spines */}
+          {/* Sidebars (Spine) */}
           {modules.map((mod, index) => {
-
-            // LOGIC FIX:
-            // We calculate the starting position (Z-depth) for this specific module.
-            // Start at the Back (-Offset) and add the thickness of previous modules.
-            const startZ = -dynamicCoverOffset + (index * moduleThicknessPx);
+            const currentThicknessPx = mod.isDouble ? singleModuleThicknessPx * 2 : singleModuleThicknessPx;
+            const currentThicknessRem = mod.isDouble ? singleModuleThicknessRem * 2 : singleModuleThicknessRem;
+            const startZ = runningZOffset;
+            runningZOffset += currentThicknessPx;
 
             let spineClasses = '';
             let spineTransform = '';
@@ -97,37 +253,24 @@ const Preview3D = (
             let spineStyle = {};
 
             if (format === 'A7') {
-              // --- A7 TOP SPINE ---
               spineClasses = `absolute top-0 left-0 right-0 rounded-lg shadow-inner transition-colors duration-300 `;
-
-              // 1. Rotate X 90deg to lay flat on top.
-              // 2. translateY(${startZ}px): Move along the DEPTH (which is local Y after rotation).
-              // 3. translateZ(-0.5px): Slight visual adjustment to align flush with cover edge.
               spineTransform = `rotateX(90deg) translateY(${startZ}px) translateZ(-0.5px)`;
-
               spineStyle = {
-                height: `${moduleThicknessRem}rem`, // The "Thickness" of the slice is its Height in A7
+                height: `${currentThicknessRem}rem`,
                 width: '100%',
-                transformOrigin: 'top center', // Pivot from the top edge
+                transformOrigin: 'top center',
                 transform: spineTransform,
                 zIndex: index + 1,
                 backgroundColor: mod.sidebarColor.color,
               };
               spineTextTransform = `rotate(0deg)`;
             } else {
-              // --- A5 / A6 SIDE SPINE ---
               spineClasses = `absolute top-0 left-0 bottom-0 rounded-lg shadow-inner transition-colors duration-300`;
-
-              // 1. Rotate Y -90deg to stand on the left.
-              // 2. translateX(${startZ}px): Move along the DEPTH (which is local X after rotation).
-              // 3. translateZ(0.5px): Slight visual adjustment to push it slightly "out" to left edge.
-              // Note: We REMOVED 'translateX(-50%)' because we are positioning exactly from the edge now.
               spineTransform = `rotateY(-90deg) translateX(${startZ}px) translateZ(0.5px)`;
-
               spineStyle = {
-                width: `${moduleThicknessRem}rem`, // The "Thickness" of the slice is its Width in A5/A6
+                width: `${currentThicknessRem}rem`,
                 height: '100%',
-                transformOrigin: 'left center', // Pivot from the left edge
+                transformOrigin: 'left center',
                 transform: spineTransform,
                 zIndex: index + 1,
                 backgroundColor: mod.sidebarColor.color,
@@ -141,21 +284,26 @@ const Preview3D = (
                 className={spineClasses}
                 style={spineStyle}
               >
-                {/* Text displayed only on the last module (Front-most) */}
-
+                <div className={`absolute top-0 left-0 ${format === 'A7' ? 'w-4 h-full rounded-l-lg' : 'w-full h-12 rounded-t-lg'} bg-black`}>
+                  <div className={`absolute top-1 left-1 right-1 ${format === 'A7' ? 'h-3/4 top-1/2 -translate-y-1/2 w-1' : 'h-1'} rounded-sm`}
+                    style={{ backgroundColor: mod.sidebarColor.color }}></div>
+                </div>
                 <span
-                  className={`absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-white font-medium whitespace-nowrap ${previewSize.text}`}
+                  className={`absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center ${mod.sidebarColor.color.substring(1, 3) === 'ff' ? 'text-black' : 'text-white'} font-medium whitespace-nowrap ${previewSize.text}`}
                   style={{
                     transform: spineTextTransform,
                     writingMode: format === 'A7' ? 'unset' : 'vertical-rl',
                     textOrientation: format === 'A7' ? 'unset' : 'mixed',
-                    // Force line-height to equal the FULL spine width, so text centers visually over the whole group
-                    lineHeight: format !== 'A7' ? `${previewSize.spineWidthRem}rem` : 'initial',
-                    // top: format === 'A7' ? '0' : 'initial',
+                    lineHeight: format !== 'A7' ? `${currentThicknessRem}rem` : 'initial',
                   }}
                 >
                   {mod.sidebarText}
                 </span>
+                <div className={`absolute bottom-0 right-0 ${format === 'A7' ? 'w-4 h-full rounded-r-lg' : 'w-full h-12 rounded-b-lg'} bg-black`}>
+                  <div className={`absolute bottom-1 left-1 right-1 ${format === 'A7' ? 'top-1/2 -translate-y-1/2 h-3/4 w-1' : 'h-1'} rounded-sm`}
+                    style={{ backgroundColor: mod.sidebarColor.color }}
+                  ></div>
+                </div>
               </div>
             );
           })}
@@ -164,21 +312,23 @@ const Preview3D = (
           <div
             className={`absolute inset-0 rounded-lg shadow-2xl transition-colors duration-300 ${backCoverColor.name === 'Bianco' ? 'border border-gray-200' : ''} overflow-hidden flex items-center justify-center`}
             style={{
-              transform: `rotateY(-180deg) translateZ(${dynamicCoverOffset}px)`, // Pushed back by half thickness
+              transform: `rotateY(-180deg) translateZ(${dynamicCoverOffset}px)`,
               zIndex: -1,
               backgroundColor: backCoverColor.color,
               color: backCoverColor.color
             }}
           >
-            <div className={`absolute inset-0 flex text-center text-black ${getPositionClasses(backCoverPosition)}`}
-              style={{ transform: 'rotateY(180deg)' }}>
+            <div className={`absolute inset-0 flex text-center ${getPositionClasses(backCoverPosition)}`}
+              style={{
+                transform: 'rotateY(180deg)',
+                color: backCoverTextColor?.color || 'black'
+              }}>
               <p className={`p-1 rounded bg-transparent scale-x-[-1] font-bold ${getFontSizeClass(backCoverFontSize)}`}>
                 {backCoverText}
               </p>
             </div>
-            {/* Page edges */}
             <div className="absolute top-1 bottom-1 right-0 w-1 bg-white opacity-80 rounded-r-sm"></div>
-            <Logo className="sticky w-[40px]" />
+            <Logo className="sticky w-[40px]" onlyBlack />
             <div className="absolute top-2 bottom-2 right-1 w-px bg-gray-300 opacity-60"></div>
           </div>
 

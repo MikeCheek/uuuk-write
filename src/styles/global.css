@@ -10,6 +10,18 @@
   cursor: none !important;
 } */
 
+@theme {
+  --color-agenda-red: #ff0000;
+  --color-agenda-white: #ffffff;
+  --color-agenda-black: #000000;
+  --color-agenda-yellow: #ffff00;
+  --color-agenda-blue: #0000ff;
+  --color-agenda-purple: #800080;
+  --color-agenda-orange: #ffa500;
+  --color-agenda-gray: #808080;
+  --color-agenda-brown: #a5522d;
+}
+
 html {
   @apply scrollbar-thin scrollbar-track-black scrollbar-thumb-brown bg-black overflow-x-hidden;
 }
@@ -141,3 +153,4 @@ img {
     opacity: 0;
   }
 }
+

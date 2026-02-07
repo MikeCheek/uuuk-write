@@ -1,8 +1,9 @@
-import type { Module } from '../utilities/arenaSettings';
+import type { ExtendedTextPosition, Module } from '../utilities/arenaSettings';
 import React, { CSSProperties, useState, useId, useMemo, useEffect } from 'react';
 import { ShoppingCart, X, RotateCcw, Play } from 'lucide-react'; // Suggested icon library
 import {
-  AgendaFormat, ColorOption, colors, Collection, CoverImageTemplate, FontSize, TextPosition, MAX_MODULES, formats, fontSizes, textPositions, collections, pageInteriors, steps
+  AgendaFormat, ColorOption, colors, Collection, CoverImageTemplate, FontSize, TextPosition, MAX_MODULES, formats, fontSizes, textPositions, collections, pageInteriors, steps,
+  getRandomPreset
 } from '../utilities/arenaSettings';
 import {
   getCoverTemplateImagePath, getTemplatesForCollection, getPositionClasses, getFontSizeClass
@@ -21,22 +22,32 @@ import Layout from '../components/organisms/Layout';
 const LOCAL_STORAGE_KEY = 'uuuk_agenda_draft';
 
 const Arena = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [format, setFormat] = useState<AgendaFormat>('A5');
-  const [frontCoverColor, setFrontCoverColor] = useState<ColorOption>(colors[0]);
-  const [frontCoverCollection, setFrontCoverCollection] = useState<Collection>('Triadic');
-  const [frontCoverTemplate, setFrontCoverTemplate] = useState<CoverImageTemplate>('None');
-  const [frontCoverText, setFrontCoverText] = useState<string>('');
-  const [frontCoverFontSize, setFrontCoverFontSize] = useState<FontSize>('Medio');
-  const [frontCoverPosition, setFrontCoverPosition] = useState<TextPosition>('Centro');
-  const [modules, setModules] = useState<Module[]>([
+  const preset = getRandomPreset()
+
+  const [currentStep, setCurrentStep] = useState(preset.currentStep || 0);
+  const [format, setFormat] = useState<AgendaFormat>(preset.format || 'A5');
+
+  // Front Cover States
+  const [frontCoverColor, setFrontCoverColor] = useState<ColorOption>(preset.frontCover.color || colors[0]);
+  const [frontCoverCollection, setFrontCoverCollection] = useState<Collection>(preset.frontCover.collection || 'Triadic');
+  const [frontCoverTemplate, setFrontCoverTemplate] = useState<CoverImageTemplate>(preset.frontCover.template || 'None');
+  const [frontCoverText, setFrontCoverText] = useState<string>(preset.frontCover.text || '');
+  const [frontCoverFontSize, setFrontCoverFontSize] = useState<FontSize>(preset.frontCover.fontSize || 'Medio');
+  const [frontCoverPosition, setFrontCoverPosition] = useState<ExtendedTextPosition>(preset.frontCover.position || 'Sotto');
+  const [frontCoverTextColor, setFrontCoverTextColor] = useState<ColorOption>(preset.frontCover.textColor || colors[2]);
+
+  // Modules State
+  const [modules, setModules] = useState<Module[]>(preset.modules.length > 0 ? preset.modules : [
     { id: 'initial-mod', sidebarColor: colors[4], sidebarText: 'Idee', pageInterior: 'Righe' }
   ]);
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
-  const [backCoverColor, setBackCoverColor] = useState<ColorOption>(colors[0]);
-  const [backCoverText, setBackCoverText] = useState<string>('');
-  const [backCoverFontSize, setBackCoverFontSize] = useState<FontSize>('Medio');
-  const [backCoverPosition, setBackCoverPosition] = useState<TextPosition>('Centro');
+
+  // Back Cover States
+  const [backCoverColor, setBackCoverColor] = useState<ColorOption>(preset.backCover.color || colors[0]);
+  const [backCoverText, setBackCoverText] = useState<string>(preset.backCover.text || '');
+  const [backCoverFontSize, setBackCoverFontSize] = useState<FontSize>(preset.backCover.fontSize || 'Medio');
+  const [backCoverPosition, setBackCoverPosition] = useState<TextPosition>(preset.backCover.position || 'Sotto');
+  const [backCoverTextColor, setBackCoverTextColor] = useState<ColorOption>(preset.backCover.textColor || colors[2]);
 
   // New UI States
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -46,12 +57,12 @@ const Arena = () => {
   // 1. ORGANIZE DATA IN METADATA OBJECT
   const metadata = useMemo(() => ({
     format,
-    frontCover: { color: frontCoverColor, collection: frontCoverCollection, template: frontCoverTemplate, text: frontCoverText, fontSize: frontCoverFontSize, position: frontCoverPosition },
+    frontCover: { color: frontCoverColor, collection: frontCoverCollection, template: frontCoverTemplate, text: frontCoverText, fontSize: frontCoverFontSize, position: frontCoverPosition, textColor: frontCoverTextColor },
     modules,
-    backCover: { color: backCoverColor, text: backCoverText, fontSize: backCoverFontSize, position: backCoverPosition },
+    backCover: { color: backCoverColor, text: backCoverText, fontSize: backCoverFontSize, position: backCoverPosition, textColor: backCoverTextColor },
     lastUpdated: new Date().toISOString(),
     currentStep
-  }), [format, frontCoverColor, frontCoverCollection, frontCoverTemplate, frontCoverText, frontCoverFontSize, frontCoverPosition, modules, backCoverColor, backCoverText, backCoverFontSize, backCoverPosition, currentStep]);
+  }), [format, frontCoverColor, frontCoverCollection, frontCoverTemplate, frontCoverText, frontCoverFontSize, frontCoverPosition, frontCoverTextColor, modules, backCoverColor, backCoverText, backCoverFontSize, backCoverPosition, backCoverTextColor, currentStep]);
 
   // 2. LOCALSTORAGE: LOAD ON MOUNT
   useEffect(() => {
@@ -81,6 +92,8 @@ const Arena = () => {
       setBackCoverText(pendingDraft.backCover.text);
       setBackCoverFontSize(pendingDraft.backCover.fontSize);
       setBackCoverPosition(pendingDraft.backCover.position);
+      setFrontCoverTextColor(pendingDraft.frontCover.textColor);
+      setBackCoverTextColor(pendingDraft.backCover.textColor);
       setCurrentStep(pendingDraft.currentStep || 0);
     }
     setShowResumeModal(false);
@@ -119,11 +132,11 @@ const Arena = () => {
 
   // Module Handlers
   const addModule = () => {
-    if (modules.length < MAX_MODULES) {
+    if (modules.length < MAX_MODULES && !(modules.filter(m => m.isDouble).length > 0 && modules.length >= MAX_MODULES - 1)) {
       const newModule: Module = {
         id: Date.now().toString(),
         sidebarColor: colors[Math.floor(Math.random() * (colors.length - 1))],
-        sidebarText: `Section ${modules.length + 1}`,
+        sidebarText: `Sidebar ${modules.length + 1}`,
         pageInterior: 'Righe',
       };
       setModules([...modules, newModule]);
@@ -150,7 +163,7 @@ const Arena = () => {
   // --- END Handlers ---
 
   const getPreviewSizeClasses = () => {
-    const baseSpineWidth = 2;
+    const baseSpineWidth = 3;
     const totalSpineWidthRem = modules.length * baseSpineWidth * 0.35;
 
     switch (format) {
@@ -212,7 +225,7 @@ const Arena = () => {
   return (
     <Layout showCustomCursor={false}>
       {/* RESUME MODAL */}
-      <Modal show={showResumeModal} onClose={() => setShowResumeModal(false)}>
+      <Modal show={showResumeModal} onClose={() => setShowResumeModal(false)} showCursor>
         <div className="flex flex-col items-center text-center p-4">
           <h3 className="text-2xl font-bold text-beige mb-4 uppercase">Bentornato!</h3>
           <p className="text-white mb-8">Abbiamo trovato una sessione non completata. Vuoi riprendere da dove avevi lasciato?</p>
@@ -318,6 +331,8 @@ const Arena = () => {
                 availableTemplates={availableTemplates}
                 fontSizes={fontSizes}
                 setFrontCoverFontSize={setFrontCoverFontSize}
+                frontCoverTextColor={frontCoverTextColor}
+                setFrontCoverTextColor={setFrontCoverTextColor}
                 frontCoverFontSize={frontCoverFontSize}
                 textPositions={textPositions}
                 setFrontCoverPosition={setFrontCoverPosition}
@@ -348,6 +363,8 @@ const Arena = () => {
                 backCoverColor={backCoverColor}
                 setBackCoverColor={setBackCoverColor}
                 backCoverText={backCoverText}
+                backCoverTextColor={backCoverTextColor}
+                setBackCoverTextColor={setBackCoverTextColor}
                 setBackCoverText={setBackCoverText}
                 backCoverFontSize={backCoverFontSize}
                 setBackCoverFontSize={setBackCoverFontSize}
@@ -399,6 +416,8 @@ const Arena = () => {
               frontCoverText={frontCoverText}
               frontCoverFontSize={frontCoverFontSize}
               frontCoverPosition={frontCoverPosition}
+              frontCoverTextColor={frontCoverTextColor}
+              backCoverTextColor={backCoverTextColor}
               backCoverText={backCoverText}
               backCoverFontSize={backCoverFontSize}
               backCoverPosition={backCoverPosition}
