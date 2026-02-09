@@ -143,86 +143,129 @@ export const steps = [
   'Acquista'
 ]
 
+////// TEMPLATES //////
+
+const getColor = (name: string): ColorOption =>
+  colors.find(c => c.name === name)!
+
+const common = {
+  lastUpdated: new Date().toISOString(),
+  currentStep: 0
+}
+
+const modules: Module[] = [
+  {
+    id: 'mod1',
+    sidebarColor: getColor('Bianco'),
+    sidebarText: 'Idee',
+    pageInterior: 'Righe'
+  },
+  {
+    id: 'mod2',
+    sidebarColor: getColor('Bianco'),
+    sidebarText: 'Progetti',
+    pageInterior: 'Punti',
+    isDouble: true
+  }
+]
+
+const noText = {
+  text: '' as const,
+  fontSize: 'Medio' as FontSize,
+  position: 'Sotto' as TextPosition,
+  textColor: getColor('Nero')
+}
+
+const triadic = (template: TriadicTemplate): Metadata => ({
+  format: 'A5',
+  frontCover: {
+    color: getColor('Bianco'),
+    collection: 'Triadic',
+    template: template,
+    ...noText
+  },
+  modules: modules,
+  backCover: {
+    color: getColor('Bianco'),
+    ...noText
+  },
+  ...common
+})
+
+const mood = (
+  template: MoodTemplate,
+  frontColor: ColorOption,
+  frontTextColor: ColorOption,
+  backColor?: ColorOption,
+  backTextColor?: ColorOption
+): Metadata => ({
+  format: 'A5',
+  frontCover: {
+    color: frontColor,
+    collection: 'M(O_O)D',
+    template: template,
+    ...noText,
+    textColor: frontTextColor
+  },
+  modules: modules,
+  backCover: {
+    color: backColor ?? frontColor,
+    ...noText,
+    textColor: backTextColor ?? frontTextColor
+  },
+  ...common
+})
+
 export const presets: Record<string, Metadata> = {
   Blank: {
-    format: 'A5' as AgendaFormat,
+    format: 'A5',
     frontCover: {
-      color: colors[1],
-      collection: 'Triadic' as Collection,
+      color: getColor('Bianco'),
+      collection: 'Custom',
       template: undefined,
-      text: '',
-      fontSize: 'Medio' as FontSize,
-      position: 'Sotto' as ExtendedTextPosition,
-      textColor: colors[2]
+      ...noText
     },
-    modules: [],
+    modules: modules,
     backCover: {
-      color: colors[1],
-      text: '',
-      fontSize: 'Medio' as FontSize,
-      position: 'Sotto' as TextPosition,
-      textColor: colors[2]
+      color: getColor('Bianco'),
+      ...noText
     },
-    lastUpdated: new Date().toISOString(),
-    currentStep: 0
+    ...common
   },
-  Punto: {
-    format: 'A5' as AgendaFormat,
-    frontCover: {
-      color: colors[1],
-      collection: 'Triadic' as Collection,
-      template: 'Punto' as TriadicTemplate,
-      text: '',
-      fontSize: 'Medio' as FontSize,
-      position: 'Sotto' as ExtendedTextPosition,
-      textColor: colors[2]
-    },
-    modules: [
-      {
-        id: 'mod1',
-        sidebarColor: colors[2],
-        sidebarText: 'Idee',
-        pageInterior: 'Righe'
-      },
-      {
-        id: 'mod2',
-        sidebarColor: colors[2],
-        sidebarText: 'Progetti',
-        pageInterior: 'Punti',
-        isDouble: true
-      }
-    ],
-    backCover: {
-      color: colors[1],
-      text: '',
-      fontSize: 'Grande' as FontSize,
-      position: 'Sotto' as TextPosition,
-      textColor: colors[2]
-    },
-    lastUpdated: new Date().toISOString(),
-    currentStep: 0
-  },
+  Punto: triadic('Punto'),
+  Flusso: triadic('Flusso'),
+  Occhio: triadic('Occhio'),
+  '(◣ _ ◢)': mood('(◣ _ ◢)', getColor('Nero'), getColor('Rosso')),
+  '(－_－)': mood('(－_－)', getColor('Grigio'), getColor('Bianco')),
+  'ヽ⊙_⊙ﾉ': mood('ヽ⊙_⊙ﾉ', getColor('Arancione'), getColor('Nero')),
+  '(◕‿◕ )': mood(
+    '(◕‿◕ )',
+    getColor('Giallo'),
+    getColor('Nero'),
+    getColor('Blu')
+  ),
+  '(´◕︵◕`)': mood('(´◕︵◕`)', getColor('Blu'), getColor('Nero')),
+  '(●__● )': mood('(●__● )', getColor('Viola'), getColor('Nero')),
   minimal: {
-    format: 'A6' as AgendaFormat,
+    format: 'A6',
     frontCover: {
-      color: colors[4],
-      collection: 'Custom' as Collection,
+      color: colors.find(c => c.name === 'Nero')!,
+      collection: 'Custom',
       template: undefined,
       text: 'Eat. Write. Sleep. Repeat.',
-      fontSize: 'Medio' as FontSize,
-      position: 'Centro' as ExtendedTextPosition,
-      textColor: colors[3]
+      fontSize: 'Medio',
+      position: 'Centro',
+      textColor: colors.find(c => c.name === 'Arancione')!
     },
-    modules: [],
+    modules: modules,
     backCover: {
-      color: colors[4],
+      color: colors.find(c => c.name === 'Nero')!,
       text: 'UUUK AGENDA',
-      fontSize: 'Medio' as FontSize,
-      position: 'Sotto' as TextPosition,
-      textColor: colors[3]
+      fontSize: 'Medio',
+      position: 'Sotto',
+      textColor: colors.find(c => c.name === 'Arancione')!
     },
-    lastUpdated: new Date().toISOString(),
-    currentStep: 0
+    ...common
   }
 }
 
@@ -230,4 +273,8 @@ export const getRandomPreset = (): Metadata => {
   const presetKeys = Object.keys(presets)
   const randomKey = presetKeys[Math.floor(Math.random() * presetKeys.length)]
   return presets[randomKey]
+}
+
+export const getPresetFromKey = (key: string): Metadata => {
+  return presets[key] || presets['Punto']
 }

@@ -3,10 +3,12 @@ import React, { CSSProperties, useState, useId, useMemo, useEffect } from 'react
 import { ShoppingCart, X, RotateCcw, Play } from 'lucide-react'; // Suggested icon library
 import {
   AgendaFormat, ColorOption, colors, Collection, CoverImageTemplate, FontSize, TextPosition, MAX_MODULES, formats, fontSizes, textPositions, collections, pageInteriors, steps,
-  getRandomPreset
+  getRandomPreset,
+  getPresetFromKey
 } from '../utilities/arenaSettings';
 import {
-  getCoverTemplateImagePath, getTemplatesForCollection, getPositionClasses, getFontSizeClass
+  getCoverTemplateImagePath, getTemplatesForCollection,
+  getPreviewSizeClasses, getPreviewTransform
 } from '../utilities/arenaHelpers';
 import ProgressBar from '../components/arena/ProgressBar';
 import BackCover from '../components/arena/BackCover';
@@ -22,7 +24,12 @@ import Layout from '../components/organisms/Layout';
 const LOCAL_STORAGE_KEY = 'uuuk_agenda_draft';
 
 const Arena = () => {
-  const preset = getRandomPreset()
+
+  const queryParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+
+  const preset: Metadata = queryParams.has('preset') ?
+    getPresetFromKey(queryParams.get('preset')!)
+    : getPresetFromKey("Punto")!;
 
   const [currentStep, setCurrentStep] = useState(preset.currentStep || 0);
   const [format, setFormat] = useState<AgendaFormat>(preset.format || 'A5');
@@ -165,64 +172,21 @@ const Arena = () => {
 
   // --- END Handlers ---
 
-  const getPreviewSizeClasses = () => {
-    const baseSpineWidth = 3;
-    const totalSpineWidthRem = modules.length * baseSpineWidth * 0.35;
 
-    switch (format) {
-      case 'A7': return {
-        container: 'w-24 h-36', text: 'text-[6px]', spineWidthRem: totalSpineWidthRem, //* 0.7, 
-        coverTextSize: 'text-xs'
-      };
-      case 'A6': return {
-        container: 'w-32 h-48', text: 'text-[8px]', spineWidthRem: totalSpineWidthRem, //* 0.85, 
-        coverTextSize: 'text-sm'
-      };
-      case 'A5':
-      default: return { container: 'w-40 h-56', text: 'text-[10px]', spineWidthRem: totalSpineWidthRem, coverTextSize: 'text-base' };
-    }
-  };
 
   const availableTemplates = useMemo(() => {
     return getTemplatesForCollection(frontCoverCollection);
   }, [frontCoverCollection]);
 
-  const previewSize = getPreviewSizeClasses();
+  const previewSize = getPreviewSizeClasses({ modules, format });
   const activeModule = modules[activeModuleIndex];
   const coverZOffset = Math.min(modules.length * 1.5, 10);
   const templateImagePath = getCoverTemplateImagePath(format, frontCoverCollection, frontCoverTemplate);
 
   // --- Dynamic 3D Transform Logic ---
   const previewTransform = useMemo<CSSProperties>(() => {
-    let baseRotation = 'rotateX(10deg)';
-    let stepRotation = 'rotateY(-25deg)';
-
-    switch (steps[currentStep]) {
-      case 'Formato':
-      case 'Copertina Anteriore':
-      case 'Revisione':
-        stepRotation = 'rotateY(-25deg)';
-        break;
-      case 'Sidebars':
-        if (format === 'A7') {
-          stepRotation = 'rotateY(0deg)';
-          baseRotation = 'rotateX(-45deg)';
-        }
-        else
-          stepRotation = 'rotateY(80deg)';
-        break;
-      case 'Copertina Posteriore':
-        stepRotation = 'rotateY(160deg)';
-        break;
-      default:
-        stepRotation = 'rotateY(-25deg)';
-    }
-
-    return {
-      transform: `${baseRotation} ${stepRotation}`,
-      transformStyle: 'preserve-3d',
-    };
-  }, [currentStep]);
+    return getPreviewTransform(steps[currentStep], format)
+  }, [currentStep, format]);
 
 
   return (

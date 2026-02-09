@@ -5,6 +5,7 @@ import Logo from '../atoms/Logo';
 
 const Preview3D = (
   {
+    noExtra = false,
     modules,
     format,
     previewTransform, // Note: Ensure this doesn't already have a conflicting rotate() or it will be overwritten
@@ -25,6 +26,7 @@ const Preview3D = (
     backCoverTextColor
   }:
     {
+      noExtra?: boolean;
       modules: Module[];
       format: AgendaFormat;
       previewTransform: React.CSSProperties;
@@ -146,7 +148,10 @@ const Preview3D = (
 
   return (
     <>
-      <h2 className="text-2xl font-semibold mb-6 text-white">Anteprima ({format})</h2>
+      {
+        !noExtra &&
+        <h2 className="text-2xl font-semibold mb-6 text-white">Anteprima ({format})</h2>
+      }
 
       {/* 1. Added event handlers to the container 
          2. Added cursor styles 
@@ -368,7 +373,12 @@ const Preview3D = (
 
         </div>
       </div>
-      <p className="mt-8 text-sm text-gray-500 italic">L'anteprima qui mostrata è una bozza.</p>
+
+      {
+        !noExtra &&
+
+        <p className="mt-8 text-sm text-gray-500 italic">L'anteprima qui mostrata è una bozza.</p>
+      }
     </>
   )
 }
