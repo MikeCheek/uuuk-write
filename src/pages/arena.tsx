@@ -298,7 +298,7 @@ const Arena = () => {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1000]" onClick={() => setIsSidebarOpen(false)} />
       )}
 
-      <div className="min-h-screen bg-black p-4 md:p-8 flex flex-col items-center font-sans">
+      <div className="min-h-screen bg-black mt-16 md:mt-0 p-4 md:p-8 flex flex-col items-center font-sans">
         <h1 className="text-4xl md:text-6xl font-heading font-extrabold mb-8 animate-fadeIn">
           <span className="text-beige">Build Your </span>
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue via-purple to-magenta drop-shadow-sm">
