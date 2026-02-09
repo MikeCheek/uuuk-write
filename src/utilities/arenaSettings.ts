@@ -176,8 +176,11 @@ const noText = {
   textColor: getColor('Nero')
 }
 
-const triadic = (template: TriadicTemplate): Metadata => ({
-  format: 'A5',
+const triadic = (
+  template: TriadicTemplate,
+  format: AgendaFormat
+): Metadata => ({
+  format: format,
   frontCover: {
     color: getColor('Bianco'),
     collection: 'Triadic',
@@ -194,12 +197,13 @@ const triadic = (template: TriadicTemplate): Metadata => ({
 
 const mood = (
   template: MoodTemplate,
+  format: AgendaFormat,
   frontColor: ColorOption,
   frontTextColor: ColorOption,
   backColor?: ColorOption,
   backTextColor?: ColorOption
 ): Metadata => ({
-  format: 'A5',
+  format: format,
   frontCover: {
     color: frontColor,
     collection: 'M(O_O)D',
@@ -232,20 +236,54 @@ export const presets: Record<string, Metadata> = {
     },
     ...common
   },
-  Punto: triadic('Punto'),
-  Flusso: triadic('Flusso'),
-  Occhio: triadic('Occhio'),
-  '(◣ _ ◢)': mood('(◣ _ ◢)', getColor('Nero'), getColor('Rosso')),
-  '(－_－)': mood('(－_－)', getColor('Grigio'), getColor('Bianco')),
-  'ヽ⊙_⊙ﾉ': mood('ヽ⊙_⊙ﾉ', getColor('Arancione'), getColor('Nero')),
-  '(◕‿◕ )': mood(
+  'Punto A5': triadic('Punto', 'A5'),
+  'Flusso A5': triadic('Flusso', 'A5'),
+  'Occhio A5': triadic('Occhio', 'A5'),
+  '(◣ _ ◢) A5': mood('(◣ _ ◢)', 'A5', getColor('Nero'), getColor('Rosso')),
+  '(－_－) A5': mood('(－_－)', 'A5', getColor('Grigio'), getColor('Bianco')),
+  'ヽ⊙_⊙ﾉ A5': mood('ヽ⊙_⊙ﾉ', 'A5', getColor('Arancione'), getColor('Nero')),
+  '(◕‿◕ ) A5': mood(
     '(◕‿◕ )',
+    'A5',
     getColor('Giallo'),
     getColor('Nero'),
     getColor('Blu')
   ),
-  '(´◕︵◕`)': mood('(´◕︵◕`)', getColor('Blu'), getColor('Nero')),
-  '(●__● )': mood('(●__● )', getColor('Viola'), getColor('Nero')),
+  '(´◕︵◕`) A5': mood('(´◕︵◕`)', 'A5', getColor('Blu'), getColor('Nero')),
+  '(●__● ) A5': mood('(●__● )', 'A5', getColor('Viola'), getColor('Nero')),
+
+  'Punto A6': triadic('Punto', 'A6'),
+  'Flusso A6': triadic('Flusso', 'A6'),
+  'Occhio A6': triadic('Occhio', 'A6'),
+  '(◣ _ ◢) A6': mood('(◣ _ ◢)', 'A6', getColor('Nero'), getColor('Rosso')),
+  '(－_－) A6': mood('(－_－)', 'A6', getColor('Grigio'), getColor('Bianco')),
+  'ヽ⊙_⊙ﾉ A6': mood('ヽ⊙_⊙ﾉ', 'A6', getColor('Arancione'), getColor('Nero')),
+  '(◕‿◕ ) A6': mood(
+    '(◕‿◕ )',
+    'A6',
+    getColor('Giallo'),
+    getColor('Nero'),
+    getColor('Blu')
+  ),
+  '(´◕︵◕`) A6': mood('(´◕︵◕`)', 'A6', getColor('Blu'), getColor('Nero')),
+  '(●__● ) A6': mood('(●__● )', 'A6', getColor('Viola'), getColor('Nero')),
+
+  'Punto A7': triadic('Punto', 'A7'),
+  'Flusso A7': triadic('Flusso', 'A7'),
+  'Occhio A7': triadic('Occhio', 'A7'),
+  '(◣ _ ◢) A7': mood('(◣ _ ◢)', 'A7', getColor('Nero'), getColor('Rosso')),
+  '(－_－) A7': mood('(－_－)', 'A7', getColor('Grigio'), getColor('Bianco')),
+  'ヽ⊙_⊙ﾉ A7': mood('ヽ⊙_⊙ﾉ', 'A7', getColor('Arancione'), getColor('Nero')),
+  '(◕‿◕ ) A7': mood(
+    '(◕‿◕ )',
+    'A7',
+    getColor('Giallo'),
+    getColor('Nero'),
+    getColor('Blu')
+  ),
+  '(´◕︵◕`) A7': mood('(´◕︵◕`)', 'A7', getColor('Blu'), getColor('Nero')),
+  '(●__● ) A7': mood('(●__● )', 'A7', getColor('Viola'), getColor('Nero')),
+
   minimal: {
     format: 'A6',
     frontCover: {

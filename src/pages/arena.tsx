@@ -8,7 +8,7 @@ import {
 } from '../utilities/arenaSettings';
 import {
   getCoverTemplateImagePath, getTemplatesForCollection,
-  getPreviewSizeClasses, getPreviewTransform
+
 } from '../utilities/arenaHelpers';
 import ProgressBar from '../components/arena/ProgressBar';
 import BackCover from '../components/arena/BackCover';
@@ -24,14 +24,15 @@ import Layout from '../components/organisms/Layout';
 const LOCAL_STORAGE_KEY = 'uuuk_agenda_draft';
 
 const Arena = () => {
-
   const queryParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
 
   const preset: Metadata = queryParams.has('preset') ?
     getPresetFromKey(queryParams.get('preset')!)
-    : getPresetFromKey("Punto")!;
+    : getPresetFromKey("Punto A5")!;
 
-  const [currentStep, setCurrentStep] = useState(preset.currentStep || 0);
+  const step = queryParams.has('paynow') ? steps.length - 1 : preset.currentStep || 0;
+
+  const [currentStep, setCurrentStep] = useState(step);
   const [format, setFormat] = useState<AgendaFormat>(preset.format || 'A5');
 
   // Front Cover States
@@ -77,7 +78,7 @@ const Arena = () => {
     metadata.lastUpdated = new Date().toISOString(); // Update lastUpdated on every change
 
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (saved) {
+    if (saved && !queryParams.has('paynow')) {
       setPendingDraft(JSON.parse(saved));
       setShowResumeModal(true);
     }
@@ -171,6 +172,74 @@ const Arena = () => {
   };
 
   // --- END Handlers ---
+
+  const getPreviewSizeClasses = ({
+    modules,
+    format
+  }: {
+    modules: Module[]
+    format: AgendaFormat
+  }) => {
+    const baseSpineWidth = 3
+    const totalSpineWidthRem = modules.length * baseSpineWidth * 0.35
+
+    switch (format) {
+      case 'A7':
+        return {
+          container: 'w-24 h-36',
+          text: 'text-[6px]',
+          spineWidthRem: totalSpineWidthRem, //* 0.7,
+          coverTextSize: 'text-xs'
+        }
+      case 'A6':
+        return {
+          container: 'w-32 h-48',
+          text: 'text-[8px]',
+          spineWidthRem: totalSpineWidthRem, //* 0.85,
+          coverTextSize: 'text-sm'
+        }
+      case 'A5':
+      default:
+        return {
+          container: 'w-40 h-56',
+          text: 'text-[10px]',
+          spineWidthRem: totalSpineWidthRem,
+          coverTextSize: 'text-base'
+        }
+    }
+  }
+
+  const getPreviewTransform = (
+    step: string,
+    format: AgendaFormat
+  ): CSSProperties => {
+    let baseRotation = 'rotateX(10deg)'
+    let stepRotation = 'rotateY(-25deg)'
+
+    switch (step) {
+      case 'Formato':
+      case 'Copertina Anteriore':
+      case 'Revisione':
+        stepRotation = 'rotateY(-25deg)'
+        break
+      case 'Sidebars':
+        if (format === 'A7') {
+          stepRotation = 'rotateY(0deg)'
+          baseRotation = 'rotateX(-45deg)'
+        } else stepRotation = 'rotateY(80deg)'
+        break
+      case 'Copertina Posteriore':
+        stepRotation = 'rotateY(160deg)'
+        break
+      default:
+        stepRotation = 'rotateY(-25deg)'
+    }
+
+    return {
+      transform: `${baseRotation} ${stepRotation}`,
+      transformStyle: 'preserve-3d'
+    }
+  }
 
 
 
@@ -392,7 +461,7 @@ const Arena = () => {
           </div>
         </div>
       </div>
-      <div className="py-16 flex justify-between items-center">
+      <div className="absolute py-16 flex justify-between items-center z-10">
         <button
           onClick={handlePrev}
           disabled={currentStep === 0}
@@ -409,7 +478,7 @@ const Arena = () => {
           </button>
         ) : <></>}
       </div>
-      <p className="text-beige w-full text-center pb-10 animate-fadeIn">⚠️ Questa pagina è ancora in fase di sviluppo. Gli ordini effettuati qui non verranno presi in considerazione e non saremo responsabili per eventuali problemi derivanti dall'utilizzo. ⚠️</p>
+      <p className="text-beige md:mx-48 text-center pb-10 -z-10 animate-fadeIn">⚠️ Questa pagina è ancora in fase di sviluppo. Gli ordini effettuati qui non verranno presi in considerazione e non saremo responsabili per eventuali problemi derivanti dall'utilizzo. ⚠️</p>
     </Layout>
   );
 };

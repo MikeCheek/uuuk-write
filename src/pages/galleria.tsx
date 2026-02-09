@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import TemplateGallery from '../components/arena/TemplateGallery'
 import Layout from '../components/organisms/Layout'
+import Switch from '../components/arena/Switch'
 
-const ArenaGallery = () => {
+const Gallery = () => {
+  const [mode, setMode] = useState<'flat' | '3D'>('3D')
   return (
     <Layout >
       <div className='flex flex-col items-center justify-center'>
@@ -12,10 +14,10 @@ const ArenaGallery = () => {
             personalizza
           </span>
         </h1>
-        <TemplateGallery />
+        <TemplateGallery mode={mode} />
       </div>
     </Layout>
   )
 }
 
-export default ArenaGallery
+export default Gallery

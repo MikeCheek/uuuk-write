@@ -8,7 +8,7 @@ const Preview3D = (
     noExtra = false,
     modules,
     format,
-    previewTransform, // Note: Ensure this doesn't already have a conflicting rotate() or it will be overwritten
+    previewTransform,
     previewSize,
     coverZOffset,
     frontCoverColor,
@@ -62,28 +62,6 @@ const Preview3D = (
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
     lastMousePos.current = { x: clientX, y: clientY };
-  };
-
-  const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
-
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-
-    const deltaX = clientX - lastMousePos.current.x;
-    const deltaY = clientY - lastMousePos.current.y;
-
-    setRotation((prev) => ({
-      x: prev.x - deltaY * 0.5, // Drag up/down rotates X axis (inverted feel usually better)
-      y: prev.y + deltaX * 0.5, // Drag left/right rotates Y axis
-    }));
-
-    lastMousePos.current = { x: clientX, y: clientY };
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
   };
 
   useEffect(() => {
@@ -153,23 +131,16 @@ const Preview3D = (
         <h2 className="text-2xl font-semibold mb-6 text-white">Anteprima ({format})</h2>
       }
 
-      {/* 1. Added event handlers to the container 
-         2. Added cursor styles 
-      */}
       <div
         style={{ perspective: '1000px', cursor: isDragging ? 'grabbing' : 'grab', userSelect: 'none' }}
         onMouseDown={handleMouseDown}
         onTouchStart={handleMouseDown}
-      // onMouseMove={handleMouseMove}
-      // onMouseUp={handleMouseUp}
-      // onMouseLeave={handleMouseUp} // Stop dragging if mouse leaves area
       >
         <div
           className={`relative transition-transform duration-75 ease-out ${previewSize.container}`}
-          // Note: duration-700 changed to duration-75 or 0 for instant drag response
           style={{
             ...previewTransform,
-            // We append our dynamic rotation to whatever transform was passed in
+            transformStyle: 'preserve-3d',
             transform: `${previewTransform?.transform || ''} rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`
           }}
         >
@@ -243,6 +214,8 @@ const Preview3D = (
               transform: `translateZ(${dynamicCoverOffset}px)`,
               backgroundColor: frontCoverColor.color,
               color: frontCoverColor.color,
+              width: '100%',
+              height: '100%',
               // backfaceVisibility: 'hidden' // Optional: hides it if viewed from inside
             }}
           >
