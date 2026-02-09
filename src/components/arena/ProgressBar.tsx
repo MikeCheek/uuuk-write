@@ -14,7 +14,7 @@ const ProgressBar = ({ steps, currentStep }: { steps: string[]; currentStep: num
           {/* Animated Fill - Using your 'bg-brown' */}
           <motion.div
             initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
+            animate={{ width: `${progress === 0 ? 1 : progress}%` }}
             transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
             className="h-full bg-brown"
           />
@@ -27,7 +27,7 @@ const ProgressBar = ({ steps, currentStep }: { steps: string[]; currentStep: num
               key={i}
               initial={false}
               animate={{
-                backgroundColor: i <= currentStep ? '#6b4423' : '#E5E7EB', // Assuming your 'brown' hex, adjust as needed
+                backgroundColor: i <= currentStep ? '#6b4423' : '#ecddbe ', // Assuming your 'brown' hex, adjust as needed
               }}
               className={`h-4 w-4 rounded-full z-10 transition-colors duration-500 ${i <= currentStep ? 'bg-brown' : 'bg-gray-200'
                 }`}
