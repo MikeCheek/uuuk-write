@@ -19,7 +19,7 @@ type QueryResult = {
   }
 }
 
-const siteUrl = `https://uuuk.netlify.app/`
+const siteUrl = `https://uuuk.it`
 
 const useSiteMetadata = (): {
   metadata: SiteMetadata
