@@ -72,42 +72,32 @@ const Index = ({
         image: [metadata.siteUrl + fallbackImage?.src, ...images.map((image) => metadata.siteUrl + image)],
         inLanguage: 'IT',
       },
-      // {
-      //   '@context': 'https://www.schema.org',
-      //   '@type': 'BreadcrumbList',
-      //   itemListElement: links(lang)
-      //     .map((link) =>
-      //       link.multiple
-      //         ? link.links.map((l) => ({
-      //           '@type': 'ListItem',
-      //           position: l.position,
-      //           name: l.name,
-      //           item: metadata.siteUrl + l.to,
-      //         }))
-      //         : {
-      //           '@type': 'ListItem',
-      //           position: link.position,
-      //           name: link.name,
-      //           item: metadata.siteUrl + link.to,
-      //         }
-      //     )
-      //     .flat(),
-      // },
-      // {
-      //   '@context': 'https://schema.org/',
-      //   '@type': 'FAQPage',
-      //   mainEntity: dataFAQ
-      //     .map((data) => data.data)
-      //     .reduce((elem1, elem2) => [...elem1, ...elem2])
-      //     .map((faq) => ({
-      //       '@type': 'Question',
-      //       name: faq.title,
-      //       acceptedAnswer: {
-      //         '@type': 'Answer',
-      //         text: removeHTMLTags(faq.text),
-      //       },
-      //     })),
-      // },
+      {
+        '@context': 'https://www.schema.org',
+        '@type': 'Product',
+        name: seo.title,
+        description: seo.description,
+        image: [metadata.siteUrl + fallbackImage?.src, ...images.map((image) => metadata.siteUrl + image)],
+        url: seo.url,
+        brand: {
+          '@type': 'Brand',
+          name: metadata.title,
+        },
+        category: '3D Printed Agenda',
+        offers: {
+          '@type': 'AggregateOffer',
+          availability: 'https://schema.org/InStock',
+          priceCurrency: 'EUR',
+        },
+      },
+      {
+        '@context': 'https://www.schema.org',
+        '@type': 'Organization',
+        name: metadata.title,
+        url: metadata.siteUrl,
+        logo: metadata.siteUrl + fallbackImage?.src,
+        description: metadata.description,
+      },
     ],
   };
 

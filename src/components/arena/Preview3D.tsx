@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'; // Added hooks
 import { getFontSizeClass, getPositionClasses } from '../../utilities/arenaHelpers';
-import { AgendaFormat, ColorOption, CoverImageTemplate, ExtendedTextPosition, FontSize, Module, TextPosition } from '../../utilities/arenaSettings';
+import { AgendaFormat, Collection, ColorOption, CoverImageTemplate, ExtendedTextPosition, FontSize, Module, TextPosition } from '../../utilities/arenaSettings';
 import Logo from '../atoms/Logo';
 
 const Preview3D = (
@@ -13,7 +13,8 @@ const Preview3D = (
     frontCoverColor,
     backCoverColor,
     frontCoverTemplate,
-    templateImagePath,
+    frontCoverCollection,
+    templateImage,
     frontCoverText,
     frontCoverFontSize,
     frontCoverPosition,
@@ -37,7 +38,8 @@ const Preview3D = (
       frontCoverColor: ColorOption;
       backCoverColor: ColorOption;
       frontCoverTemplate: CoverImageTemplate;
-      templateImagePath: string;
+      frontCoverCollection: Collection;
+      templateImage: string;
       frontCoverText: string;
       frontCoverFontSize: FontSize;
       frontCoverPosition: ExtendedTextPosition;
@@ -53,23 +55,29 @@ const Preview3D = (
   const [isDragging, setIsDragging] = useState(false);
   const lastMousePos = useRef({ x: 0, y: 0 });
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
     setIsDragging(true);
-    lastMousePos.current = { x: e.clientX, y: e.clientY };
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    lastMousePos.current = { x: clientX, y: clientY };
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isDragging) return;
+    e.preventDefault();
 
-    const deltaX = e.clientX - lastMousePos.current.x;
-    const deltaY = e.clientY - lastMousePos.current.y;
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+    const deltaX = clientX - lastMousePos.current.x;
+    const deltaY = clientY - lastMousePos.current.y;
 
     setRotation((prev) => ({
       x: prev.x - deltaY * 0.5, // Drag up/down rotates X axis (inverted feel usually better)
       y: prev.y + deltaX * 0.5, // Drag left/right rotates Y axis
     }));
 
-    lastMousePos.current = { x: e.clientX, y: e.clientY };
+    lastMousePos.current = { x: clientX, y: clientY };
   };
 
   const handleMouseUp = () => {
@@ -81,18 +89,21 @@ const Preview3D = (
   }, [previewTransform]);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent | TouchEvent) => {
       if (!isDragging) return;
 
-      const deltaX = e.clientX - lastMousePos.current.x;
-      const deltaY = e.clientY - lastMousePos.current.y;
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+      const deltaX = clientX - lastMousePos.current.x;
+      const deltaY = clientY - lastMousePos.current.y;
 
       setRotation((prev) => ({
         x: prev.x - deltaY * 0.4, // Sensitivity
         y: prev.y + deltaX * 0.4,
       }));
 
-      lastMousePos.current = { x: e.clientX, y: e.clientY };
+      lastMousePos.current = { x: clientX, y: clientY };
     };
 
     const handleMouseUp = () => {
@@ -102,11 +113,15 @@ const Preview3D = (
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('touchmove', handleMouseMove);
+      window.addEventListener('touchend', handleMouseUp);
     }
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleMouseMove);
+      window.removeEventListener('touchend', handleMouseUp);
     };
   }, [isDragging]);
 
@@ -118,7 +133,7 @@ const Preview3D = (
 
   const totalRealWidthPx = modules.reduce((acc, mod) => {
     return acc + (mod.isDouble ? singleModuleThicknessPx * 2 : singleModuleThicknessPx);
-  }, 0);
+  }, 0) - 2; // -2px is only for visual fine-tuning to prevent visual intersections
 
   const dynamicCoverOffset = totalRealWidthPx / 2;
   let runningZOffset = -dynamicCoverOffset;
@@ -139,6 +154,7 @@ const Preview3D = (
       <div
         style={{ perspective: '1000px', cursor: isDragging ? 'grabbing' : 'grab', userSelect: 'none' }}
         onMouseDown={handleMouseDown}
+        onTouchStart={handleMouseDown}
       // onMouseMove={handleMouseMove}
       // onMouseUp={handleMouseUp}
       // onMouseLeave={handleMouseUp} // Stop dragging if mouse leaves area
@@ -153,6 +169,7 @@ const Preview3D = (
           }}
         >
           {/* --- WHITE PAGES BLOCK --- */}
+          {/* TOP */}
           {format !== 'A7' && (
             <div
               className="absolute left-0"
@@ -168,6 +185,7 @@ const Preview3D = (
             />
           )}
 
+          {/* BOTTOM */}
           <div
             className="absolute left-0"
             style={{
@@ -181,7 +199,7 @@ const Preview3D = (
             }}
           />
 
-          {/* Side view pages (only visible on A7 format) */}
+          {/* SIDES */}
           <div
             className="absolute"
             style={{
@@ -223,20 +241,36 @@ const Preview3D = (
               // backfaceVisibility: 'hidden' // Optional: hides it if viewed from inside
             }}
           >
-            {frontCoverTemplate !== 'None' ? (
-              <div
-                className="absolute inset-0 bg-contain bg-center bg-no-repeat"
-                style={{ backgroundImage: `url('${templateImagePath}')` }}
-              ></div>
-            )
-              :
-              <div className={`absolute inset-0 flex text-center ${getPositionClasses(frontCoverPosition)}`}
-                style={{ color: frontCoverTextColor?.color || 'black' }}
-              >
-                <p className={`p-1 rounded bg-transparent font-bold ${getFontSizeClass(frontCoverFontSize)}`}>
-                  {frontCoverText}
-                </p>
-              </div>
+            {
+              frontCoverCollection === 'M(O_O)D' ?
+                <div className="absolute inset-0 flex items-start justify-center">
+                  <p className="text-center whitespace-nowrap" style={{
+                    color: frontCoverTextColor?.color || 'Black',
+                    fontSize: format === 'A7' ? '20px' : format === 'A6' ? '28px' : '36px',
+                    marginTop: '30%'
+                  }}>
+                    {frontCoverTemplate}
+                  </p>
+                </div>
+                :
+
+                frontCoverCollection !== 'Custom' ?
+                  <div
+                    className="absolute inset-0 bg-contain bg-center bg-no-repeat"
+                    style={{
+                      backgroundImage: `url('${templateImage}')`,
+                      margin: frontCoverTemplate === 'Occhio' ? '10%' : 0
+                    }}
+                  ></div>
+                  :
+
+                  <div className={`absolute inset-0 flex text-center ${getPositionClasses(frontCoverPosition)}`}
+                    style={{ color: frontCoverTextColor?.color || 'black' }}
+                  >
+                    <p className={`p-1 rounded bg-transparent font-bold ${getFontSizeClass(frontCoverFontSize)}`}>
+                      {frontCoverText}
+                    </p>
+                  </div>
             }
           </div>
 

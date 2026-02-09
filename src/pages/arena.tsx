@@ -1,4 +1,4 @@
-import type { ExtendedTextPosition, Module } from '../utilities/arenaSettings';
+import type { ExtendedTextPosition, Metadata, Module } from '../utilities/arenaSettings';
 import React, { CSSProperties, useState, useId, useMemo, useEffect } from 'react';
 import { ShoppingCart, X, RotateCcw, Play } from 'lucide-react'; // Suggested icon library
 import {
@@ -29,8 +29,8 @@ const Arena = () => {
 
   // Front Cover States
   const [frontCoverColor, setFrontCoverColor] = useState<ColorOption>(preset.frontCover.color || colors[0]);
-  const [frontCoverCollection, setFrontCoverCollection] = useState<Collection>(preset.frontCover.collection || 'Triadic');
-  const [frontCoverTemplate, setFrontCoverTemplate] = useState<CoverImageTemplate>(preset.frontCover.template || 'None');
+  const [frontCoverCollection, setFrontCoverCollection] = useState<Collection>(preset.frontCover.collection || 'Custom');
+  const [frontCoverTemplate, setFrontCoverTemplate] = useState<CoverImageTemplate>(preset.frontCover.template || undefined);
   const [frontCoverText, setFrontCoverText] = useState<string>(preset.frontCover.text || '');
   const [frontCoverFontSize, setFrontCoverFontSize] = useState<FontSize>(preset.frontCover.fontSize || 'Medio');
   const [frontCoverPosition, setFrontCoverPosition] = useState<ExtendedTextPosition>(preset.frontCover.position || 'Sotto');
@@ -55,17 +55,20 @@ const Arena = () => {
   const [pendingDraft, setPendingDraft] = useState<any>(null);
 
   // 1. ORGANIZE DATA IN METADATA OBJECT
-  const metadata = useMemo(() => ({
+  const metadata: Metadata = useMemo(() => ({
     format,
     frontCover: { color: frontCoverColor, collection: frontCoverCollection, template: frontCoverTemplate, text: frontCoverText, fontSize: frontCoverFontSize, position: frontCoverPosition, textColor: frontCoverTextColor },
     modules,
     backCover: { color: backCoverColor, text: backCoverText, fontSize: backCoverFontSize, position: backCoverPosition, textColor: backCoverTextColor },
-    lastUpdated: new Date().toISOString(),
+    lastUpdated: undefined,
     currentStep
   }), [format, frontCoverColor, frontCoverCollection, frontCoverTemplate, frontCoverText, frontCoverFontSize, frontCoverPosition, frontCoverTextColor, modules, backCoverColor, backCoverText, backCoverFontSize, backCoverPosition, backCoverTextColor, currentStep]);
 
   // 2. LOCALSTORAGE: LOAD ON MOUNT
   useEffect(() => {
+
+    metadata.lastUpdated = new Date().toISOString(); // Update lastUpdated on every change
+
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (saved) {
       setPendingDraft(JSON.parse(saved));
@@ -105,10 +108,10 @@ const Arena = () => {
   };
 
   // Helper for Sidebar content
-  const SummaryItem = ({ label, value }: { label: string, value: string }) => (
+  const SummaryItem = ({ label, value }: { label: string, value: string | undefined }) => (
     <div className="mb-4 border-b border-gray-700 pb-2">
       <span className="text-xs text-gray-400 block uppercase tracking-widest">{label}</span>
-      <span className="text-white font-medium">{value}</span>
+      <span className="text-white font-medium">{value ?? 'Nessun ' + label}</span>
     </div>
   );
 
@@ -337,7 +340,6 @@ const Arena = () => {
                 textPositions={textPositions}
                 setFrontCoverPosition={setFrontCoverPosition}
                 frontCoverPosition={frontCoverPosition}
-                colors={colors}
                 collections={collections}
               />
             )}
@@ -412,7 +414,8 @@ const Arena = () => {
               frontCoverColor={frontCoverColor}
               backCoverColor={backCoverColor}
               frontCoverTemplate={frontCoverTemplate}
-              templateImagePath={templateImagePath}
+              frontCoverCollection={frontCoverCollection}
+              templateImage={templateImagePath}
               frontCoverText={frontCoverText}
               frontCoverFontSize={frontCoverFontSize}
               frontCoverPosition={frontCoverPosition}

@@ -18,27 +18,12 @@ export const getCoverTemplateImagePath = (
   collection: Collection,
   template: CoverImageTemplate
 ): string => {
-  if (template === 'None') return ''
+  if (template === undefined) return ''
 
   const formatFolder = format === 'A5' ? 'A6' : format // A5 uses A6 folder structure
 
   try {
-    // Narrow by collection so TypeScript knows which template union is valid
-    if (collection === 'M(O_O)D') {
-      const key = template as MoodTemplate
-      const assets = imageAssets['M(O_O)D'] as Record<
-        string,
-        Record<MoodTemplate | 'None', string>
-      >
-      return assets[formatFolder][key]
-    } else {
-      const key = template as TriadicTemplate
-      const assets = imageAssets['Triadic'] as Record<
-        string,
-        Record<TriadicTemplate | 'None', string>
-      >
-      return assets[formatFolder][key]
-    }
+    return imageAssets[collection][formatFolder][template]
   } catch (e) {
     console.error(
       `Image not found for: ${collection}/${formatFolder}/${template}`

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Icon Components (using warm colors)
 const CoverIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -33,6 +33,12 @@ const CheckIconWarm: React.FC<{ className?: string }> = ({ className }) => (
 
 
 const Presentation: React.FC = () => {
+  const [year, setYear] = useState<number | null>(null)
+
+  useEffect(() => {
+    setYear(new Date().getFullYear())
+  }, [])
+
   return (
     <>
       <title>Creative Agenda | Craft Your Unique Planner</title>
@@ -296,7 +302,7 @@ const Presentation: React.FC = () => {
         {/* Footer */}
         <footer className="bg-stone-800 text-stone-400 py-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
-            <p>&copy; {new Date().getFullYear()} CreativeAgenda Works. All rights reserved.</p>
+            <p>&copy; {year ?? new Date().getFullYear()} CreativeAgenda Works. All rights reserved.</p>
             <div className="mt-4 space-x-6">
               <a href="#" className="hover:text-white transition duration-150">Privacy</a>
               <a href="#" className="hover:text-white transition duration-150">Terms</a>

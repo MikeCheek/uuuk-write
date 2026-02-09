@@ -11,8 +11,15 @@ const Shapes = ({ color }: { color: string }) => {
   const maxAttempts = 50;
 
   const [shapes, setShapes] = useState<ShapeState>([]);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+
     const generateShapes = () => {
       const newShapes: typeof shapes = [];
 
@@ -46,7 +53,7 @@ const Shapes = ({ color }: { color: string }) => {
     };
 
     generateShapes();
-  }, []);
+  }, [isClient]);
 
   return <>
     {

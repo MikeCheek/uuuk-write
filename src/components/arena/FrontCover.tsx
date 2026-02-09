@@ -1,5 +1,5 @@
-import React from 'react'
-import { Collection, ColorOption, CoverImageTemplate, ExtendedTextPosition, extendedTextPositions, FontSize, TextPosition } from '../../utilities/arenaSettings';
+import React, { useEffect } from 'react'
+import { Collection, ColorOption, colors, colorsMood, CoverImageTemplate, ExtendedTextPosition, extendedTextPositions, FontSize, TextPosition } from '../../utilities/arenaSettings';
 import ColorButton from './ColorButton';
 import TextButton from './TextButton';
 import InputText from './InputText';
@@ -24,7 +24,6 @@ const FrontCover = (
     textPositions,
     collections,
     availableTemplates,
-    colors
   }: {
     frontCoverText: string;
     setFrontCoverText: (text: string) => void;
@@ -44,20 +43,35 @@ const FrontCover = (
     textPositions: ExtendedTextPosition[];
     collections: Collection[];
     availableTemplates: CoverImageTemplate[];
-    colors: ColorOption[];
   }
 ) => {
+
+  useEffect(() => {
+    if (frontCoverCollection !== 'Custom' && !availableTemplates.includes(frontCoverTemplate!)) {
+      setFrontCoverTemplate(availableTemplates[0])
+      if (frontCoverCollection === 'Triadic')
+        setFrontCoverColor(colors.find(c => c.name === 'Bianco')!)
+    }
+  }, [frontCoverCollection, availableTemplates, setFrontCoverTemplate, colors, setFrontCoverColor])
+
+  const currentCoverColorOptions = frontCoverCollection === 'M(O_O)D' ? colorsMood : colors
+
   return (
     <div className="space-y-6">
       {/* Collection Chooser */}
       <div>
-        <p className="text-gray-300 mb-2 font-medium">1. Scegli la collezione:</p>
+        <p className="text-gray-300 mb-2 font-medium">Scegli la collezione:</p>
         <div className="flex flex-wrap gap-3">
           {collections.map((c) => (
             <TextButton
               key={c}
               text={c}
-              onClick={() => { setFrontCoverCollection(c); setFrontCoverTemplate('None' as CoverImageTemplate); }}
+              onClick={() => {
+                setFrontCoverCollection(c);
+                if (c === 'Custom') {
+                  setFrontCoverTemplate(undefined);
+                }
+              }}
               active={frontCoverCollection === c}
             />
           ))}
@@ -65,41 +79,47 @@ const FrontCover = (
       </div>
 
       {/* Cover Template */}
-      <div>
-        <p className="text-gray-300 mb-2 font-medium">2. Modello immagine copertina:</p>
-        <div className="flex flex-wrap gap-3">
-          {availableTemplates.map((t) => (
-            <TextButton
-              key={t}
-              text={t}
-              onClick={() => setFrontCoverTemplate(t)}
-              active={frontCoverTemplate === t}
-            />
-          ))}
-        </div>
-      </div>
+      {
+        frontCoverCollection !== 'Custom' && (
+          <div>
+            <p className="text-gray-300 mb-2 font-medium">Modello copertina:</p>
+            <div className="flex flex-wrap gap-3">
+              {availableTemplates.map((t) => (
+                <TextButton
+                  key={t}
+                  text={t!}
+                  onClick={() => setFrontCoverTemplate(t)}
+                  active={frontCoverTemplate === t}
+                />
+              ))}
+            </div>
+          </div>)
+      }
 
-      {/* Color (omitted for brevity) */}
-      <div>
-        <p className="text-gray-300 mb-2 font-medium">Colore Copertina Anteriore:</p>
-        <div className="flex flex-wrap gap-3">
-          {colors.map((c) => (
-            <ColorButton key={c.name} name={c.name}
-              color={c.color}
-              active={frontCoverColor.name === c.name}
-              onClick={() => setFrontCoverColor(c)} />
-          ))}
-        </div>
-      </div>
 
+      {
+        frontCoverCollection !== 'Triadic' && (
+          <div>
+            <p className="text-gray-300 mb-2 font-medium">Colore Copertina:</p>
+            <div className="flex flex-wrap gap-3">
+              {currentCoverColorOptions.map((c) => (
+                <ColorButton key={c.name} name={c.name}
+                  color={c.color}
+                  active={frontCoverColor.name === c.name}
+                  onClick={() => setFrontCoverColor(c)} />
+              ))}
+            </div>
+          </div>
+        )
+      }
 
       {/* Front Cover Text */}
       {
-        frontCoverTemplate === "None" && (
+        frontCoverCollection === 'Custom' && (
           <>
             <div>
               <InputText
-                label="Testo Copertina Anteriore (Opzionale):"
+                label="Testo Copertina:"
                 id="frontCoverText"
                 value={frontCoverText}
                 onChange={(e) => setFrontCoverText(e.target.value)} />
@@ -135,23 +155,26 @@ const FrontCover = (
                   ))}
                 </div>
               </div>
-
-              {/* Text Color Chooser */}
-              <div>
-                <p className="text-gray-300 mb-2 font-medium">Colore Testo:</p>
-                <div className="flex flex-wrap gap-3">
-                  {colors.map((c) => (
-                    <ColorButton key={c.name} name={c.name}
-                      color={c.color}
-                      active={frontCoverTextColor.name === c.name}
-                      onClick={() => setFrontCoverTextColor(c)} />
-                  ))}
-                </div>
-              </div>
             </div>
           </>
         )
 
+      }
+
+      {
+        frontCoverCollection === 'Custom' || frontCoverCollection === 'M(O_O)D' ? (
+          <div>
+            <p className="text-gray-300 mb-2 font-medium">Colore Testo:</p>
+            <div className="flex flex-wrap gap-3">
+              {colors.map((c) => (
+                <ColorButton key={c.name} name={c.name}
+                  color={c.color}
+                  active={frontCoverTextColor.name === c.name}
+                  onClick={() => setFrontCoverTextColor(c)} />
+              ))}
+            </div>
+          </div>
+        ) : <></>
       }
 
     </div >

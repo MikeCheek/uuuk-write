@@ -1,17 +1,16 @@
 // Define types for customization options
 export type AgendaFormat = 'A5' | 'A6' | 'A7'
 export type PageInterior = 'Righe' | 'Punti' | 'Vuoto'
-export type Collection = 'M(O_O)D' | 'Triadic'
+export type Collection = 'M(O_O)D' | 'Triadic' | 'Custom'
 export type MoodTemplate =
-  | 'Angry'
-  | 'Bored'
-  | 'Excited'
-  | 'Happy'
-  | 'Sad'
-  | 'Shock'
-  | 'None'
-export type TriadicTemplate = 'Flusso' | 'Occhio' | 'Punto' | 'None'
-export type CoverImageTemplate = MoodTemplate | TriadicTemplate
+  | '(◣ _ ◢)'
+  | '(－_－)'
+  | 'ヽ⊙_⊙ﾉ'
+  | '(◕‿◕ )'
+  | '(´◕︵◕`)'
+  | '(●__● )'
+export type TriadicTemplate = 'Flusso' | 'Occhio' | 'Punto'
+export type CoverImageTemplate = MoodTemplate | TriadicTemplate | undefined
 
 // --- NEW TEXT CUSTOMIZATION TYPES ---
 export type FontSize = 'Piccolo' | 'Medio' | 'Grande'
@@ -34,16 +33,22 @@ export interface Module {
 // --- Available Options ---
 export const formats: AgendaFormat[] = ['A5', 'A6', 'A7']
 export const colors: ColorOption[] = [
-  { name: 'Rosso', color: '#ff0000' },
+  { name: 'Rosso', color: '#d55f5a' },
   { name: 'Bianco', color: '#ffffff' },
   { name: 'Nero', color: '#000000' },
-  { name: 'Giallo', color: '#ffff00' },
-  { name: 'Blu', color: '#0000ff' },
-  { name: 'Viola', color: '#800080' },
-  { name: 'Arancione', color: '#ffa500' },
-  { name: 'Grigio', color: '#808080' },
+  { name: 'Giallo', color: '#e9e042' },
+  { name: 'Blu', color: '#2529a9' },
+  { name: 'Viola', color: '#f1c7ff' },
+  { name: 'Arancione', color: '#ffc790' },
+  { name: 'Grigio', color: '#696765' },
   { name: 'Marrone', color: '#a5522d' }
 ]
+
+const colorsNamesForMood = ['Nero', 'Viola', 'Arancione', 'Grigio', 'Marrone']
+
+export const colorsMood: ColorOption[] = colors.filter(c =>
+  colorsNamesForMood.includes(c.name)
+)
 
 export const fontSizes: FontSize[] = ['Piccolo', 'Medio', 'Grande']
 export const textPositions: TextPosition[] = ['Sopra', 'Sotto']
@@ -72,43 +77,46 @@ export interface Metadata {
     position: TextPosition
     textColor: ColorOption
   }
-  lastUpdated: string
+  lastUpdated?: string
   currentStep: number
 }
 
-export const imageAssets = {
+export const imageAssets: Record<
+  Collection,
+  Record<string, Record<string, string>>
+> = {
+  Custom: {
+    A6: {},
+    A7: {}
+  },
   'M(O_O)D': {
     A6: {
-      Angry: '/images/collezioni/M(O_O)D/A6/Angry.png',
-      Bored: '/images/collezioni/M(O_O)D/A6/Bored.png',
-      Excited: '/images/collezioni/M(O_O)D/A6/Excited.png',
-      Happy: '/images/collezioni/M(O_O)D/A6/Happy.png',
-      Sad: '/images/collezioni/M(O_O)D/A6/Sad.png',
-      Shock: '/images/collezioni/M(O_O)D/A6/Shock.png',
-      None: ''
+      '(◣ _ ◢)': '',
+      '(－_－)': '',
+      'ヽ⊙_⊙ﾉ': '',
+      '(◕‿◕ )': '',
+      '(´◕︵◕`)': '',
+      '(●__● )': ''
     },
     A7: {
-      Angry: '/images/collezioni/M(O_O)D/A7/Angry.png',
-      Bored: '/images/collezioni/M(O_O)D/A7/Bored.png',
-      Excited: '/images/collezioni/M(O_O)D/A7/Excited.png',
-      Happy: '/images/collezioni/M(O_O)D/A7/Happy.png',
-      Sad: '/images/collezioni/M(O_O)D/A7/Sad.png',
-      Shock: '/images/collezioni/M(O_O)D/A7/Shock.png',
-      None: ''
+      '(◣ _ ◢)': '',
+      '(－_－)': '',
+      'ヽ⊙_⊙ﾉ': '',
+      '(◕‿◕ )': '',
+      '(´◕︵◕`)': '',
+      '(●__● )': ''
     }
   },
   Triadic: {
     A6: {
       Flusso: '/images/collezioni/TRIADIC/Flusso.png',
       Occhio: '/images/collezioni/TRIADIC/Occhio.png',
-      Punto: '/images/collezioni/TRIADIC/Punto.png',
-      None: ''
+      Punto: '/images/collezioni/TRIADIC/Punto.png'
     },
     A7: {
       Flusso: '/images/collezioni/TRIADIC/Flusso.png',
       Occhio: '/images/collezioni/TRIADIC/Occhio.png',
-      Punto: '/images/collezioni/TRIADIC/Punto.png',
-      None: ''
+      Punto: '/images/collezioni/TRIADIC/Punto.png'
     }
   }
 }
@@ -141,7 +149,7 @@ export const presets: Record<string, Metadata> = {
     frontCover: {
       color: colors[1],
       collection: 'Triadic' as Collection,
-      template: 'None' as TriadicTemplate,
+      template: undefined,
       text: '',
       fontSize: 'Medio' as FontSize,
       position: 'Sotto' as ExtendedTextPosition,
@@ -198,8 +206,8 @@ export const presets: Record<string, Metadata> = {
     format: 'A6' as AgendaFormat,
     frontCover: {
       color: colors[4],
-      collection: 'Triadic' as Collection,
-      template: 'None' as TriadicTemplate,
+      collection: 'Custom' as Collection,
+      template: undefined,
       text: 'Eat. Write. Sleep. Repeat.',
       fontSize: 'Medio' as FontSize,
       position: 'Centro' as ExtendedTextPosition,
