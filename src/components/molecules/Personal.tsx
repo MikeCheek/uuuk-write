@@ -24,7 +24,7 @@ const Personal = () => {
           <Typography variant="h2" render="div" className="[perspective:400px]" >
             <h2 className='text-6xl md:text-8xl font-bold mb-8 uppercase -ml-24 md:-ml-40 [transform:rotateY(-30deg)_rotateZ(0deg)]  text-beige'>Personale</h2>
           </Typography>
-          <Typography variant="p" >
+          <Typography variant="p" className='md:text-right' >
             Cambia la cover <HighlightedText text="Plug & Play" /> per rappresentare ciò a cui tieni
             <br />
             L'occhio vuole la sua parte

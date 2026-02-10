@@ -19,7 +19,7 @@ const Infinite = () => {
             <h2 className="[transform:rotateY(40deg)_rotateZ(0deg)] text-7xl md:text-8xl w-fit text-shadow-lg mt-10 md:ml-8">Infinita</h2>
           </Typography>
 
-          <Typography variant="p" className="text-lg md:text-xl mr-auto ml-0 text-center md:text-left bg-opacity-80 rounded-lg self-center justify-self-center !md:max-w-[33vw] md:ml-28 md:mt-40">
+          <Typography variant="p" className="mr-auto ml-0 text-center md:text-left bg-opacity-80 rounded-lg self-center justify-self-center !md:max-w-[33vw] md:ml-28 md:mt-40">
             Ricarica le pagine di ogni fascicolo <CircledText text="all'infinito" />
             <br />
             e proteggi le tue idee.

@@ -21,7 +21,7 @@ const UUUKForever = () => {
           </Typography>
 
 
-          <Typography variant="p" className="text-lg md:text-xl mr-auto ml-0 text-center md:text-left bg-opacity-80 rounded-lg self-center justify-self-center !md:max-w-[33vw] md:ml-28 md:mt-40">
+          <Typography variant="p" className="mr-auto ml-0 text-center md:text-left bg-opacity-80 rounded-lg self-center justify-self-center !md:max-w-[33vw] md:ml-28 md:mt-40">
             {renderText(t("UUUKForever").split("<br/><br/>")[0])}
           </Typography>
         </div>
