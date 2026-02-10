@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState } from 'react'
+import React, { CSSProperties, useMemo, useState } from 'react'
 import { AgendaFormat, Metadata, Module, presets } from '../../utilities/arenaSettings'
 import Preview3D from './Preview3D'
 import Button from '../atoms/Button'
@@ -11,11 +11,13 @@ import Switch from './Switch'
 const TemplateItem = ({
   name,
   preset,
-  image
+  image,
+  index
 }: {
   name: string
   preset: Metadata
   image?: IGatsbyImageData
+  index: number
 }) => {
   const coverZOffset = Math.min(preset.modules.length * 1.5, 10)
 
@@ -90,12 +92,24 @@ const TemplateItem = ({
   }
 
   return (
-    <div className="border rounded-lg p-4 overflow-hidden gap-8 flex flex-col items-center relative pt-16">
-      <div className="absolute top-0 left-0 bg-gradient-to-br from-blue-600 to-blue-700 text-white px-4 py-2 rounded-br-lg shadow-lg">
+    <div
+      className="
+    /* Layout & Base Styles */
+    border border-gray-600 rounded-lg p-4 overflow-hidden gap-8 flex flex-col items-center relative pt-16
+   opacity-0 transition-all duration-300 ease-out animate-fadeIn
+    
+    /* Hover Effects */
+    hover:-translate-y-1 
+    hover:border-blue/50
+    hover:shadow-[0_0_20px_rgba(37,99,235,0.15)] 
+  "
+      style={{ animationDelay: `${index * 0.1}s` }}
+    >
+      <div className="absolute top-0 left-0 bg-gradient-to-br from-blue-600 to-blue-700 text-white px-4 py-2 rounded-br-lg shadow-lg z-10">
         <div className="font-bold text-sm tracking-wide">{name}</div>
         <div className="text-xs opacity-90 capitalize">{preset.frontCover.collection}</div>
       </div>
-      {image ? <div className='absolute top-2 right-2'>
+      {image ? <div className='absolute top-2 right-2 z-10'>
         <Switch isOn={mode === '3D'} toggleSwitch={() => setMode(mode === 'flat' ? '3D' : 'flat')} />
       </div> : <></>}
       {
@@ -129,14 +143,14 @@ const TemplateItem = ({
           />
         )
       }
-      <div className='flex flex-row gap-2 items-end justify-center'>
+      <div className='flex flex-row gap-2 items-end justify-center w-full mt-auto'>
         <Button
           text="Compra ora"
           href={`/arena?preset=${name}&paynow=true`}
           small
         />
         <Button
-          text="Personalizza"
+          text="Modifica"
           href={`/arena?preset=${name}`}
           smaller
           variant='secondary'
@@ -146,9 +160,12 @@ const TemplateItem = ({
   )
 }
 
-const TemplateGallery = (
-  { mode }: { mode: 'flat' | '3D' }
-) => {
+const TemplateGallery = () => {
+  // --- 1. Filter State ---
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCollection, setSelectedCollection] = useState('')
+  const [selectedFormat, setSelectedFormat] = useState('')
+  const [selectedTemplate, setSelectedTemplate] = useState('')
 
   const rawData = useStaticQuery(graphql`
       query {
@@ -183,35 +200,72 @@ const TemplateGallery = (
     return { collection: parts[1], format: parts[2] }
   }
 
-  const [data] = useState(() => {
+  // Use Memo for image data processing to avoid recalculation on every filter keystroke
+  const processedData = useMemo(() => {
     const edges = [...rawData.allFile.edges]
-
-    const modEdges = edges.map(e => {
+    const modEdges = edges.map((e: any) => {
       const { collection, format } = parseCollectionAndFormat(e.node.relativePath)
       return { ...e, collection, format }
     })
 
     const additional = modEdges
-      .filter(e => (e.format || '').toUpperCase() === 'A6')
-      .map(e => ({ ...e, format: 'A5' }));
+      .filter((e: any) => (e.format || '').toUpperCase() === 'A6')
+      .map((e: any) => ({ ...e, format: 'A5' }));
 
     modEdges.push(...additional);
 
-    modEdges.sort((a, b) => {
+    modEdges.sort((a: any, b: any) => {
       if (a.format !== b.format) return a.format.localeCompare(b.format);
       if (a.collection !== b.collection) return a.collection.localeCompare(b.collection);
       return a.node.name.localeCompare(b.node.name);
     });
 
-    // for (let i = modEdges.length - 1; i > 0; i--) {
-    //   const j = Math.floor(Math.random() * (i + 1))
-    //     ;[modEdges[i], modEdges[j]] = [modEdges[j], modEdges[i]]
-    // }
-    return { allFile: { modEdges } }
-  })
+    return modEdges
+  }, [rawData])
+
+  // --- 2. Extract Unique Options for Dropdowns ---
+  const filterOptions = useMemo(() => {
+    const formats = new Set<string>()
+    const collections = new Set<string>()
+    const templates = new Set<string>()
+
+    Object.values(presets).forEach(preset => {
+      if (preset.format) formats.add(preset.format)
+      if (preset.frontCover.collection) collections.add(preset.frontCover.collection)
+      if (preset.frontCover.template) templates.add(preset.frontCover.template)
+    })
+
+    return {
+      formats: Array.from(formats).sort(),
+      collections: Array.from(collections).sort(),
+      templates: Array.from(templates).sort()
+    }
+  }, [])
+
+  // --- 3. Filter Logic ---
+  const filteredPresets = useMemo(() => {
+    return Object.entries(presets).filter(([key, preset]) => {
+      const searchLower = searchTerm.toLowerCase()
+
+      // Text Search matches Name or Collection
+      const matchesSearch =
+        key.toLowerCase().includes(searchLower) ||
+        preset.frontCover.collection.toLowerCase().includes(searchLower) ||
+        preset.frontCover.template?.toLowerCase().includes(searchLower) ||
+        preset.format.toLowerCase().includes(searchLower) ||
+        // check also in collection without special characters, only letters and the numbers
+        preset.frontCover.collection.replace(/[^a-zA-Z0-9]/g, '').toLowerCase().includes(searchLower)
+
+      const matchesCollection = selectedCollection ? preset.frontCover.collection === selectedCollection : true
+      const matchesFormat = selectedFormat ? preset.format === selectedFormat : true
+      const matchesTemplate = selectedTemplate ? preset.frontCover.template === selectedTemplate : true
+
+      return matchesSearch && matchesCollection && matchesFormat && matchesTemplate
+    })
+  }, [searchTerm, selectedCollection, selectedFormat, selectedTemplate])
 
   const getImageFromData = (format: string, collection: string, template: string) => {
-    const found = data.allFile.modEdges.find(
+    const found = processedData.find(
       (e: any) =>
         e.format.toUpperCase() === format.toUpperCase() &&
         e.collection.toUpperCase() === collection.toUpperCase() &&
@@ -220,18 +274,94 @@ const TemplateGallery = (
     return found ? found.node.childImageSharp.gatsbyImageData : null
   }
 
+  // --- 4. Render ---
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
-      {Object.entries(presets).map(([key, preset]) => (
-        <TemplateItem
-          key={key}
-          name={key}
-          preset={preset}
-          image={
-            preset.frontCover.template ?
-              getImageFromData(preset.format, preset.frontCover.collection, preset.frontCover.template) : undefined}
-        />
-      ))}
+    <div className="flex flex-col gap-6 p-6 w-[80vw]">
+      {/* Filter Controls */}
+      <div className="p-4 rounded-lg flex flex-col md:flex-row gap-4 items-center justify-between animate-fadeIn">
+        {/* Search Bar: Full width on mobile, auto on desktop */}
+        <div className="w-full md:flex-1 md:min-w-[200px]">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Cerca per nome..."
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 md:py-2 text-sm bg-beige focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Selectors Container: Grid on mobile, flex on desktop */}
+        <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full md:w-auto items-center">
+          <select
+            className="border border-gray-200 rounded-lg px-3 py-2.5 md:py-2 text-sm bg-beige cursor-pointer appearance-none md:appearance-auto shadow-sm"
+            value={selectedCollection}
+            onChange={(e) => setSelectedCollection(e.target.value)}
+          >
+            <option value="">Collezioni</option>
+            {filterOptions.collections.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+
+          <select
+            className="border border-gray-200 rounded-lg px-3 py-2.5 md:py-2 text-sm bg-beige cursor-pointer shadow-sm"
+            value={selectedFormat}
+            onChange={(e) => setSelectedFormat(e.target.value)}
+          >
+            <option value="">Formati</option>
+            {filterOptions.formats.map(f => <option key={f} value={f}>{f}</option>)}
+          </select>
+
+          <select
+            className="border border-gray-200 rounded-lg px-3 py-2.5 md:py-2 text-sm bg-beige cursor-pointer shadow-sm col-span-1"
+            value={selectedTemplate}
+            onChange={(e) => setSelectedTemplate(e.target.value)}
+          >
+            <option value="">Template</option>
+            {filterOptions.templates.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+
+          {/* Reset Button: Styled as a clear action */}
+          {(searchTerm || selectedCollection || selectedFormat || selectedTemplate) && (
+            <button
+              onClick={() => {
+                setSearchTerm('')
+                setSelectedCollection('')
+                setSelectedFormat('')
+                setSelectedTemplate('')
+              }}
+              className="col-span-1 sm:ml-2 flex items-center justify-center text-brown hover:text-red-600 transition-colors py-2 px-4 md:px-2"
+              aria-label="Reset filters"
+            >
+              <span className="text-xs font-bold tracking-tighter uppercase md:hidden">Reset</span>
+              <span className="hidden md:block font-extrabold text-xl">×</span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="text-sm text-gray-500 px-1 animate-fadeIn">
+        Mostrando {filteredPresets.length} risultati
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {filteredPresets.map(([key, preset], index) => (
+          <TemplateItem
+            index={index}
+            key={key}
+            name={key}
+            preset={preset}
+            image={
+              preset.frontCover.template ?
+                getImageFromData(preset.format, preset.frontCover.collection, preset.frontCover.template) : undefined}
+          />
+        ))}
+        {filteredPresets.length === 0 && (
+          <div className="col-span-full py-12 text-center text-gray-400">
+            Nessun risultato trovato per i filtri selezionati.
+          </div>
+        )}
+      </div>
     </div>
   )
 }

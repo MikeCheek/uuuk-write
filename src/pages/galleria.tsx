@@ -4,17 +4,17 @@ import Layout from '../components/organisms/Layout'
 import Switch from '../components/arena/Switch'
 
 const Gallery = () => {
-  const [mode, setMode] = useState<'flat' | '3D'>('3D')
+
   return (
     <Layout >
       <div className='flex flex-col items-center justify-center'>
-        <h1 className="text-4xl md:text-6xl font-heading font-extrabold mb-8 animate-fadeIn">
+        <h1 className="text-4xl md:text-6xl font-heading font-extrabold my-8 animate-fadeIn text-center">
           <span className="text-beige">Scegli un template o </span>
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue via-purple to-magenta drop-shadow-sm">
             personalizza
           </span>
         </h1>
-        <TemplateGallery mode={mode} />
+        <TemplateGallery />
       </div>
     </Layout>
   )
