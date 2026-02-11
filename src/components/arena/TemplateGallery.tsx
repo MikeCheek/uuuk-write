@@ -1,4 +1,4 @@
-import React, { CSSProperties, useMemo, useState } from 'react'
+import React, { CSSProperties, useMemo, useState, useEffect } from 'react'
 import { AgendaFormat, Metadata, Module, presets } from '../../utilities/arenaSettings'
 import Preview3D from './Preview3D'
 import Button from '../atoms/Button'
@@ -7,21 +7,45 @@ import { graphql, useStaticQuery } from 'gatsby'
 import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
 import Switch from './Switch'
 
+// --- Types for API Data ---
+interface StripePrice {
+  id: string;
+  currency: string;
+  unit_amount: number;
+}
+
+interface Product {
+  id: string;
+  name: string; // Format: "FORMAT - COLLECTION - TEMPLATE"
+  description: string | null;
+  images: string[];
+  default_price: StripePrice;
+}
 
 const TemplateItem = ({
   name,
   preset,
   image,
-  index
+  index,
+  productData // New prop for Stripe data
 }: {
   name: string
   preset: Metadata
   image?: IGatsbyImageData
   index: number
+  productData?: Product | null
 }) => {
   const coverZOffset = Math.min(preset.modules.length * 1.5, 10)
-
   const [mode, setMode] = useState<'flat' | '3D'>('3D')
+
+  // Helper to format currency
+  const formattedPrice = useMemo(() => {
+    if (!productData?.default_price) return null;
+    return new Intl.NumberFormat('it-IT', { // Assuming Italian based on text
+      style: 'currency',
+      currency: productData.default_price.currency.toUpperCase(),
+    }).format(productData.default_price.unit_amount / 100);
+  }, [productData]);
 
   const getPreviewSizeClasses = ({
     modules,
@@ -33,20 +57,19 @@ const TemplateItem = ({
     const baseSpineWidth = 3
     const totalSpineWidthRem = modules.length * baseSpineWidth * 0.35
 
-
     switch (format) {
       case 'A7':
         return {
           container: 'w-24 h-36',
           text: 'text-[6px]',
-          spineWidthRem: totalSpineWidthRem, //* 0.7,
+          spineWidthRem: totalSpineWidthRem,
           coverTextSize: 'text-xs'
         }
       case 'A6':
         return {
           container: 'w-32 h-48',
           text: 'text-[8px]',
-          spineWidthRem: totalSpineWidthRem, //* 0.85,
+          spineWidthRem: totalSpineWidthRem,
           coverTextSize: 'text-sm'
         }
       case 'A5':
@@ -91,16 +114,18 @@ const TemplateItem = ({
     }
   }
 
+  const linkProduct = productData ? `/arena?preset=${name}&pid=${productData.id}&price_id=${productData.default_price.id}` : `/arena?preset=${name}`
+  const linkProductPay = linkProduct + '&paynow=true'
+
   return (
     <div
       className="
     /* Layout & Base Styles */
     border border-gray-600 rounded-lg p-4 overflow-hidden gap-8 flex flex-col items-center relative pt-16
    opacity-0 transition-all duration-300 ease-out animate-fadeIn
-    
     /* Hover Effects */
     hover:-translate-y-1 
-    hover:border-blue/50
+    hover:border-blue-500/50
     hover:shadow-[0_0_20px_rgba(37,99,235,0.15)] 
   "
       style={{ animationDelay: `${index * 0.1}s` }}
@@ -109,9 +134,11 @@ const TemplateItem = ({
         <div className="font-bold text-sm tracking-wide">{name}</div>
         <div className="text-xs opacity-90 capitalize">{preset.frontCover.collection}</div>
       </div>
+
       {image ? <div className='absolute top-2 right-2 z-10'>
         <Switch isOn={mode === '3D'} toggleSwitch={() => setMode(mode === 'flat' ? '3D' : 'flat')} />
       </div> : <></>}
+
       {
         mode === '3D' || !image ? (
           <Preview3D
@@ -143,15 +170,29 @@ const TemplateItem = ({
           />
         )
       }
-      <div className='flex flex-row gap-2 items-end justify-center w-full mt-auto'>
+
+      {/* Price Display */}
+      <div className="w-full flex justify-center -mb-4 z-10">
+        {formattedPrice ? (
+          <span className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-0.5 rounded border border-green-200">
+            {formattedPrice}
+          </span>
+        ) : (
+          // Placeholder for loading price
+          <span className="h-5 w-16 animate-pulse rounded"></span>
+        )}
+      </div>
+
+      <div className='flex flex-row gap-2 items-end justify-center w-full mt-auto pt-6'>
         <Button
           text="Compra ora"
-          href={`/arena?preset=${name}&paynow=true`}
+          // We can append the stripe Price ID if needed by your checkout logic
+          href={linkProductPay}
           small
         />
         <Button
           text="Modifica"
-          href={`/arena?preset=${name}`}
+          href={linkProduct}
           smaller
           variant='secondary'
         />
@@ -166,6 +207,37 @@ const TemplateGallery = () => {
   const [selectedCollection, setSelectedCollection] = useState('')
   const [selectedFormat, setSelectedFormat] = useState('')
   const [selectedTemplate, setSelectedTemplate] = useState('')
+
+  // --- New State for API Products ---
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  // --- Fetch Logic ---
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch('/api/products');
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoadingProducts(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  // Helper to find product by constructing the name "FORMAT - COLLECTION - TEMPLATE"
+  const getProductData = (preset: Metadata) => {
+    if (!products.length) return null;
+
+    // Construct the name as expected from the API
+    const searchName = `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`;
+
+    // Find exact match (case insensitive if needed, but usually IDs are strict)
+    return products.find(p => p.name.trim() === searchName.trim()) || null;
+  };
 
   const rawData = useStaticQuery(graphql`
       query {
@@ -285,7 +357,7 @@ const TemplateGallery = () => {
             <input
               type="text"
               placeholder="Cerca per nome..."
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 md:py-2 text-sm bg-beige focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 md:py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -295,7 +367,7 @@ const TemplateGallery = () => {
         {/* Selectors Container: Grid on mobile, flex on desktop */}
         <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full md:w-auto items-center">
           <select
-            className="border border-gray-200 rounded-lg px-3 py-2.5 md:py-2 text-sm bg-beige cursor-pointer appearance-none md:appearance-auto shadow-sm"
+            className="border border-gray-200 rounded-lg px-3 py-2.5 md:py-2 text-sm bg-white cursor-pointer appearance-none md:appearance-auto shadow-sm"
             value={selectedCollection}
             onChange={(e) => setSelectedCollection(e.target.value)}
           >
@@ -304,7 +376,7 @@ const TemplateGallery = () => {
           </select>
 
           <select
-            className="border border-gray-200 rounded-lg px-3 py-2.5 md:py-2 text-sm bg-beige cursor-pointer shadow-sm"
+            className="border border-gray-200 rounded-lg px-3 py-2.5 md:py-2 text-sm bg-white cursor-pointer shadow-sm"
             value={selectedFormat}
             onChange={(e) => setSelectedFormat(e.target.value)}
           >
@@ -313,7 +385,7 @@ const TemplateGallery = () => {
           </select>
 
           <select
-            className="border border-gray-200 rounded-lg px-3 py-2.5 md:py-2 text-sm bg-beige cursor-pointer shadow-sm col-span-1"
+            className="border border-gray-200 rounded-lg px-3 py-2.5 md:py-2 text-sm bg-white cursor-pointer shadow-sm col-span-1"
             value={selectedTemplate}
             onChange={(e) => setSelectedTemplate(e.target.value)}
           >
@@ -340,8 +412,9 @@ const TemplateGallery = () => {
         </div>
       </div>
 
-      <div className="text-sm text-gray-500 px-1 animate-fadeIn">
-        Mostrando {filteredPresets.length} risultati
+      <div className="text-sm text-gray-500 px-1 animate-fadeIn flex justify-between">
+        <span>Mostrando {filteredPresets.length} risultati</span>
+        {loadingProducts && <span className="text-blue-500 italic">Aggiornamento prezzi...</span>}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -351,6 +424,8 @@ const TemplateGallery = () => {
             key={key}
             name={key}
             preset={preset}
+            // Pass the API data to the item
+            productData={getProductData(preset)}
             image={
               preset.frontCover.template ?
                 getImageFromData(preset.format, preset.frontCover.collection, preset.frontCover.template) : undefined}

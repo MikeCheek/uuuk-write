@@ -8,17 +8,34 @@ const stripePromise = loadStripe(
   process.env.GATSBY_STRIPE_PUBLISHABLE_KEY || ""
 )
 
-const testPrice = "price_1SaxTJLZC3eASp0tJ5eoNT0U"
-const livePrice = "price_1SawXxPpEYHfVWarxTKLKnDv"
+const shippingOptions = [
+  {
+    id: 'free-shipping',
+    label: 'Free Shipping',
+    detail: 'Delivery within 5-7 business days',
+    amount: 0,
+  },
+  {
+    id: 'express-shipping',
+    label: 'Express Shipping',
+    detail: 'Delivery within 1-2 business days',
+    amount: 500,
+  },
+];
 
 const Checkout = ({ metadata }: { metadata: Metadata }) => {
   const [error, setError] = useState<string | null>(null)
 
+  // Get price id from url params
+  const urlParams = new URLSearchParams(window.location.search);
+  const priceId = urlParams.get('price_id')
+
   const promise = useMemo(async () => {
     const data = {
-      PRICE_ID: process.env.NODE_ENV === 'development' ? testPrice : livePrice,
+      PRICE_ID: priceId,
       SITE_URL: window.location.origin,
-      metadata: metadata
+      metadata: metadata,
+      shippingOptions: shippingOptions
     }
     try {
       const res = await fetch('/api/create-checkout-session', {
@@ -28,27 +45,38 @@ const Checkout = ({ metadata }: { metadata: Metadata }) => {
         },
         body: JSON.stringify(data),
       });
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.statusText}`);
+      }
       const data_1 = await res.json();
       return data_1.clientSecret;
 
     } catch (e) {
-      setError('Failed to create checkout session.')
-      return Promise.reject('Failed to create checkout session.')
+      setError('Errore sconosciuto durante la creazione della sessione di checkout.')
+      return Promise.reject('Errore sconosciuto durante la creazione della sessione di checkout.')
     }
   }, [metadata]);
 
 
   return error ?
-    <div >
-      <p>Errors occurred:</p>
+    <div className="text-white" >
+      <p>Errore:</p>
       <p>{error}</p>
     </div>
     :
-    <CheckoutProvider stripe={stripePromise} options={{
-      clientSecret: promise
-    }}>
-      <CheckoutForm />
-    </CheckoutProvider >
+    priceId === null || priceId.trim() === '' ?
+      <div className="text-white" >
+        <p>ID prezzo non valido.</p>
+      </div>
+      :
+      <div className="[&_label]:!text-white" >
+        <CheckoutProvider stripe={stripePromise} options={{
+          clientSecret: promise
+        }}
+        >
+          <CheckoutForm />
+        </CheckoutProvider >
+      </div>
 }
 
 export default Checkout

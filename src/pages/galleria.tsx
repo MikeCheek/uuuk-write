@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import TemplateGallery from '../components/arena/TemplateGallery'
 import Layout from '../components/organisms/Layout'
-import Switch from '../components/arena/Switch'
 
 const Gallery = () => {
 

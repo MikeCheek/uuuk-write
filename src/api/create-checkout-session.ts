@@ -57,7 +57,7 @@ export default async function handler (
 
       res.send({ clientSecret: session.client_secret })
     } catch (error) {
-      console.log(error)
+      console.log('Error', error)
       res.status(500).send({ message: 'Internal Server Error' })
     }
   } else {

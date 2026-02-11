@@ -1,5 +1,6 @@
 import React from 'react'
 import { useCheckout, PaymentElement, ShippingAddressElement } from '@stripe/react-stripe-js/checkout';
+import Button from '../atoms/Button';
 
 const CheckoutForm = () => {
   const checkoutState = useCheckout();
@@ -41,7 +42,9 @@ const CheckoutForm = () => {
     <form onSubmit={handleSubmit} className="space-y-6">
       <ShippingAddressElement />
       <PaymentElement />
-      <button className='bg-blue py-2 px-4 rounded-lg text-white'>Paga ora</button>
+      <Button
+        text='Paga ora'
+      />
     </form>
   )
 };
