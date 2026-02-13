@@ -36,7 +36,7 @@ const TemplateItem = ({
   productData?: Product | null
 }) => {
   const coverZOffset = Math.min(preset.modules.length * 1.5, 10)
-  const [mode, setMode] = useState<'flat' | '3D'>('3D')
+  const [mode, setMode] = useState<'flat' | '3D'>('flat')
 
   // Helper to format currency
   const formattedPrice = useMemo(() => {
@@ -54,7 +54,7 @@ const TemplateItem = ({
     modules: Module[]
     format: AgendaFormat
   }) => {
-    const baseSpineWidth = 3
+    const baseSpineWidth = 2
     const totalSpineWidthRem = modules.length * baseSpineWidth * 0.35
 
     switch (format) {

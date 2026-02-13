@@ -2,12 +2,10 @@ import React from "react";
 import Section from "./Section";
 import ShowOnView from "./ShowOnView";
 import Typography from "../atoms/Typography";
-import { useTranslation } from "react-i18next";
 import renderText from "../../utilities/renderText";
 import { StaticImage } from "gatsby-plugin-image";
 
 const UUUKForever = () => {
-  const { t } = useTranslation()
 
   return (
     // <Section id="section2" bgColor="bg-gradient-to-b from-1% from-white via-50% via-red to-99% to-blue" shapeColor="text-white" preset="left">
@@ -22,7 +20,7 @@ const UUUKForever = () => {
 
 
           <Typography variant="p" className="mr-auto ml-0 text-center md:text-left bg-opacity-80 rounded-lg self-center justify-self-center !md:max-w-[33vw] md:ml-28 md:mt-40">
-            {renderText(t("UUUKForever").split("<br/><br/>")[0])}
+            {renderText("Puoi sempre cambiare le parti del tuo UUUK e personalizzarlo secondo le tue ***esigenze***")}
           </Typography>
         </div>
         {/* <ul className="space-y-5 text-beige mt-10 text-sm md:text-xl">

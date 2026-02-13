@@ -180,7 +180,7 @@ const Arena = () => {
     modules: Module[]
     format: AgendaFormat
   }) => {
-    const baseSpineWidth = 3
+    const baseSpineWidth = 2
     const totalSpineWidthRem = modules.length * baseSpineWidth * 0.35
 
     switch (format) {

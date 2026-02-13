@@ -2,13 +2,11 @@ import React from "react";
 import Section from "./Section";
 import ShowOnView from "./ShowOnView";
 import Typography from "../atoms/Typography";
-import { useTranslation } from "react-i18next";
 import renderText from "../../utilities/renderText";
 import { StaticImage } from "gatsby-plugin-image";
 import CircledText from "../atoms/CircledText";
 
 const Infinite = () => {
-  const { t } = useTranslation()
 
   return (
     // <Section id="section2" bgColor="bg-gradient-to-b from-1% from-white via-50% via-red to-99% to-blue" shapeColor="text-white" preset="left">

@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import Slider from 'react-slick'
 import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
 import "slick-carousel/slick/slick.css";
@@ -7,7 +6,6 @@ import "slick-carousel/slick/slick-theme.css";
 import OrderNow from '../atoms/Button';
 
 const Showcase = ({ data, opened, openModal }: { data: any[], opened: boolean, openModal: () => void }) => {
-  const { t } = useTranslation()
   const [activeSlide, setActiveSlide] = useState(0);
 
   const handleBeforeChange = React.useCallback((_: any, next: number) => {
