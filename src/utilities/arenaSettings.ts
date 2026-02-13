@@ -58,7 +58,7 @@ export const extendedTextPositions: ExtendedTextPosition[] = [
   'Sotto'
 ]
 
-export interface Metadata {
+interface RawMetadata {
   format: AgendaFormat
   frontCover: {
     color: ColorOption
@@ -80,6 +80,10 @@ export interface Metadata {
   lastUpdated?: string
   currentStep: number
   slug?: string
+}
+
+export interface Metadata extends RawMetadata {
+  id: number
 }
 
 export const imageAssets: Record<
@@ -180,7 +184,7 @@ const noText = {
 const triadic = (
   template: TriadicTemplate,
   format: AgendaFormat
-): Metadata => ({
+): RawMetadata => ({
   format: format,
   frontCover: {
     color: getColor('Bianco'),
@@ -204,7 +208,7 @@ const mood = (
   slug?: string,
   backColor?: ColorOption,
   backTextColor?: ColorOption
-): Metadata => ({
+): RawMetadata => ({
   format: format,
   frontCover: {
     color: frontColor,
@@ -223,7 +227,7 @@ const mood = (
   ...common
 })
 
-export const presets: Record<string, Metadata> = {
+const rawPresets: Record<string, RawMetadata> = {
   Blank: {
     format: 'A5',
     frontCover: {
@@ -403,6 +407,17 @@ export const presets: Record<string, Metadata> = {
   }
 }
 
+// Export presets with id for each that are increasing numbers like 0, 1, 2, 3, ...
+export const presets: Record<string, Metadata> = Object.fromEntries(
+  Object.entries(rawPresets).map(([key, value], index) => [
+    key,
+    {
+      ...value,
+      id: index
+    }
+  ])
+)
+
 export const getRandomPreset = (): Metadata => {
   const presetKeys = Object.keys(presets)
   const randomKey = presetKeys[Math.floor(Math.random() * presetKeys.length)]
@@ -411,4 +426,9 @@ export const getRandomPreset = (): Metadata => {
 
 export const getPresetFromKey = (key: string): Metadata => {
   return presets[key] || presets['Punto']
+}
+
+export const getPresetFromId = (id: number): Metadata => {
+  const preset = Object.values(presets).find(p => p.id === id)
+  return preset || presets['Punto']
 }

@@ -40,10 +40,6 @@ export const createPages = async ({ actions }: any) => {
     const presetName = presetEntry ? presetEntry[0] : null
     const presetData = presetEntry ? presetEntry[1] : null
 
-    const template = presetData
-      ? presetData.frontCover.template
-      : stripeProduct.name.split(' - ')[2] || 'default'
-
     // Use the Stripe name as the slug basis if no preset name exists
     const finalSlug = slugify(
       presetData?.slug ?? presetName ?? stripeProduct.name
@@ -54,7 +50,7 @@ export const createPages = async ({ actions }: any) => {
       component: path.resolve('./src/templates/ProductPage.tsx'),
       context: {
         stripeData: stripeProduct,
-        presetName: template, // "Occhio A5"
+        presetName: presetName, // "Occhio A5"
         preset: presetData // The actual Metadata object
       }
     })

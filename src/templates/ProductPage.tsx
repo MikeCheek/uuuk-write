@@ -27,7 +27,10 @@ const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) =>
   const [mode, setMode] = useState<'flat' | '3D'>('flat')
   const [loading, setLoading] = useState(false)
 
-  const name = `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`
+  const name = presetName ?? stripeData.name ?? `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`
+
+  const linkProduct = stripeData ? `/arena?preset_id=${preset.id}&pid=${stripeData.id}&price_id=${stripeData.default_price.id}` : `/arena?preset_id=${preset.id}`
+  const linkProductPay = linkProduct + '&paynow=true'
 
   // The price is already here! No fetching required.
   const formattedPrice = useMemo(() => {
@@ -114,12 +117,12 @@ const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) =>
                 <Button
                   text="Acquista Ora"
                   // Link to your checkout/arena with paynow flag
-                  href={`/arena?preset=${name}&paynow=true${stripeData ? `&pid=${stripeData.id}` : ''}`}
+                  href={linkProductPay}
                 />
                 <Button
                   text="Personalizza"
                   variant="secondary"
-                  href={`/arena?preset=${name}`}
+                  href={linkProduct}
                 />
               </div>
             </div>

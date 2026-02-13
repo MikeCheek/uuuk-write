@@ -4,7 +4,8 @@ import { ShoppingCart, X, RotateCcw, Play } from 'lucide-react'; // Suggested ic
 import {
   AgendaFormat, ColorOption, colors, Collection, CoverImageTemplate, FontSize, TextPosition, MAX_MODULES, formats, fontSizes, textPositions, collections, pageInteriors, steps,
   getRandomPreset,
-  getPresetFromKey
+  getPresetFromKey,
+  getPresetFromId
 } from '../utilities/arenaSettings';
 import {
   getCoverTemplateImagePath, getTemplatesForCollection,
@@ -16,7 +17,6 @@ import Checkout from '../components/arena/Checkout';
 import Format from '../components/arena/Format';
 import FrontCover from '../components/arena/FrontCover';
 import Modules from '../components/arena/Modules';
-import Preview3D from '../components/arena/Preview3D';
 import Review from '../components/arena/Review';
 import Modal from '../components/atoms/Modal';
 import Layout from '../components/organisms/Layout';
@@ -27,8 +27,8 @@ const LOCAL_STORAGE_KEY = 'uuuk_agenda_draft';
 const Arena = () => {
   const queryParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
 
-  const preset: Metadata = queryParams.has('preset') ?
-    getPresetFromKey(queryParams.get('preset')!)
+  const preset: Metadata = queryParams.has('preset_id') ?
+    getPresetFromId(Number(queryParams.get('preset_id')!))
     : getPresetFromKey("Punto A5")!;
 
   const step = queryParams.has('paynow') ? steps.length - 1 : preset.currentStep || 0;
@@ -70,25 +70,26 @@ const Arena = () => {
     modules,
     backCover: { color: backCoverColor, text: backCoverText, fontSize: backCoverFontSize, position: backCoverPosition, textColor: backCoverTextColor },
     lastUpdated: undefined,
-    currentStep
+    currentStep,
+    id: preset.id || -1
   }), [format, frontCoverColor, frontCoverCollection, frontCoverTemplate, frontCoverText, frontCoverFontSize, frontCoverPosition, frontCoverTextColor, modules, backCoverColor, backCoverText, backCoverFontSize, backCoverPosition, backCoverTextColor, currentStep]);
 
   // 2. LOCALSTORAGE: LOAD ON MOUNT
-  useEffect(() => {
+  // useEffect(() => {
 
-    metadata.lastUpdated = new Date().toISOString(); // Update lastUpdated on every change
+  //   metadata.lastUpdated = new Date().toISOString(); // Update lastUpdated on every change
 
-    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (saved && !queryParams.has('paynow')) {
-      setPendingDraft(JSON.parse(saved));
-      setShowResumeModal(true);
-    }
-  }, []);
+  //   const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+  //   if (saved && !queryParams.has('paynow')) {
+  //     setPendingDraft(JSON.parse(saved));
+  //     setShowResumeModal(true);
+  //   }
+  // }, []);
 
-  // 3. LOCALSTORAGE: SAVE ON CHANGE
-  useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(metadata));
-  }, [metadata]);
+  // // 3. LOCALSTORAGE: SAVE ON CHANGE
+  // useEffect(() => {
+  //   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(metadata));
+  // }, [metadata]);
 
   const handleResume = () => {
     if (pendingDraft) {
@@ -199,7 +200,8 @@ const Arena = () => {
       position: backCoverPosition,
       textColor: backCoverTextColor
     },
-    currentStep: 0
+    currentStep: 0,
+    id: preset.id || -1
   };
 
   return (
