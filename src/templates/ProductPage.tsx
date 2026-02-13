@@ -1,25 +1,12 @@
 // src/templates/ProductPage.tsx
-import React, { CSSProperties, useEffect, useState, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import { PageProps, Link } from 'gatsby'
-import { AgendaFormat, Metadata, Module } from '../utilities/arenaSettings' // Adjust path
+import { Metadata } from '../utilities/arenaSettings' // Adjust path
 import Button from '../components/atoms/Button' // Adjust path
 import { getCoverTemplateImagePath } from '../utilities/arenaHelpers'
 import Switch from '../components/arena/Switch'
-import Preview3D from '../components/arena/Preview3D'
 import Preview3DWrapper from '../components/arena/Preview3DWrapper'
-
-// --- Types ---
-interface StripePrice {
-  id: string
-  currency: string
-  unit_amount: number
-}
-
-interface Product {
-  id: string
-  name: string
-  default_price: StripePrice
-}
+import { StripeProduct } from '../utilities/stripeHelper'
 
 // The data passed from gatsby-node via "context"
 interface PageContextType {
@@ -31,13 +18,7 @@ interface PageContextType {
 interface PageContext {
   presetName: string
   preset: Metadata
-  stripeData: {
-    id: string
-    default_price: {
-      currency: string
-      unit_amount: number
-    }
-  } | null
+  stripeData: StripeProduct
 }
 
 const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) => {
@@ -49,7 +30,7 @@ const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) =>
 
   // The price is already here! No fetching required.
   const formattedPrice = useMemo(() => {
-    if (!stripeData) return "Prezzo su richiesta"
+    if (!stripeData || !stripeData.default_price.unit_amount) return "Prezzo su richiesta"
     return new Intl.NumberFormat('it-IT', {
       style: 'currency',
       currency: stripeData.default_price.currency.toUpperCase(),
@@ -75,10 +56,20 @@ const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) =>
               <Switch isOn={mode === '3D'} toggleSwitch={() => setMode(mode === 'flat' ? '3D' : 'flat')} />
             </div>
 
-            <div className="scale-100 transition-transform duration-500">
-              <Preview3DWrapper
-                product={preset}
-              />
+            <div className="scale-100 transition-transform duration-500 max-h-[60vh]">
+              {
+                preset && mode === '3D' ? (
+                  <Preview3DWrapper product={preset} noExtra />
+                ) : (
+                  <img
+                    src={stripeData.images[0] || getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template)}
+                    alt={name}
+                    width={200}
+                    height={360}
+                    className="object-contain !w-auto !h-auto"
+                  />
+                )
+              }
             </div>
           </div>
 

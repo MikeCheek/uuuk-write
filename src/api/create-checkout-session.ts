@@ -34,7 +34,7 @@ export default async function handler (
         },
         {} as Record<string, string>
       )
-      console.log('Sanitized Metadata:', sanitizedMetadata)
+      // console.log('Sanitized Metadata:', sanitizedMetadata)
       const session = await stripe.checkout.sessions.create({
         ui_mode: 'custom',
         line_items: [

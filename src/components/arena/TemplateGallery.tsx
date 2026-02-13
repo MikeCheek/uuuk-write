@@ -5,21 +5,8 @@ import { graphql, useStaticQuery } from 'gatsby'
 import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
 import Switch from './Switch'
 import Preview3DWrapper from './Preview3DWrapper'
+import { StripeProduct } from '../../utilities/stripeHelper'
 
-// --- Types for API Data ---
-interface StripePrice {
-  id: string;
-  currency: string;
-  unit_amount: number;
-}
-
-interface Product {
-  id: string;
-  name: string; // Format: "FORMAT - COLLECTION - TEMPLATE"
-  description: string | null;
-  images: string[];
-  default_price: StripePrice;
-}
 
 const TemplateItem = ({
   name,
@@ -32,13 +19,13 @@ const TemplateItem = ({
   preset: Metadata
   image?: IGatsbyImageData
   index: number
-  productData?: Product | null
+  productData?: StripeProduct | null
 }) => {
   const [mode, setMode] = useState<'flat' | '3D'>('flat')
 
   // Helper to format currency
   const formattedPrice = useMemo(() => {
-    if (!productData?.default_price) return null;
+    if (!productData?.default_price || !productData.default_price.unit_amount) return null;
     return new Intl.NumberFormat('it-IT', { // Assuming Italian based on text
       style: 'currency',
       currency: productData.default_price.currency.toUpperCase(),
@@ -126,7 +113,7 @@ const TemplateItem = ({
 
 interface TemplateGalleryProps {
   // Products passed from Gatsby Page Context
-  serverProducts?: Product[]
+  serverProducts?: StripeProduct[]
 }
 
 const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {

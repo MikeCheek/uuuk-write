@@ -26,10 +26,10 @@ html {
   @apply scrollbar-thin scrollbar-track-black scrollbar-thumb-brown bg-black overflow-x-hidden;
 }
 
-img {
+/* img {
   height: 100% !important;
   width: 100% !important;
-}
+} */
 
 @keyframes marqueeLoop {
   0% {

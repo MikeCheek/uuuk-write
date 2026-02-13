@@ -18,34 +18,45 @@ const slugify = (text: string) =>
 export const createPages = async ({ actions }: any) => {
   const { createPage } = actions
 
-  // 1. Fetch API data at Build Time
+  // 1. Fetch Stripe products
   const apiProducts = await getProducts()
+  const allStripeProducts = apiProducts.data
 
+  // 2. Create the Gallery Page
   createPage({
-    path: `/galleria`, // or your gallery path
-    component: path.resolve('./src/templates/GalleryPage.tsx'), // Point to your Gallery file
+    path: `/galleria`,
+    component: path.resolve('./src/templates/GalleryPage.tsx'),
     context: {
-      allStripeProducts: apiProducts.data // Pass the full array here
+      allStripeProducts: allStripeProducts
     }
   })
 
-  // 2. Iterate through local presets
-  Object.entries(presets).forEach(([key, preset]) => {
-    // 3. Find the matching Stripe product
-    const searchName = `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`
-    const stripeMatch = apiProducts.data.find(
-      (p: any) =>
-        p.name.trim().toLowerCase() === searchName.trim().toLowerCase()
-    )
+  // 3. Create Product Pages based on Stripe Data
+  allStripeProducts.forEach((stripeProduct: any) => {
+    // Attempt to find a matching local preset
+    // We look for a preset where our searchName matches the stripe product name
+    const presetEntry = Object.entries(presets).find(([key, preset]) => {
+      const searchName = `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`
+      return (
+        searchName.trim().toLowerCase() ===
+        stripeProduct.name.trim().toLowerCase()
+      )
+    })
+
+    // If found, presetEntry is [key, presetObject]
+    const presetName = presetEntry ? presetEntry[0] : null
+    const presetData = presetEntry ? presetEntry[1] : null
+
+    // Use the Stripe name as the slug basis if no preset name exists
+    const finalSlug = slugify(presetName || stripeProduct.name)
 
     createPage({
-      path: `/prodotto/${slugify(key)}`,
+      path: `/prodotto/${finalSlug}`,
       component: path.resolve('./src/templates/ProductPage.tsx'),
       context: {
-        presetName: key,
-        preset: preset,
-        // Pass the combined Stripe data directly!
-        stripeData: stripeMatch || null
+        stripeData: stripeProduct,
+        presetName: presetName, // "Occhio A5"
+        preset: presetData // The actual Metadata object
       }
     })
   })
