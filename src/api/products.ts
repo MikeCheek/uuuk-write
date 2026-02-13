@@ -1,20 +1,13 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby'
+import { getProducts } from '../utilities/stripeHelper'
 
 export default async function handler (
   req: GatsbyFunctionRequest,
   res: GatsbyFunctionResponse<{ clientSecret: string } | { message: string }>
 ) {
-  const stripe = require('stripe')(process.env.STRIPE_API_KEY, {
-    apiVersion: '2025-11-17.clover'
-  })
-
   if (req.method === `GET`) {
     try {
-      const products = await stripe.products.list({
-        limit: 100, // adjust as needed
-        expand: ['data.default_price'] // include prices
-      })
-
+      const products = await getProducts()
       res.json(products.data)
     } catch (error) {
       console.log(error)

@@ -20,6 +20,7 @@ import Preview3D from '../components/arena/Preview3D';
 import Review from '../components/arena/Review';
 import Modal from '../components/atoms/Modal';
 import Layout from '../components/organisms/Layout';
+import Preview3DWrapper from '../components/arena/Preview3DWrapper';
 
 const LOCAL_STORAGE_KEY = 'uuuk_agenda_draft';
 
@@ -171,92 +172,35 @@ const Arena = () => {
     setModules(newModules);
   };
 
-  // --- END Handlers ---
-
-  const getPreviewSizeClasses = ({
-    modules,
-    format
-  }: {
-    modules: Module[]
-    format: AgendaFormat
-  }) => {
-    const baseSpineWidth = 2
-    const totalSpineWidthRem = modules.length * baseSpineWidth * 0.35
-
-    switch (format) {
-      case 'A7':
-        return {
-          container: 'w-24 h-36',
-          text: 'text-[6px]',
-          spineWidthRem: totalSpineWidthRem, //* 0.7,
-          coverTextSize: 'text-xs'
-        }
-      case 'A6':
-        return {
-          container: 'w-32 h-48',
-          text: 'text-[8px]',
-          spineWidthRem: totalSpineWidthRem, //* 0.85,
-          coverTextSize: 'text-sm'
-        }
-      case 'A5':
-      default:
-        return {
-          container: 'w-40 h-56',
-          text: 'text-[10px]',
-          spineWidthRem: totalSpineWidthRem,
-          coverTextSize: 'text-base'
-        }
-    }
-  }
-
-  const getPreviewTransform = (
-    step: string,
-    format: AgendaFormat
-  ): CSSProperties => {
-    let baseRotation = 'rotateX(10deg)'
-    let stepRotation = 'rotateY(-25deg)'
-
-    switch (step) {
-      case 'Formato':
-      case 'Copertina Anteriore':
-      case 'Revisione':
-        stepRotation = 'rotateY(-25deg)'
-        break
-      case 'Sidebars':
-        if (format === 'A7') {
-          stepRotation = 'rotateY(0deg)'
-          baseRotation = 'rotateX(-45deg)'
-        } else stepRotation = 'rotateY(80deg)'
-        break
-      case 'Copertina Posteriore':
-        stepRotation = 'rotateY(160deg)'
-        break
-      default:
-        stepRotation = 'rotateY(-25deg)'
-    }
-
-    return {
-      transform: `${baseRotation} ${stepRotation}`,
-      transformStyle: 'preserve-3d'
-    }
-  }
-
-
-
   const availableTemplates = useMemo(() => {
     return getTemplatesForCollection(frontCoverCollection);
   }, [frontCoverCollection]);
 
-  const previewSize = getPreviewSizeClasses({ modules, format });
   const activeModule = modules[activeModuleIndex];
   const coverZOffset = Math.min(modules.length * 1.5, 10);
   const templateImagePath = getCoverTemplateImagePath(format, frontCoverCollection, frontCoverTemplate);
 
-  // --- Dynamic 3D Transform Logic ---
-  const previewTransform = useMemo<CSSProperties>(() => {
-    return getPreviewTransform(steps[currentStep], format)
-  }, [currentStep, format]);
-
+  const previewProduct = {
+    modules,
+    format,
+    frontCover: {
+      color: frontCoverColor,
+      collection: frontCoverCollection,
+      template: frontCoverTemplate,
+      text: frontCoverText,
+      fontSize: frontCoverFontSize,
+      position: frontCoverPosition,
+      textColor: frontCoverTextColor
+    },
+    backCover: {
+      color: backCoverColor,
+      text: backCoverText,
+      fontSize: backCoverFontSize,
+      position: backCoverPosition,
+      textColor: backCoverTextColor
+    },
+    currentStep: 0
+  };
 
   return (
     <Layout showCustomCursor={false}>
@@ -438,26 +382,7 @@ const Arena = () => {
 
           {/* 3D Preview Panel (Updated for text size/position) */}
           <div className="lg:w-1/2 flex flex-col items-center justify-center bg-gray-800 p-6 rounded-xl shadow-lg min-h-[400px]">
-            <Preview3D
-              modules={modules}
-              format={format}
-              previewTransform={previewTransform}
-              previewSize={previewSize}
-              coverZOffset={coverZOffset}
-              frontCoverColor={frontCoverColor}
-              backCoverColor={backCoverColor}
-              frontCoverTemplate={frontCoverTemplate}
-              frontCoverCollection={frontCoverCollection}
-              templateImage={templateImagePath}
-              frontCoverText={frontCoverText}
-              frontCoverFontSize={frontCoverFontSize}
-              frontCoverPosition={frontCoverPosition}
-              frontCoverTextColor={frontCoverTextColor}
-              backCoverTextColor={backCoverTextColor}
-              backCoverText={backCoverText}
-              backCoverFontSize={backCoverFontSize}
-              backCoverPosition={backCoverPosition}
-            />
+            <Preview3DWrapper product={previewProduct} />
           </div>
         </div>
       </div>

@@ -2,7 +2,8 @@ import React from 'react'
 import TemplateGallery from '../components/arena/TemplateGallery'
 import Layout from '../components/organisms/Layout'
 
-const Gallery = () => {
+const GalleryPage = ({ pageContext }: any) => {
+  const { allStripeProducts } = pageContext;
 
   return (
     <Layout >
@@ -13,10 +14,10 @@ const Gallery = () => {
             personalizza
           </span>
         </h1>
-        <TemplateGallery />
+        <TemplateGallery serverProducts={allStripeProducts} />
       </div>
     </Layout>
   )
 }
 
-export default Gallery
+export default GalleryPage

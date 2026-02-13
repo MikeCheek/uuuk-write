@@ -1,11 +1,10 @@
-import React, { CSSProperties, useMemo, useState, useEffect } from 'react'
-import { AgendaFormat, Metadata, Module, presets } from '../../utilities/arenaSettings'
-import Preview3D from './Preview3D'
+import React, { useMemo, useState, useEffect } from 'react'
+import { Metadata, presets } from '../../utilities/arenaSettings'
 import Button from '../atoms/Button'
-import { getCoverTemplateImagePath } from '../../utilities/arenaHelpers'
 import { graphql, useStaticQuery } from 'gatsby'
 import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
 import Switch from './Switch'
+import Preview3DWrapper from './Preview3DWrapper'
 
 // --- Types for API Data ---
 interface StripePrice {
@@ -35,7 +34,6 @@ const TemplateItem = ({
   index: number
   productData?: Product | null
 }) => {
-  const coverZOffset = Math.min(preset.modules.length * 1.5, 10)
   const [mode, setMode] = useState<'flat' | '3D'>('flat')
 
   // Helper to format currency
@@ -47,71 +45,9 @@ const TemplateItem = ({
     }).format(productData.default_price.unit_amount / 100);
   }, [productData]);
 
-  const getPreviewSizeClasses = ({
-    modules,
-    format
-  }: {
-    modules: Module[]
-    format: AgendaFormat
-  }) => {
-    const baseSpineWidth = 2
-    const totalSpineWidthRem = modules.length * baseSpineWidth * 0.35
-
-    switch (format) {
-      case 'A7':
-        return {
-          container: 'w-24 h-36',
-          text: 'text-[6px]',
-          spineWidthRem: totalSpineWidthRem,
-          coverTextSize: 'text-xs'
-        }
-      case 'A6':
-        return {
-          container: 'w-32 h-48',
-          text: 'text-[8px]',
-          spineWidthRem: totalSpineWidthRem,
-          coverTextSize: 'text-sm'
-        }
-      case 'A5':
-      default:
-        return {
-          container: 'w-40 h-56',
-          text: 'text-[10px]',
-          spineWidthRem: totalSpineWidthRem,
-          coverTextSize: 'text-base'
-        }
-    }
-  }
-
-  const getPreviewTransform = (
-    step: string,
-    format: AgendaFormat
-  ): CSSProperties => {
-    let baseRotation = 'rotateX(10deg)'
-    let stepRotation = 'rotateY(-25deg)'
-
-    switch (step) {
-      case 'Formato':
-      case 'Copertina Anteriore':
-      case 'Revisione':
-        stepRotation = 'rotateY(-25deg)'
-        break
-      case 'Sidebars':
-        if (format === 'A7') {
-          stepRotation = 'rotateY(0deg)'
-          baseRotation = 'rotateX(-45deg)'
-        } else stepRotation = 'rotateY(80deg)'
-        break
-      case 'Copertina Posteriore':
-        stepRotation = 'rotateY(160deg)'
-        break
-      default:
-        stepRotation = 'rotateY(-25deg)'
-    }
-    return {
-      transform: `${baseRotation} ${stepRotation}`,
-      transformStyle: 'preserve-3d'
-    }
+  const slugify = (text: string) => {
+    return text.toString().toLowerCase()
+      .replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-').trim()
   }
 
   const linkProduct = productData ? `/arena?preset=${name}&pid=${productData.id}&price_id=${productData.default_price.id}` : `/arena?preset=${name}`
@@ -141,27 +77,7 @@ const TemplateItem = ({
 
       {
         mode === '3D' || !image ? (
-          <Preview3D
-            noExtra
-            modules={preset.modules}
-            format={preset.format}
-            previewTransform={getPreviewTransform('Formato', preset.format)}
-            previewSize={getPreviewSizeClasses({ modules: preset.modules, format: preset.format })}
-            coverZOffset={coverZOffset}
-            frontCoverColor={preset.frontCover.color}
-            backCoverColor={preset.backCover.color}
-            frontCoverTemplate={preset.frontCover.template}
-            frontCoverCollection={preset.frontCover.collection}
-            templateImage={getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template)}
-            frontCoverText={preset.frontCover.text}
-            frontCoverFontSize={preset.frontCover.fontSize}
-            frontCoverPosition={preset.frontCover.position}
-            frontCoverTextColor={preset.frontCover.textColor}
-            backCoverTextColor={preset.backCover.textColor}
-            backCoverText={preset.backCover.text}
-            backCoverFontSize={preset.backCover.fontSize}
-            backCoverPosition={preset.backCover.position}
-          />
+          <Preview3DWrapper product={preset} noExtra />
         ) : (
           <GatsbyImage
             image={image}
@@ -184,7 +100,7 @@ const TemplateItem = ({
       </div>
 
       <div className='flex flex-row gap-2 items-end justify-center w-full mt-auto pt-6'>
-        <Button
+        {/* <Button
           text="Compra ora"
           // We can append the stripe Price ID if needed by your checkout logic
           href={linkProductPay}
@@ -195,48 +111,36 @@ const TemplateItem = ({
           href={linkProduct}
           smaller
           variant='secondary'
+        /> */}
+        <Button
+          text="Vedi prodotto"
+          // This links to the new static page we created
+          href={`/prodotto/${slugify(name)}`}
+          variant="primary"
+          small
         />
       </div>
     </div>
   )
 }
 
-const TemplateGallery = () => {
+interface TemplateGalleryProps {
+  // Products passed from Gatsby Page Context
+  serverProducts?: Product[]
+}
+
+const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
   // --- 1. Filter State ---
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCollection, setSelectedCollection] = useState('')
   const [selectedFormat, setSelectedFormat] = useState('')
   const [selectedTemplate, setSelectedTemplate] = useState('')
 
-  // --- New State for API Products ---
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loadingProducts, setLoadingProducts] = useState(true);
 
-  // --- Fetch Logic ---
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const response = await fetch('/api/products');
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoadingProducts(false);
-      }
-    }
-    fetchProducts();
-  }, []);
-
-  // Helper to find product by constructing the name "FORMAT - COLLECTION - TEMPLATE"
   const getProductData = (preset: Metadata) => {
-    if (!products.length) return null;
-
-    // Construct the name as expected from the API
+    if (!serverProducts || !serverProducts.length) return null;
     const searchName = `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`;
-
-    // Find exact match (case insensitive if needed, but usually IDs are strict)
-    return products.find(p => p.name.trim() === searchName.trim()) || null;
+    return serverProducts.find(p => p.name.trim().toLowerCase() === searchName.trim().toLowerCase()) || null;
   };
 
   const rawData = useStaticQuery(graphql`
@@ -414,7 +318,6 @@ const TemplateGallery = () => {
 
       <div className="text-sm text-gray-500 px-1 animate-fadeIn flex justify-between">
         <span>Mostrando {filteredPresets.length} risultati</span>
-        {loadingProducts && <span className="text-blue-500 italic">Aggiornamento prezzi...</span>}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
