@@ -79,6 +79,7 @@ export interface Metadata {
   }
   lastUpdated?: string
   currentStep: number
+  slug?: string
 }
 
 export const imageAssets: Record<
@@ -200,6 +201,7 @@ const mood = (
   format: AgendaFormat,
   frontColor: ColorOption,
   frontTextColor: ColorOption,
+  slug?: string,
   backColor?: ColorOption,
   backTextColor?: ColorOption
 ): Metadata => ({
@@ -217,6 +219,7 @@ const mood = (
     ...noText,
     textColor: backTextColor ?? frontTextColor
   },
+  slug: slug,
   ...common
 })
 
@@ -239,50 +242,143 @@ export const presets: Record<string, Metadata> = {
   'Punto A5': triadic('Punto', 'A5'),
   'Flusso A5': triadic('Flusso', 'A5'),
   'Occhio A5': triadic('Occhio', 'A5'),
-  '(◣ _ ◢) A5': mood('(◣ _ ◢)', 'A5', getColor('Nero'), getColor('Rosso')),
-  '(－_－) A5': mood('(－_－)', 'A5', getColor('Grigio'), getColor('Bianco')),
-  'ヽ⊙_⊙ﾉ A5': mood('ヽ⊙_⊙ﾉ', 'A5', getColor('Arancione'), getColor('Nero')),
+  '(◣ _ ◢) A5': mood(
+    '(◣ _ ◢)',
+    'A5',
+    getColor('Nero'),
+    getColor('Rosso'),
+    'angry A5'
+  ),
+  '(－_－) A5': mood(
+    '(－_－)',
+    'A5',
+    getColor('Grigio'),
+    getColor('Bianco'),
+    'bored A5'
+  ),
+  'ヽ⊙_⊙ﾉ A5': mood(
+    'ヽ⊙_⊙ﾉ',
+    'A5',
+    getColor('Arancione'),
+    getColor('Nero'),
+    'shocked A5'
+  ),
   '(◕‿◕ ) A5': mood(
     '(◕‿◕ )',
     'A5',
     getColor('Giallo'),
     getColor('Nero'),
+    'happy A5',
     getColor('Blu')
   ),
-  '(´◕︵◕`) A5': mood('(´◕︵◕`)', 'A5', getColor('Blu'), getColor('Nero')),
-  '(●__● ) A5': mood('(●__● )', 'A5', getColor('Viola'), getColor('Nero')),
+  '(´◕︵◕`) A5': mood(
+    '(´◕︵◕`)',
+    'A5',
+    getColor('Blu'),
+    getColor('Nero'),
+    'sad A5'
+  ),
+  '(●__● ) A5': mood(
+    '(●__● )',
+    'A5',
+    getColor('Viola'),
+    getColor('Nero'),
+    'neutral A5'
+  ),
 
   'Punto A6': triadic('Punto', 'A6'),
   'Flusso A6': triadic('Flusso', 'A6'),
   'Occhio A6': triadic('Occhio', 'A6'),
-  '(◣ _ ◢) A6': mood('(◣ _ ◢)', 'A6', getColor('Nero'), getColor('Rosso')),
-  '(－_－) A6': mood('(－_－)', 'A6', getColor('Grigio'), getColor('Bianco')),
-  'ヽ⊙_⊙ﾉ A6': mood('ヽ⊙_⊙ﾉ', 'A6', getColor('Arancione'), getColor('Nero')),
+  '(◣ _ ◢) A6': mood(
+    '(◣ _ ◢)',
+    'A6',
+    getColor('Nero'),
+    getColor('Rosso'),
+    'angry A6'
+  ),
+  '(－_－) A6': mood(
+    '(－_－)',
+    'A6',
+    getColor('Grigio'),
+    getColor('Bianco'),
+    'bored A6'
+  ),
+  'ヽ⊙_⊙ﾉ A6': mood(
+    'ヽ⊙_⊙ﾉ',
+    'A6',
+    getColor('Arancione'),
+    getColor('Nero'),
+    'shocked A6'
+  ),
   '(◕‿◕ ) A6': mood(
     '(◕‿◕ )',
     'A6',
     getColor('Giallo'),
     getColor('Nero'),
+    'happy A6',
     getColor('Blu')
   ),
-  '(´◕︵◕`) A6': mood('(´◕︵◕`)', 'A6', getColor('Blu'), getColor('Nero')),
-  '(●__● ) A6': mood('(●__● )', 'A6', getColor('Viola'), getColor('Nero')),
+  '(´◕︵◕`) A6': mood(
+    '(´◕︵◕`)',
+    'A6',
+    getColor('Blu'),
+    getColor('Nero'),
+    'sad A6'
+  ),
+  '(●__● ) A6': mood(
+    '(●__● )',
+    'A6',
+    getColor('Viola'),
+    getColor('Nero'),
+    'neutral A6'
+  ),
 
   'Punto A7': triadic('Punto', 'A7'),
   'Flusso A7': triadic('Flusso', 'A7'),
   'Occhio A7': triadic('Occhio', 'A7'),
-  '(◣ _ ◢) A7': mood('(◣ _ ◢)', 'A7', getColor('Nero'), getColor('Rosso')),
-  '(－_－) A7': mood('(－_－)', 'A7', getColor('Grigio'), getColor('Bianco')),
-  'ヽ⊙_⊙ﾉ A7': mood('ヽ⊙_⊙ﾉ', 'A7', getColor('Arancione'), getColor('Nero')),
+  '(◣ _ ◢) A7': mood(
+    '(◣ _ ◢)',
+    'A7',
+    getColor('Nero'),
+    getColor('Rosso'),
+    'angry A7'
+  ),
+  '(－_－) A7': mood(
+    '(－_－)',
+    'A7',
+    getColor('Grigio'),
+    getColor('Bianco'),
+    'bored A7'
+  ),
+  'ヽ⊙_⊙ﾉ A7': mood(
+    'ヽ⊙_⊙ﾉ',
+    'A7',
+    getColor('Arancione'),
+    getColor('Nero'),
+    'shocked A7'
+  ),
   '(◕‿◕ ) A7': mood(
     '(◕‿◕ )',
     'A7',
     getColor('Giallo'),
     getColor('Nero'),
+    'happy A7',
     getColor('Blu')
   ),
-  '(´◕︵◕`) A7': mood('(´◕︵◕`)', 'A7', getColor('Blu'), getColor('Nero')),
-  '(●__● ) A7': mood('(●__● )', 'A7', getColor('Viola'), getColor('Nero')),
+  '(´◕︵◕`) A7': mood(
+    '(´◕︵◕`)',
+    'A7',
+    getColor('Blu'),
+    getColor('Nero'),
+    'sad A7'
+  ),
+  '(●__● ) A7': mood(
+    '(●__● )',
+    'A7',
+    getColor('Viola'),
+    getColor('Nero'),
+    'neutral A7'
+  ),
 
   minimal: {
     format: 'A6',

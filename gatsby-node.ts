@@ -5,15 +5,8 @@ import { presets } from './src/utilities/arenaSettings'
 import { getProducts } from './src/utilities/stripeHelper'
 
 import dotenv from 'dotenv'
+import { slugify } from './src/utilities/arenaHelpers'
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
-
-// Helper to slugify names for URLs
-const slugify = (text: string) =>
-  text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .trim()
 
 export const createPages = async ({ actions }: any) => {
   const { createPage } = actions
@@ -48,7 +41,9 @@ export const createPages = async ({ actions }: any) => {
     const presetData = presetEntry ? presetEntry[1] : null
 
     // Use the Stripe name as the slug basis if no preset name exists
-    const finalSlug = slugify(presetName || stripeProduct.name)
+    const finalSlug = slugify(
+      presetData?.slug ?? presetName ?? stripeProduct.name
+    )
 
     createPage({
       path: `/prodotto/${finalSlug}`,

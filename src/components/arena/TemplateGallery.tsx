@@ -6,6 +6,7 @@ import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
 import Switch from './Switch'
 import Preview3DWrapper from './Preview3DWrapper'
 import { StripeProduct } from '../../utilities/stripeHelper'
+import { slugify } from '../../utilities/arenaHelpers'
 
 
 const TemplateItem = ({
@@ -31,11 +32,6 @@ const TemplateItem = ({
       currency: productData.default_price.currency.toUpperCase(),
     }).format(productData.default_price.unit_amount / 100);
   }, [productData]);
-
-  const slugify = (text: string) => {
-    return text.toString().toLowerCase()
-      .replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-').trim()
-  }
 
   const linkProduct = productData ? `/arena?preset=${name}&pid=${productData.id}&price_id=${productData.default_price.id}` : `/arena?preset=${name}`
   const linkProductPay = linkProduct + '&paynow=true'
@@ -102,7 +98,7 @@ const TemplateItem = ({
         <Button
           text="Vedi prodotto"
           // This links to the new static page we created
-          href={`/prodotto/${slugify(name)}`}
+          href={`/prodotto/${slugify(preset?.slug ?? name)}`}
           variant="primary"
           small
         />

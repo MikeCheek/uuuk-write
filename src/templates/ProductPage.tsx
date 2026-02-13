@@ -151,6 +151,8 @@ export const Head = ({ location, pageContext }: HeadProps<null, HeadPageContext>
     ? stripeData.images
     : [getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template)];
 
+
+
   return (
     <Seo
       lang="it"
