@@ -13,6 +13,10 @@ export type SeoProps = {
   noIndex?: boolean;
   images?: string[];
   bgColor?: string;
+
+  price?: number;
+  currency?: string;
+  sku?: string;
 };
 
 export type Meta = ConcatArray<PropertyMetaObj | NameMetaObj>;
@@ -46,9 +50,14 @@ const Index = ({
   structuredData = false,
   keywords,
   noIndex,
-  images = []
+  images = [],
+  price,
+  currency = 'EUR',
+  sku
 }: SeoProps) => {
   const { metadata, featuredImage } = useSiteMetadata();
+
+  metadata.siteUrl = metadata.siteUrl.endsWith('/') ? metadata.siteUrl : metadata.siteUrl + '/';
 
   const seo = {
     title: title && pathname != '/' ? title + ' | ' + metadata.title : metadata.title,
@@ -59,8 +68,9 @@ const Index = ({
   };
 
   const fallbackImage = seo.image?.images.fallback
+  const mainImage = metadata.siteUrl + (fallbackImage?.src || "");
 
-  const microData = {
+  const microData: any = {
     '@context': 'https://schema.org',
     '@graph': [
       {
@@ -74,24 +84,6 @@ const Index = ({
       },
       {
         '@context': 'https://www.schema.org',
-        '@type': 'Product',
-        name: seo.title,
-        description: seo.description,
-        image: [metadata.siteUrl + fallbackImage?.src, ...images.map((image) => metadata.siteUrl + image)],
-        url: seo.url,
-        brand: {
-          '@type': 'Brand',
-          name: metadata.title,
-        },
-        category: '3D Printed Agenda',
-        offers: {
-          '@type': 'AggregateOffer',
-          availability: 'https://schema.org/InStock',
-          priceCurrency: 'EUR',
-        },
-      },
-      {
-        '@context': 'https://www.schema.org',
         '@type': 'Organization',
         name: metadata.title,
         url: metadata.siteUrl,
@@ -100,6 +92,29 @@ const Index = ({
       },
     ],
   };
+
+  if (price) {
+    microData['@graph'].push({
+      '@type': 'Product',
+      name: title, // Use the specific product name
+      description: seo.description,
+      image: [mainImage, ...images.map((img) => (img.startsWith('http') ? img : metadata.siteUrl + img))],
+      sku: sku || pathname?.split('/').pop(),
+      brand: {
+        '@type': 'Brand',
+        name: 'UUUK',
+      },
+      offers: {
+        '@type': 'Offer',
+        url: seo.url,
+        price: (price / 100).toFixed(2), // Stripe prices are in cents
+        priceCurrency: currency,
+        availability: 'https://schema.org/InStock',
+        itemCondition: 'https://schema.org/NewCondition',
+        valueAddedTaxIncluded: true
+      },
+    });
+  }
 
   return (
     <>

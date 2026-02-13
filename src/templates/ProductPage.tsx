@@ -1,12 +1,13 @@
 // src/templates/ProductPage.tsx
 import React, { useState, useMemo } from 'react'
-import { PageProps, Link } from 'gatsby'
+import { PageProps, Link, HeadProps } from 'gatsby'
 import { Metadata } from '../utilities/arenaSettings' // Adjust path
 import Button from '../components/atoms/Button' // Adjust path
 import { getCoverTemplateImagePath } from '../utilities/arenaHelpers'
 import Switch from '../components/arena/Switch'
 import Preview3DWrapper from '../components/arena/Preview3DWrapper'
 import { StripeProduct } from '../utilities/stripeHelper'
+import Seo from '../components/atoms/Seo'
 
 // The data passed from gatsby-node via "context"
 interface PageContextType {
@@ -131,3 +132,38 @@ const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) =>
 }
 
 export default ProductPage
+
+type HeadPageContext = {
+  presetName: string
+  preset: Metadata
+  stripeData: StripeProduct | null
+}
+
+export const Head = ({ location, pageContext }: HeadProps<null, HeadPageContext>) => {
+  const { presetName, preset, stripeData } = pageContext;
+
+  // Construct a clean description
+  const description = preset
+    ? `Scopri l'agenda ${presetName} della collezione ${preset.frontCover.collection}. Formato ${preset.format}, personalizzala o acquistala subito!`
+    : `Scopri la nostra agenda personalizzata UUUK. Design unico e qualità premium.`;
+
+  const seoImages = stripeData?.images?.length
+    ? stripeData.images
+    : [getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template)];
+
+  return (
+    <Seo
+      lang="it"
+      // Use presetName since 'name' isn't in your context
+      title={presetName}
+      pathname={location.pathname}
+      description={description}
+      structuredData={true}
+      // Pass the raw amount (SEO component handles the decimal)
+      price={stripeData?.default_price?.unit_amount ? Number((stripeData.default_price.unit_amount / 100).toFixed(2)) : undefined}
+      currency={stripeData?.default_price?.currency?.toUpperCase() || 'EUR'}
+      sku={stripeData?.id}
+      images={seoImages}
+    />
+  )
+}
