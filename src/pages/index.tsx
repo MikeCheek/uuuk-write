@@ -37,7 +37,7 @@ export const Head = ({ location, data, pageContext }: HeadProps) => {
       }
       title={''}
       pathname={location.pathname}
-      description={"UUUK è l'agenda personalizzabile stampata in 3D. Scopri le nostre collezioni, scegli il tuo design e personalizzala per renderla veramente tua. Riscopri il piacere della scrittura. Acquista ora e rendi ogni giorno speciale con UUUK!"}
+      description={"UUUK è l'agenda personalizzabile stampata in 3D. Scopri le nostre collezioni, scegli il tuo design e personalizzala per renderla veramente tua. Riscopri il piacere della scrittura."}
       structuredData
     />
   )
