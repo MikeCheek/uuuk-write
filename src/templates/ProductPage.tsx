@@ -161,7 +161,7 @@ export const Head = ({ location, pageContext }: HeadProps<null, HeadPageContext>
       description={description}
       structuredData={true}
       // Pass the raw amount (SEO component handles the decimal)
-      price={stripeData?.default_price?.unit_amount ? Number((stripeData.default_price.unit_amount / 100).toFixed(2)) : undefined}
+      price={stripeData?.default_price?.unit_amount ? Number((stripeData.default_price.unit_amount / 100)) : undefined}
       currency={stripeData?.default_price?.currency?.toUpperCase() || 'EUR'}
       sku={stripeData?.id}
       images={seoImages}

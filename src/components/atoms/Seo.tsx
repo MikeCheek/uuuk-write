@@ -96,7 +96,7 @@ const Index = ({
   if (price) {
     microData['@graph'].push({
       '@type': 'Product',
-      name: title, // Use the specific product name
+      name: title,
       description: seo.description,
       image: [mainImage, ...images.map((img) => (img.startsWith('http') ? img : metadata.siteUrl + img))],
       sku: sku || pathname?.split('/').pop(),
@@ -104,14 +104,35 @@ const Index = ({
         '@type': 'Brand',
         name: 'UUUK',
       },
+      aggregateRating: {
+        // '@type': 'AggregateRating',
+        // ratingValue: '4.5',
+        // reviewCount: '1',
+      },
+      review: [
+        // {
+        //   '@type': 'Review',
+        //   reviewRating: {
+        //     '@type': 'Rating',
+        //     ratingValue: '5',
+        //   },
+        //   author: {
+        //     '@type': 'Person',
+        //     name: 'Customer',
+        //   },
+        //   reviewBody: 'Great product!',
+        // },
+      ],
       offers: {
-        '@type': 'Offer',
-        url: seo.url,
-        price: (price / 100).toFixed(2), // Stripe prices are in cents
+        '@type': 'AggregateOffer',
         priceCurrency: currency,
+        price: price,
+        lowPrice: price,
+        highPrice: price,
+        offerCount: '1',
+        url: seo.url,
         availability: 'https://schema.org/InStock',
         itemCondition: 'https://schema.org/NewCondition',
-        valueAddedTaxIncluded: true
       },
     });
   }
