@@ -1,4 +1,3 @@
-// src/templates/ProductPage.tsx
 import React, { useState, useMemo } from 'react'
 import { PageProps, Link, HeadProps } from 'gatsby'
 import { Metadata } from '../utilities/arenaSettings' // Adjust path
@@ -25,7 +24,6 @@ interface PageContext {
 const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) => {
   const { preset, presetName, stripeData } = pageContext
   const [mode, setMode] = useState<'flat' | '3D'>('flat')
-  const [loading, setLoading] = useState(false)
 
   const name = presetName ?? stripeData.name ?? `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`
 
@@ -104,9 +102,7 @@ const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) =>
 
             <div className="mt-4 pt-6 border-t border-gray-100">
               <div className="flex items-end gap-4 mb-8">
-                {loading ? (
-                  <div className="h-10 w-32 bg-gray-100 animate-pulse rounded"></div>
-                ) : formattedPrice ? (
+                {formattedPrice ? (
                   <span className="text-4xl font-bold text-gray-900">{formattedPrice}</span>
                 ) : (
                   <span className="text-gray-400 italic">Prezzo non disponibile</span>

@@ -4,9 +4,9 @@ const path = require('path')
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `UUUK | Write your story`,
+    title: `UUUK | La tua agenda stampata in 3D`,
     siteUrl: siteUrl,
-    keywords: [`innovation`, 'agenda', 'uuuk', 'creative', '3d print']
+    keywords: [`personalizzabile`, 'agenda', 'uuuk', 'creatività', 'stampa 3d']
   },
   // More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
   // If you use VSCode you can also use the GraphQL plugin
