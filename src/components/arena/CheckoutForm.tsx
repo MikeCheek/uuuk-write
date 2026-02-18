@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCheckout, PaymentElement, ShippingAddressElement } from '@stripe/react-stripe-js/checkout';
 import Button from '../atoms/Button';
 import { StripeCheckoutPaymentElementOptions } from '@stripe/stripe-js';
 
 const CheckoutForm = () => {
   const checkoutState = useCheckout();
+  const [loading, setLoading] = useState(false);
 
   // Configuration for a tighter UI
   const paymentElementOptions = {
@@ -20,6 +21,7 @@ const CheckoutForm = () => {
     event.preventDefault();
 
     if (checkoutState.type === 'loading' || checkoutState.type === 'error') return;
+    setLoading(true);
 
     const { checkout } = checkoutState;
     const result = await checkout.confirm({
@@ -29,6 +31,7 @@ const CheckoutForm = () => {
     if (result.type === 'error') {
       console.log(result.error.message);
     }
+    setLoading(false);
   };
 
   if (checkoutState.type === 'loading') return <div className="text-center py-10">Caricamento...</div>;
@@ -70,7 +73,7 @@ const CheckoutForm = () => {
 
           <div className="pt-2">
             <div className="w-full py-3 shadow-lg transform active:scale-95 transition-transform">
-              <Button text="Paga ora" />
+              <Button text="Paga ora" loading={loading} type="submit" />
             </div>
             <p className="text-[10px] text-center mt-3 opacity-50">
               Pagamento sicuro con Stripe. Non memorizziamo i dati della tua carta.
