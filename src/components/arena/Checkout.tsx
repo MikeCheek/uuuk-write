@@ -8,21 +8,6 @@ const stripePromise = loadStripe(
   process.env.GATSBY_STRIPE_PUBLISHABLE_KEY || ""
 )
 
-const shippingOptions = [
-  {
-    id: 'free-shipping',
-    label: 'Free Shipping',
-    detail: 'Delivery within 5-7 business days',
-    amount: 0,
-  },
-  {
-    id: 'express-shipping',
-    label: 'Express Shipping',
-    detail: 'Delivery within 1-2 business days',
-    amount: 500,
-  },
-];
-
 const Checkout = ({ metadata }: { metadata: Metadata }) => {
   const [error, setError] = useState<string | null>(null)
 
@@ -35,7 +20,6 @@ const Checkout = ({ metadata }: { metadata: Metadata }) => {
       PRICE_ID: priceId,
       SITE_URL: window.location.origin,
       metadata: metadata,
-      shippingOptions: shippingOptions
     }
     try {
       const res = await fetch('/api/create-checkout-session', {
@@ -69,9 +53,23 @@ const Checkout = ({ metadata }: { metadata: Metadata }) => {
         <p>ID prezzo non valido.</p>
       </div>
       :
-      <div className="[&_label]:!text-white" >
+      <div className="!text-white" >
         <CheckoutProvider stripe={stripePromise} options={{
-          clientSecret: promise
+          clientSecret: promise,
+          elementsOptions: {
+            appearance: {
+              theme: 'stripe',
+              variables: {
+                colorPrimary: '#4f46e5',
+                colorBackground: '#1f2937',
+                colorText: '#ffffff',
+                colorDanger: '#ef4444',
+                fontFamily: 'Arial, sans-serif',
+                spacingUnit: '4px',
+                borderRadius: '4px',
+              },
+            },
+          },
         }}
         >
           <CheckoutForm />

@@ -8,16 +8,10 @@ export default async function handler (
     apiVersion: '2025-11-17.clover'
   })
 
-  // const YOUR_DOMAIN = 'https://localhost:8000' //siteUrl
-
   const sanitize = (text: any): string => {
     if (!text) return ''
-    if (Array.isArray(text)) {
-      return text.map(sanitize).join(',')
-    }
-    if (typeof text === 'object') {
-      return JSON.stringify(text)
-    }
+    if (Array.isArray(text)) return text.map(sanitize).join(',')
+    if (typeof text === 'object') return JSON.stringify(text)
     return String(text)
   }
 
@@ -25,8 +19,20 @@ export default async function handler (
     try {
       const { PRICE_ID, SITE_URL, metadata } = req.body
 
-      // Optional: Sanitize metadata to ensure all values are strings
-      // Stripe will throw an error if you pass a number like { id: 123 }
+      // 1. Fetch the price details to see how much it costs
+      const price = await stripe.prices.retrieve(PRICE_ID)
+      const unitAmount = price.unit_amount || 0 // Amount in cents (e.g., 5000 = €50)
+
+      // 2. Define your threshold (e.g., €50.00)
+      const THRESHOLD = process.env.SHIPPING_THRESHOLD
+        ? parseInt(process.env.SHIPPING_THRESHOLD)
+        : 3000 // Default to 3000 cents (€30) if not set
+      const SHIPPING_STANDARD = process.env.SHIPPING_STANDARD || ''
+      const SHIPPING_FREE = process.env.SHIPPING_FREE || ''
+
+      const selectedShipping =
+        unitAmount >= THRESHOLD ? SHIPPING_FREE : SHIPPING_STANDARD
+
       const sanitizedMetadata = Object.entries(metadata || {}).reduce(
         (acc, [key, value]) => {
           acc[key] = sanitize(value)
@@ -34,7 +40,7 @@ export default async function handler (
         },
         {} as Record<string, string>
       )
-      // console.log('Sanitized Metadata:', sanitizedMetadata)
+
       const session = await stripe.checkout.sessions.create({
         ui_mode: 'custom',
         line_items: [
@@ -44,12 +50,17 @@ export default async function handler (
           }
         ],
         mode: 'payment',
+        // 3. Add Shipping Address collection and Options
+        shipping_address_collection: {
+          allowed_countries: ['IT'] // Adjust as needed
+        },
+        shipping_options: [
+          {
+            shipping_rate: selectedShipping
+          }
+        ],
         return_url: `${SITE_URL}/grazie?session_id={CHECKOUT_SESSION_ID}`,
-
-        // Pass the whole object here
         metadata: sanitizedMetadata,
-
-        // Also pass it here so it's attached to the actual transaction/charge
         payment_intent_data: {
           metadata: sanitizedMetadata
         }

@@ -1,5 +1,4 @@
 import React from 'react';
-import { graphql, type HeadProps } from "gatsby"
 import Seo from '../components/atoms/Seo';
 import Layout from '../components/organisms/Layout';
 import NewHero from '../components/organisms/NewHero';
@@ -8,6 +7,7 @@ import Footer from '../components/molecules/Footer';
 import Personal from '../components/molecules/Personal';
 import Banner from '../components/atoms/Banner';
 import Infinite from '../components/molecules/Infinite';
+import { HeadProps } from 'gatsby';
 
 const IndexPage = () => {
 

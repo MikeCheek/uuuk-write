@@ -1,9 +1,8 @@
 import type { ExtendedTextPosition, Metadata, Module } from '../utilities/arenaSettings';
-import React, { CSSProperties, useState, useId, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ShoppingCart, X, RotateCcw, Play } from 'lucide-react'; // Suggested icon library
 import {
   AgendaFormat, ColorOption, colors, Collection, CoverImageTemplate, FontSize, TextPosition, MAX_MODULES, formats, fontSizes, textPositions, collections, pageInteriors, steps,
-  getRandomPreset,
   getPresetFromKey,
   getPresetFromId
 } from '../utilities/arenaSettings';
@@ -11,7 +10,7 @@ import {
   getCoverTemplateImagePath, getTemplatesForCollection,
 
 } from '../utilities/arenaHelpers';
-import ProgressBar from '../components/arena/ProgressBar';
+import CompactProgressCircle from '../components/arena/CompactProgressCircle';
 import BackCover from '../components/arena/BackCover';
 import Checkout from '../components/arena/Checkout';
 import Format from '../components/arena/Format';
@@ -286,7 +285,7 @@ const Arena = () => {
         </h1>
 
         {/* Progress Bar */}
-        <ProgressBar steps={steps} currentStep={currentStep} />
+        <CompactProgressCircle steps={steps} currentStep={currentStep} />
 
         <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl animate-fadeIn">
           {/* Customization Options Panel */}
@@ -392,16 +391,16 @@ const Arena = () => {
         <button
           onClick={handlePrev}
           disabled={currentStep === 0}
-          className="px-4 py-2 rounded-lg bg-gray-300 text-black hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors fixed bottom-4 left-4"
+          className="px-4 py-2 rounded-lg bg-gray-300 text-black hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors fixed bottom-1/2 -translate-y-1/2 left-4"
         >
-          Indietro
+          {'<'}
         </button>
         {currentStep < steps.length - 1 ? (
           <button
             onClick={handleNext}
-            className="px-6 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors font-semibold fixed bottom-4 right-4"
+            className="px-6 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors font-semibold fixed bottom-1/2 -translate-y-1/2 right-4"
           >
-            Avanti
+            {'>'}
           </button>
         ) : <></>}
       </div>
