@@ -6,6 +6,8 @@ import { StripeCheckoutPaymentElementOptions } from '@stripe/stripe-js';
 const CheckoutForm = () => {
   const checkoutState = useCheckout();
   const [loading, setLoading] = useState(false);
+  const [promoCode, setPromoCode] = useState<string>();
+  const [error, setError] = useState<string | null>(null);
 
   // Configuration for a tighter UI
   const paymentElementOptions = {
@@ -30,12 +32,38 @@ const CheckoutForm = () => {
 
     if (result.type === 'error') {
       console.log(result.error.message);
+      setError(result.error.message);
     }
     setLoading(false);
   };
 
+
   if (checkoutState.type === 'loading') return <div className="text-center py-10">Caricamento...</div>;
   if (checkoutState.type === 'error') return <div className="text-red-500 italic">Errore: {checkoutState.error.message}</div>;
+
+  const handleDiscountApply = () => {
+    if (!promoCode || promoCode.trim() === '') {
+      setError('Inserisci un codice sconto valido.');
+      return;
+    }
+
+    checkoutState.checkout.applyPromotionCode(promoCode).then(() => {
+      setError(null);
+    }).catch((err) => {
+      setError(err.message);
+    });
+  }
+
+  const handleDiscountRemove = () => {
+    checkoutState.checkout.removePromotionCode().then(() => {
+      setPromoCode('');
+      setError(null);
+    }).catch((err) => {
+      setError(err.message);
+    });
+  }
+
+  const discountApplied = checkoutState.checkout.total.discount.minorUnitsAmount > 0
 
   return (
     <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
@@ -55,21 +83,70 @@ const CheckoutForm = () => {
         <section className="space-y-4">
           <div className="bg-white/5 p-4 rounded-lg border border-beige/20">
             <h3 className="text-sm font-bold uppercase tracking-wider mb-4 text-brown">Pagamento</h3>
-            <div className="mb-4 p-3 bg-beige/10 rounded border border-beige/30">
-              <p className="text-sm text-brown font-semibold">
-                Importo: <span className="font-bold">{checkoutState.checkout.total.subtotal.amount}</span>
-                <br />
-                Spedizione: <span className="font-bold">{checkoutState.checkout.total.shippingRate.amount}</span>
-                <br />
-                <br />
-                Totale: <span className="font-bold">{checkoutState.checkout.total.total.amount}</span>
-              </p>
+            <div className="mb-4 p-4 bg-beige/10 rounded-lg border border-beige/30 shadow-sm">
+              <div className="space-y-2 text-sm text-brown">
+
+                {/* Subtotal */}
+                <div className="flex justify-between">
+                  <span>Importo</span>
+                  <span className="font-medium">{checkoutState.checkout.total.subtotal.amount}</span>
+                </div>
+
+                {/* Shipping */}
+                <div className="flex justify-between">
+                  <span>Spedizione</span>
+                  <span className="font-medium">{checkoutState.checkout.total.shippingRate.amount}</span>
+                </div>
+
+                {/* Discount - Green text adds a positive "saving" feel */}
+                {
+                  discountApplied ?
+                    <div className="flex justify-between text-green-700">
+                      <span>Sconto</span>
+                      <span className="font-medium">- {checkoutState.checkout.total.discount.amount}</span>
+                    </div> : <></>
+                }
+
+                {/* Divider */}
+                <div className="my-2 border-t border-beige/30 pt-2">
+                  <div className="flex justify-between items-center text-base">
+                    <span className="font-bold text-brown-900">Totale</span>
+                    <span className="text-lg font-extrabold text-brown-900">
+                      {checkoutState.checkout.total.total.amount}
+                    </span>
+                  </div>
+                </div>
+
+              </div>
             </div>
             <p className="text-xs text-gray-500 mb-2">
               Spedizione gratuita per ordini sopra {process.env.SHIPPING_THRESHOLD ? (parseInt(process.env.SHIPPING_THRESHOLD) / 100).toFixed(2) : '30.00'}€
             </p>
+            {/* Discount Code Section */}
+            <div className="mb-4 p-3 bg-beige/10 rounded border border-beige/30">
+              <p onClick={() => setPromoCode('')} className="text-sm text-blue-600 hover:underline cursor-pointer">
+                Hai un codice sconto?
+              </p>
+              {promoCode !== undefined && (
+                <div className="mt-2 flex gap-2">
+                  <input
+                    type="text"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-beige/30 rounded bg-white/5 text-brown placeholder-gray-400 focus:outline-none focus:border-brown"
+                  />
+                  <Button
+                    onClick={discountApplied ? handleDiscountRemove : handleDiscountApply}
+                    text={discountApplied ? "Rimuovi" : "Applica"}
+                    small
+                  />
+                </div>
+              )}
+            </div>
             <PaymentElement options={paymentElementOptions} />
           </div>
+
+          {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
 
           <div className="pt-2">
             <div className="w-full py-3 shadow-lg transform active:scale-95 transition-transform">
@@ -81,8 +158,8 @@ const CheckoutForm = () => {
           </div>
         </section>
 
-      </div>
-    </form>
+      </div >
+    </form >
   );
 };
 

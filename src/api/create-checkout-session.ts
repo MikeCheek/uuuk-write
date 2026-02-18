@@ -61,6 +61,7 @@ export default async function handler (
         ],
         return_url: `${SITE_URL}/grazie?session_id={CHECKOUT_SESSION_ID}`,
         metadata: sanitizedMetadata,
+        allow_promotion_codes: true,
         payment_intent_data: {
           metadata: sanitizedMetadata
         }
