@@ -1,4 +1,3 @@
-import { CSSProperties, useMemo } from 'react'
 import {
   AgendaFormat,
   Collection,

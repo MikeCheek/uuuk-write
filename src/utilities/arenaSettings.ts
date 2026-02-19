@@ -1,3 +1,6 @@
+import { IGatsbyImageData } from 'gatsby-plugin-image'
+import { getCoverTemplateImagePath } from './arenaHelpers'
+
 // Define types for customization options
 export type AgendaFormat = 'A5' | 'A6' | 'A7'
 export type PageInterior = 'Righe' | 'Punti' | 'Vuoto'
@@ -84,6 +87,16 @@ interface RawMetadata {
 
 export interface Metadata extends RawMetadata {
   id: number
+  name?: string
+  priceId?: string
+  productId?: string
+  price?: number
+  image?: IGatsbyImageData | string
+}
+
+export interface CartItem extends Metadata {
+  quantity: number
+  cartId: number
 }
 
 export const imageAssets: Record<
@@ -144,8 +157,8 @@ export const steps = [
   'Copertina Anteriore',
   'Sidebars',
   'Copertina Posteriore',
-  'Revisione',
-  'Acquista'
+  'Revisione'
+  // 'Acquista'
 ]
 
 ////// TEMPLATES //////
@@ -228,21 +241,21 @@ const mood = (
 })
 
 const rawPresets: Record<string, RawMetadata> = {
-  Blank: {
-    format: 'A5',
-    frontCover: {
-      color: getColor('Bianco'),
-      collection: 'Custom',
-      template: undefined,
-      ...noText
-    },
-    modules: modules,
-    backCover: {
-      color: getColor('Bianco'),
-      ...noText
-    },
-    ...common
-  },
+  // Blank: {
+  //   format: 'A5',
+  //   frontCover: {
+  //     color: getColor('Bianco'),
+  //     collection: 'Custom',
+  //     template: undefined,
+  //     ...noText
+  //   },
+  //   modules: modules,
+  //   backCover: {
+  //     color: getColor('Bianco'),
+  //     ...noText
+  //   },
+  //   ...common
+  // },
   'Punto A5': triadic('Punto', 'A5'),
   'Flusso A5': triadic('Flusso', 'A5'),
   'Occhio A5': triadic('Occhio', 'A5'),
@@ -384,13 +397,13 @@ const rawPresets: Record<string, RawMetadata> = {
     'neutral A7'
   ),
 
-  minimal: {
+  Custom: {
     format: 'A6',
     frontCover: {
       color: colors.find(c => c.name === 'Nero')!,
       collection: 'Custom',
       template: undefined,
-      text: 'Eat. Write. Sleep. Repeat.',
+      text: 'La tua scritta',
       fontSize: 'Medio',
       position: 'Centro',
       textColor: colors.find(c => c.name === 'Arancione')!
@@ -398,7 +411,7 @@ const rawPresets: Record<string, RawMetadata> = {
     modules: modules,
     backCover: {
       color: colors.find(c => c.name === 'Nero')!,
-      text: 'UUUK AGENDA',
+      text: 'La tua scritta',
       fontSize: 'Medio',
       position: 'Sotto',
       textColor: colors.find(c => c.name === 'Arancione')!
@@ -431,4 +444,17 @@ export const getPresetFromKey = (key: string): Metadata => {
 export const getPresetFromId = (id: number): Metadata => {
   const preset = Object.values(presets).find(p => p.id === id)
   return preset || presets['Punto']
+}
+
+export const getPresetImageFromId = (id: number): IGatsbyImageData | string => {
+  const preset = getPresetFromId(id)
+  // return preset.image
+  //   ? preset.image
+  //   :
+
+  return getCoverTemplateImagePath(
+    preset.format,
+    preset.frontCover.collection,
+    preset.frontCover.template
+  )
 }

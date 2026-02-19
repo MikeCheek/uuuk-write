@@ -7,12 +7,11 @@ import {
   getPresetFromId
 } from '../utilities/arenaSettings';
 import {
-  getCoverTemplateImagePath, getTemplatesForCollection,
+  getTemplatesForCollection,
 
 } from '../utilities/arenaHelpers';
 import CompactProgressCircle from '../components/arena/CompactProgressCircle';
 import BackCover from '../components/arena/BackCover';
-import Checkout from '../components/arena/Checkout';
 import Format from '../components/arena/Format';
 import FrontCover from '../components/arena/FrontCover';
 import Modules from '../components/arena/Modules';
@@ -20,6 +19,8 @@ import Review from '../components/arena/Review';
 import Modal from '../components/atoms/Modal';
 import Layout from '../components/organisms/Layout';
 import Preview3DWrapper from '../components/arena/Preview3DWrapper';
+import { HeadProps } from 'gatsby';
+import Seo from '../components/atoms/Seo';
 
 const LOCAL_STORAGE_KEY = 'uuuk_agenda_draft';
 
@@ -58,7 +59,6 @@ const Arena = () => {
   const [backCoverTextColor, setBackCoverTextColor] = useState<ColorOption>(preset.backCover.textColor || colors[2]);
 
   // New UI States
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [pendingDraft, setPendingDraft] = useState<any>(null);
 
@@ -116,14 +116,6 @@ const Arena = () => {
     setShowResumeModal(false);
   };
 
-  // Helper for Sidebar content
-  const SummaryItem = ({ label, value }: { label: string, value: string | undefined }) => (
-    <div className="mb-4 border-b border-gray-700 pb-2">
-      <span className="text-xs text-gray-400 block uppercase tracking-widest">{label}</span>
-      <span className="text-white font-medium">{value ?? 'Nessun ' + label}</span>
-    </div>
-  );
-
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -178,7 +170,6 @@ const Arena = () => {
 
   const activeModule = modules[activeModuleIndex];
   const coverZOffset = Math.min(modules.length * 1.5, 10);
-  const templateImagePath = getCoverTemplateImagePath(format, frontCoverCollection, frontCoverTemplate);
 
   const previewProduct = {
     modules,
@@ -201,10 +192,10 @@ const Arena = () => {
     },
     currentStep: 0,
     id: preset.id || -1
-  };
+  } as Metadata;
 
   return (
-    <Layout showCustomCursor={false}>
+    <Layout showCustomCursor={false} shoppingCart>
       {/* RESUME MODAL */}
       <Modal show={showResumeModal} onClose={() => setShowResumeModal(false)} showCursor>
         <div className="flex flex-col items-center text-center p-4">
@@ -220,61 +211,6 @@ const Arena = () => {
           </div>
         </div>
       </Modal>
-
-      {/* SHOPPING CART BUTTON */}
-      <button
-        onClick={() => setIsSidebarOpen(true)}
-        className="fixed top-6 right-6 z-50 p-3 bg-yellow rounded-full shadow-strong hover:scale-110 transition-transform text-black"
-      >
-        <ShoppingCart size={24} />
-        {/* <span className="absolute -top-1 -right-1 bg-red text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
-          {modules.length + 2}
-        </span> */}
-      </button>
-
-      {/* CART SIDEBAR */}
-      <div className={`fixed top-0 right-0 h-full w-80 bg-gray-900 z-[1001] shadow-2xl transform transition-transform duration-500 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        <div className="p-6 h-full flex flex-col">
-          <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <ShoppingCart size={20} className="text-yellow" /> Dettagli Agenda
-            </h3>
-            <button onClick={() => setIsSidebarOpen(false)} className="text-gray-400 hover:text-white">
-              <X size={24} />
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-700">
-            <SummaryItem label="Formato" value={format} />
-            <SummaryItem label="Colore Copertina" value={frontCoverColor.name} />
-            <SummaryItem label="Testo Copertina" value={frontCoverText || 'Nessuno'} />
-            <SummaryItem label="Collezione" value={frontCoverCollection} />
-            <SummaryItem label="Template Copertina" value={frontCoverTemplate} />
-            <SummaryItem label="Sidebar Selezionate" value={`${modules.length} Sidebar`} />
-            <div className="pl-4 border-l-2 border-purple/30 mb-6">
-              {modules.map((m, i) => (
-                <div key={m.id} className="text-sm text-gray-300 mb-1">
-                  {i + 1}. {m.sidebarText} ({m.pageInterior})
-                </div>
-              ))}
-            </div>
-            <SummaryItem label="Testo Posteriore" value={backCoverText || 'Nessuno'} />
-          </div>
-
-          <button
-            disabled={currentStep === steps.length - 1}
-            onClick={() => { setIsSidebarOpen(false); setCurrentStep(steps.length - 1); }}
-            className="w-full py-4 bg-indigo-500 text-white rounded-xl font-bold hover:bg-indigo-600 transition-colors mt-4"
-          >
-            Vai al Checkout
-          </button>
-        </div>
-      </div>
-
-      {/* Overlay when sidebar open */}
-      {isSidebarOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1000]" onClick={() => setIsSidebarOpen(false)} />
-      )}
 
       <div className="min-h-screen bg-black mt-16 md:mt-0 p-4 md:p-8 flex flex-col items-center font-sans">
         <h1 className="text-4xl md:text-6xl font-heading font-extrabold mb-8 animate-fadeIn">
@@ -359,26 +295,15 @@ const Arena = () => {
             {/* Step 5: Review (Updated to include new fields) */}
             {currentStep === 4 && (
               <Review
-                format={format}
-                frontCoverColor={frontCoverColor}
-                frontCoverCollection={frontCoverCollection}
-                frontCoverTemplate={frontCoverTemplate}
-                frontCoverText={frontCoverText}
-                frontCoverFontSize={frontCoverFontSize}
-                frontCoverPosition={frontCoverPosition}
-                modules={modules}
-                backCoverColor={backCoverColor}
-                backCoverText={backCoverText}
-                backCoverFontSize={backCoverFontSize}
-                backCoverPosition={backCoverPosition}
+                item={previewProduct}
               />
             )}
 
-            {
+            {/* {
               currentStep === steps.length - 1 ? (
-                <Checkout metadata={metadata} />
+                <Checkout items={[metadata]} />
               ) : <></>
-            }
+            } */}
           </div>
 
           {/* 3D Preview Panel (Updated for text size/position) */}
@@ -410,3 +335,16 @@ const Arena = () => {
 };
 
 export default Arena;
+
+export const Head = ({ location }: HeadProps) => {
+
+  return (
+    <Seo
+      lang={"it"}
+      title={'Arena'}
+      pathname={location.pathname}
+      description={"Personalizza la tua UUUK con il nostro configuratore 3D. Scegli formato, copertina, moduli interni e molto altro per creare l'agenda perfetta per te. Esplora la nostra arena e dai vita alla tua UUUK unica e su misura."}
+      noIndex
+    />
+  )
+}

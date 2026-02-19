@@ -6,7 +6,9 @@ import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
 import Switch from './Switch'
 import Preview3DWrapper from './Preview3DWrapper'
 import { StripeProduct } from '../../utilities/stripeHelper'
-import { slugify } from '../../utilities/arenaHelpers'
+import { getCoverTemplateImagePath, slugify } from '../../utilities/arenaHelpers'
+import { useCart } from '../../utilities/cartContext'
+import { PlusIcon, ShoppingCartIcon } from 'lucide-react'
 
 
 const TemplateItem = ({
@@ -23,6 +25,7 @@ const TemplateItem = ({
   productData?: StripeProduct | null
 }) => {
   const [mode, setMode] = useState<'flat' | '3D'>('flat')
+  const { addToCart } = useCart();
 
   // Helper to format currency
   const formattedPrice = useMemo(() => {
@@ -102,6 +105,21 @@ const TemplateItem = ({
           variant="primary"
           small
         />
+        <button
+          onClick={() => addToCart({
+            ...preset,
+            productId: productData?.id,
+            priceId: productData?.default_price.id,
+            price: Number(productData?.default_price.unit_amount_decimal) / 100,
+            image: image ? image : preset.frontCover.template ? getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template) : undefined,
+            name
+          })}
+          className="bg-transparent relative border-2 border-beige text-beige hover:bg-beige hover:text-brown hover:border-brown rounded-lg px-3 py-2 transition-colors flex items-center gap-1"
+        >
+          <ShoppingCartIcon className="inline-block mr-1" size={16} />
+          <PlusIcon className="inline-block absolute top-px right-px" size={16} />
+          {/* Aggiungi al carrello */}
+        </button>
       </div>
     </div>
   )

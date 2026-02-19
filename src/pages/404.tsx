@@ -1,47 +1,35 @@
 import * as React from "react"
-import { Link, HeadFC, PageProps } from "gatsby"
+import { Link, HeadFC, PageProps, HeadProps } from "gatsby"
 import Typography from "../components/atoms/Typography"
-
-const pageStyles = {
-  color: "#232129",
-  padding: "96px",
-  fontFamily: "-apple-system, Roboto, sans-serif, serif",
-}
-const headingStyles = {
-  marginTop: 0,
-  marginBottom: 64,
-  maxWidth: 320,
-}
-
-const codeStyles = {
-  color: "#8A6534",
-  padding: 4,
-  backgroundColor: "#FFF4DB",
-  fontSize: "1.25rem",
-  borderRadius: 4,
-}
+import Layout from "../components/organisms/Layout"
+import Button from "../components/atoms/Button"
+import Seo from "../components/atoms/Seo"
 
 const NotFoundPage: React.FC<PageProps> = () => {
   return (
-    <main style={pageStyles}>
-      <h1 style={headingStyles}>Page not found</h1>
-      <Typography variant="p">
-        Sorry 😔, we couldn’t find what you were looking for.
-        <br />
-        {process.env.NODE_ENV === "development" ? (
-          <>
-            <br />
-            Try creating a page in <code style={codeStyles}>src/pages/</code>.
-            <br />
-          </>
-        ) : null}
-        <br />
-        <Link to="/">Go home</Link>.
-      </Typography>
-    </main>
+    <Layout showCustomCursor>
+      <div className="text-beige flex flex-col items-center justify-center min-h-screen gap-8 p-4">
+        <Typography variant="h1">Pagina non trovata</Typography>
+        <Typography variant="p">
+          Ti sei perso in mezzo alle pagine di UUUK?
+        </Typography>
+        <Button href="/" text="Torna alla homepage"></Button>
+      </div>
+    </Layout>
   )
 }
 
 export default NotFoundPage
 
-export const Head: HeadFC = () => <title>Not found</title>
+export const Head = ({ location }: HeadProps) => {
+
+  return (
+    <Seo
+      lang={"it"}
+      title={'404'}
+      pathname={location.pathname}
+      description={"Ops! Sembra che la pagina che stai cercando sia scomparsa nel nulla. Ma non preoccuparti, il nostro team di esploratori digitali è già al lavoro per riportarla alla luce. Nel frattempo, perché non torni alla homepage e continui a scoprire le meraviglie di UUUK?"}
+      noIndex
+    />
+  )
+}

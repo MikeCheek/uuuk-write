@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react"
-import { loadStripe, Stripe } from "@stripe/stripe-js"
+import React, { useMemo, useState } from "react"
+import { loadStripe } from "@stripe/stripe-js"
 import { CheckoutProvider } from '@stripe/react-stripe-js/checkout';
 import CheckoutForm from "./CheckoutForm";
 import { Metadata } from "../../utilities/arenaSettings";
@@ -8,18 +8,18 @@ const stripePromise = loadStripe(
   process.env.GATSBY_STRIPE_PUBLISHABLE_KEY || ""
 )
 
-const Checkout = ({ metadata }: { metadata: Metadata }) => {
+const Checkout = ({ items }: { items: Metadata[] }) => {
   const [error, setError] = useState<string | null>(null)
 
   // Get price id from url params
-  const urlParams = new URLSearchParams(window.location.search);
-  const priceId = urlParams.get('price_id')
+  // const urlParams = new URLSearchParams(window.location.search);
+  // const priceId = urlParams.get('price_id')
 
   const promise = useMemo(async () => {
     const data = {
-      PRICE_ID: priceId,
+      // PRICE_ID: priceId,
       SITE_URL: window.location.origin,
-      metadata: metadata,
+      metadata: items,
     }
     try {
       const res = await fetch('/api/create-checkout-session', {
@@ -39,7 +39,7 @@ const Checkout = ({ metadata }: { metadata: Metadata }) => {
       setError('Errore sconosciuto durante la creazione della sessione di checkout.')
       return Promise.reject('Errore sconosciuto durante la creazione della sessione di checkout.')
     }
-  }, [metadata]);
+  }, [items]);
 
 
   return error ?
@@ -48,33 +48,33 @@ const Checkout = ({ metadata }: { metadata: Metadata }) => {
       <p>{error}</p>
     </div>
     :
-    priceId === null || priceId.trim() === '' ?
-      <div className="text-white" >
-        <p>ID prezzo non valido.</p>
-      </div>
-      :
-      <div className="!text-white" >
-        <CheckoutProvider stripe={stripePromise} options={{
-          clientSecret: promise,
-          elementsOptions: {
-            appearance: {
-              theme: 'stripe',
-              variables: {
-                colorPrimary: '#4f46e5',
-                colorBackground: '#1f2937',
-                colorText: '#ffffff',
-                colorDanger: '#ef4444',
-                fontFamily: 'Arial, sans-serif',
-                spacingUnit: '4px',
-                borderRadius: '4px',
-              },
+    // priceId === null || priceId.trim() === '' ?
+    //   <div className="text-white" >
+    //     <p>ID prezzo non valido.</p>
+    //   </div>
+    //   :
+    <div className="!text-white" >
+      <CheckoutProvider stripe={stripePromise} options={{
+        clientSecret: promise,
+        elementsOptions: {
+          appearance: {
+            theme: 'stripe',
+            variables: {
+              colorPrimary: '#4f46e5',
+              colorBackground: '#1f2937',
+              colorText: '#ffffff',
+              colorDanger: '#ef4444',
+              fontFamily: 'Arial, sans-serif',
+              spacingUnit: '4px',
+              borderRadius: '4px',
             },
           },
-        }}
-        >
-          <CheckoutForm />
-        </CheckoutProvider >
-      </div>
+        },
+      }}
+      >
+        <CheckoutForm />
+      </CheckoutProvider >
+    </div>
 }
 
 export default Checkout

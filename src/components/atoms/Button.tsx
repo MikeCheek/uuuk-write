@@ -10,6 +10,7 @@ interface ButtonProps {
   variant?: "primary" | "secondary"
   loading?: boolean,
   type?: "button" | "submit" | "reset"
+  theme?: "blue" | "beige"
 }
 
 const Button = ({
@@ -20,7 +21,8 @@ const Button = ({
   smaller = false,
   variant = "primary",
   loading = false,
-  type = "button"
+  type = "button",
+  theme = "beige"
 }: ButtonProps) => {
 
   // Logic for sizing to keep the JSX clean
@@ -43,8 +45,15 @@ const Button = ({
   `
 
   const variantStyle = variant === "primary"
-    ? "bg-blue text-beige shadow-md hover:shadow-lg hover:bg-opacity-90 focus:ring-blue"
-    : "bg-transparent border-2 border-beige text-beige hover:bg-beige hover:text-blue focus:ring-beige"
+    ?
+    // theme === "blue"
+    //   ? 
+    "bg-blue text-beige shadow-md hover:shadow-lg hover:bg-opacity-90 focus:ring-blue"
+    // : 
+    // "bg-beige text-blue shadow-md hover:shadow-lg hover:bg-opacity-90 focus:ring-beige"
+    : theme === "blue"
+      ? "bg-transparent border-2 border-blue text-blue hover:bg-blue hover:text-beige focus:ring-blue"
+      : "bg-transparent border-2 border-beige text-beige hover:bg-beige hover:text-blue focus:ring-beige"
 
   const style = `${baseStyle} ${variantStyle}`
 

@@ -1,8 +1,9 @@
 import React from 'react'
 import Layout from '../components/organisms/Layout'
 import Typography from '../components/atoms/Typography'
-import { Link } from 'gatsby'
+import { HeadProps, Link } from 'gatsby'
 import Button from '../components/atoms/Button'
+import Seo from '../components/atoms/Seo'
 
 const Grazie = () => {
   return (
@@ -17,3 +18,16 @@ const Grazie = () => {
 }
 
 export default Grazie
+
+export const Head = ({ location }: HeadProps) => {
+
+  return (
+    <Seo
+      lang={"it"}
+      title={'Grazie'}
+      pathname={location.pathname}
+      description={"Grazie per aver acquistato la tua UUUK. Ti contatteremo al più presto per completare il tuo ordine."}
+      noIndex
+    />
+  )
+}
