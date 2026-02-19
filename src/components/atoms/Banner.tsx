@@ -28,7 +28,7 @@ const Banner = () => {
           </div>
         </div>
       </div>
-      <a href="https://www.instagram.com/uuuk.notes/" target="_blank" rel="noopener noreferrer"
+      <a title='Pagina Instagram' href="https://www.instagram.com/uuuk.notes/" target="_blank" rel="noopener noreferrer"
         className="md:ml-4 cursor-none px-4 md:px-8 py-3 md:text-lg font-medium rounded-lg text-white bg-transparent border border-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-amber-700 focus:ring-white transition duration-300 ease-in-out shadow-none hover:shadow-md transform hover:scale-105"
       >
         Dai un'occhiata
