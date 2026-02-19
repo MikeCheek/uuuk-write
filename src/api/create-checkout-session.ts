@@ -1,4 +1,5 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby'
+import { CartItem } from '../utilities/arenaSettings'
 
 export default async function handler (
   req: GatsbyFunctionRequest,
@@ -29,8 +30,8 @@ export default async function handler (
 
       // 1. Build line items from metadata array
       let totalAmount = 0
-      const line_items = metadata.map((item: any) => {
-        totalAmount += item.unitAmount || 0
+      const line_items = metadata.map((item: CartItem) => {
+        totalAmount += item.price || 0
         return {
           price: item.priceId,
           quantity: item.quantity || 1
@@ -38,7 +39,7 @@ export default async function handler (
       })
 
       const selectedShipping =
-        totalAmount >= THRESHOLD ? SHIPPING_FREE : SHIPPING_STANDARD
+        totalAmount * 100 >= THRESHOLD ? SHIPPING_FREE : SHIPPING_STANDARD
 
       const sanitizedMetadata = Object.entries(metadata || {}).reduce(
         (acc, [key, value]) => {
