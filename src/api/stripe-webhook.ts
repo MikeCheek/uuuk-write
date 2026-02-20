@@ -59,26 +59,23 @@ export default async function handler (
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
 
-    // Dynamically choose the collection name
     const collectionName = session.livemode ? 'orders' : 'orders-test'
 
-    // Metadata items are strings in Stripe, parse them back to JSON
-    // const cartItems = session.metadata?.cartItems
-    //   ? JSON.parse(session.metadata.cartItems)
-    //   : []
-
-    await db.collection(collectionName).doc(session.id).set({
-      orderId: session.id,
-      stripeCustomerId: session.customer,
-      amount: session.amount_total,
-      currency: session.currency,
-      customer_details: session.customer_details,
-      shipping_details: session.collected_information?.shipping_details,
-      items: session.metadata?.cartItems, //cartItems,
-      status: 'paid',
-      isTest: !session.livemode,
-      createdAt: new Date().toISOString()
-    })
+    await db.collection(collectionName).doc(session.id).set(
+      {
+        orderId: session.id,
+        stripeCustomerId: session.customer,
+        amount: session.amount_total,
+        currency: session.currency,
+        customer_details: session.customer_details,
+        shipping_details: session.collected_information?.shipping_details,
+        // items: session.metadata?.cartItems,
+        status: 'paid',
+        isTest: !session.livemode,
+        updatedAt: new Date().toISOString()
+      },
+      { merge: true }
+    )
   }
 
   res.json({ received: true })

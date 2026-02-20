@@ -33,6 +33,21 @@ const Checkout = ({ items }: { items: Metadata[] }) => {
         throw new Error(`Server error: ${res.statusText}`);
       }
       const data_1 = await res.json();
+
+      const resOrder = await fetch("/api/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId: data_1.sessionId,
+          cartItems: items,
+          livemode: process.env.NODE_ENV === 'production'
+        }),
+      })
+
+      if (!resOrder.ok) {
+        throw new Error(`Failed to create order document: ${resOrder.statusText}`)
+      }
+
       return data_1.clientSecret;
 
     } catch (e) {

@@ -3,7 +3,9 @@ import { CartItem } from '../utilities/arenaSettings'
 
 export default async function handler (
   req: GatsbyFunctionRequest,
-  res: GatsbyFunctionResponse<{ clientSecret: string } | { message: string }>
+  res: GatsbyFunctionResponse<
+    { clientSecret: string; sessionId: string } | { message: string }
+  >
 ) {
   const stripe = require('stripe')(process.env.STRIPE_API_KEY, {
     apiVersion: '2025-11-17.clover'
@@ -72,7 +74,7 @@ export default async function handler (
         // }
       })
 
-      res.send({ clientSecret: session.client_secret })
+      res.send({ clientSecret: session.client_secret, sessionId: session.id })
     } catch (error) {
       console.log('Error', error)
       res.status(500).send({ message: 'Internal Server Error' })
