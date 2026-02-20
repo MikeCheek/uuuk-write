@@ -1,7 +1,19 @@
-import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby'
+import {
+  GatsbyFunctionRequest,
+  GatsbyFunctionResponse,
+  GatsbyFunctionConfig
+} from 'gatsby'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import Stripe from 'stripe'
+
+export const config: GatsbyFunctionConfig = {
+  bodyParser: {
+    raw: {
+      type: `application/json`
+    }
+  }
+}
 
 // Initialize Firebase Admin (use Environment Variables!)
 if (!getApps().length) {
@@ -27,10 +39,8 @@ export default async function handler (
 
   try {
     // Verify the event came from Stripe
-    const body =
-      typeof req.body === 'string' ? req.body : JSON.stringify(req.body)
     event = stripe.webhooks.constructEvent(
-      body,
+      req.body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!
     )
