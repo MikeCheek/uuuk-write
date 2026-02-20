@@ -63,9 +63,9 @@ export default async function handler (
     const collectionName = session.livemode ? 'orders' : 'orders-test'
 
     // Metadata items are strings in Stripe, parse them back to JSON
-    const cartItems = session.metadata?.cartItems
-      ? JSON.parse(session.metadata.cartItems)
-      : []
+    // const cartItems = session.metadata?.cartItems
+    //   ? JSON.parse(session.metadata.cartItems)
+    //   : []
 
     await db.collection(collectionName).doc(session.id).set({
       orderId: session.id,
@@ -74,7 +74,7 @@ export default async function handler (
       currency: session.currency,
       customer_details: session.customer_details,
       shipping_details: session.collected_information?.shipping_details,
-      items: cartItems,
+      items: session.metadata?.cartItems, //cartItems,
       status: 'paid',
       isTest: !session.livemode,
       createdAt: new Date().toISOString()
