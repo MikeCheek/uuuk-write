@@ -35,6 +35,13 @@ export default async function handler (
 
   let event: Stripe.Event
 
+  console.log('Signature:', sig)
+  console.log('Body type:', typeof req.body)
+  console.log(
+    'Body content:',
+    req.body instanceof Buffer ? req.body.toString() : req.body
+  )
+
   try {
     const payload =
       req.body instanceof Buffer
