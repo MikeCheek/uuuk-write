@@ -62,7 +62,10 @@ export default async function handler (
           }
         ],
         return_url: `${SITE_URL}/grazie?session_id={CHECKOUT_SESSION_ID}`,
-        // metadata: sanitizedMetadata,
+        metadata: {
+          // Stringify complex objects because Stripe metadata only accepts strings
+          cartItems: JSON.stringify(sanitizedMetadata)
+        },
         allow_promotion_codes: true
         // payment_intent_data: {
         //   metadata: sanitizedMetadata
