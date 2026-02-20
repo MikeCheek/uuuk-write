@@ -46,15 +46,6 @@ export default async function handler (
   try {
     const rawBody = await getRawBody(req)
 
-    console.log({
-      isBuffer: Buffer.isBuffer(rawBody),
-      type: typeof rawBody,
-      constructor: rawBody?.constructor?.name,
-      preview: Buffer.isBuffer(rawBody)
-        ? rawBody.toString('utf8').slice(0, 100)
-        : JSON.stringify(rawBody).slice(0, 100)
-    })
-
     event = stripe.webhooks.constructEvent(
       rawBody,
       sig,
