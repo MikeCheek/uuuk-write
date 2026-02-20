@@ -36,9 +36,13 @@ export default async function handler (
   let event: Stripe.Event
 
   try {
-    // If Gatsby successfully passed the raw buffer, this will now work.
+    const payload =
+      req.body instanceof Buffer
+        ? req.body
+        : Buffer.from(JSON.stringify(req.body))
+
     event = stripe.webhooks.constructEvent(
-      req.body as Buffer,
+      payload,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!
     )
