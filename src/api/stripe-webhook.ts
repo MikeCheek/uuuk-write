@@ -7,12 +7,9 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import Stripe from 'stripe'
 
-// 1. This is critical. It tells Gatsby to stop parsing JSON into an object.
 export const config: GatsbyFunctionConfig = {
   bodyParser: {
-    raw: {
-      type: `application/json`
-    }
+    raw: {}
   }
 }
 
@@ -41,7 +38,7 @@ export default async function handler (
   try {
     // If Gatsby successfully passed the raw buffer, this will now work.
     event = stripe.webhooks.constructEvent(
-      req.body,
+      req.body as Buffer,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!
     )
@@ -67,7 +64,7 @@ export default async function handler (
       amount: session.amount_total,
       currency: session.currency,
       customer_details: session.customer_details,
-      shipping_details: session.shipping_address_collection, // Fixed: use shipping_details from session
+      shipping_details: session.collected_information?.shipping_details,
       items: cartItems,
       status: 'paid',
       isTest: !session.livemode,
