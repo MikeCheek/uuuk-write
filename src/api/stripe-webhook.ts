@@ -35,12 +35,9 @@ export default async function handler (
 
   let event: Stripe.Event
 
-  console.log('Signature:', sig)
-  console.log('Body type:', typeof req.body)
-  console.log(
-    'Body content:',
-    req.body instanceof Buffer ? req.body.toString() : req.body
-  )
+  console.log('isBuffer:', Buffer.isBuffer(req.body))
+  console.log('typeof:', typeof req.body)
+  console.log('constructor:', req.body?.constructor?.name)
 
   try {
     const payload =
