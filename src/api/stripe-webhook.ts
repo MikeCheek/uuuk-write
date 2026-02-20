@@ -36,10 +36,6 @@ export default async function handler (
 
   const sig = req.headers['stripe-signature'] as string
 
-  // 2. LOG THIS to verify. It should look like <Buffer 7b 22 69 64...>
-  // If it looks like a regular Javascript Object {}, the config isn't working yet.
-  console.log('Request Body Type:', typeof req.body)
-
   let event: Stripe.Event
 
   try {
@@ -57,12 +53,15 @@ export default async function handler (
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
 
+    // Dynamically choose the collection name
+    const collectionName = session.livemode ? 'orders' : 'orders-test'
+
     // Metadata items are strings in Stripe, parse them back to JSON
     const cartItems = session.metadata?.cartItems
       ? JSON.parse(session.metadata.cartItems)
       : []
 
-    await db.collection('orders').doc(session.id).set({
+    await db.collection(collectionName).doc(session.id).set({
       orderId: session.id,
       stripeCustomerId: session.customer,
       amount: session.amount_total,
@@ -71,6 +70,7 @@ export default async function handler (
       shipping_details: session.shipping_address_collection, // Fixed: use shipping_details from session
       items: cartItems,
       status: 'paid',
+      isTest: !session.livemode,
       createdAt: new Date().toISOString()
     })
   }
