@@ -27,8 +27,10 @@ export default async function handler (
 
   try {
     // Verify the event came from Stripe
+    const body =
+      typeof req.body === 'string' ? req.body : JSON.stringify(req.body)
     event = stripe.webhooks.constructEvent(
-      req.body,
+      body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!
     )

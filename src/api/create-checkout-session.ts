@@ -64,7 +64,7 @@ export default async function handler (
         return_url: `${SITE_URL}/grazie?session_id={CHECKOUT_SESSION_ID}`,
         metadata: {
           // Stringify complex objects because Stripe metadata only accepts strings
-          cartItems: JSON.stringify(sanitizedMetadata)
+          cartItems: JSON.stringify(sanitizedMetadata).substring(0, 500) // Truncate to 500 chars if needed
         },
         allow_promotion_codes: true
         // payment_intent_data: {
