@@ -23,6 +23,14 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY!, {
   apiVersion: '2026-01-28.clover'
 })
 
+const getRawBody = async (req: any): Promise<Buffer> => {
+  const chunks: Uint8Array[] = []
+  for await (const chunk of req) {
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk)
+  }
+  return Buffer.concat(chunks)
+}
+
 export default async function handler (
   req: GatsbyFunctionRequest,
   res: GatsbyFunctionResponse
@@ -35,18 +43,20 @@ export default async function handler (
 
   let event: Stripe.Event
 
-  console.log('isBuffer:', Buffer.isBuffer(req.body))
-  console.log('typeof:', typeof req.body)
-  console.log('constructor:', req.body?.constructor?.name)
-
   try {
-    const payload =
-      req.body instanceof Buffer
-        ? req.body
-        : Buffer.from(JSON.stringify(req.body))
+    const rawBody = await getRawBody(req)
+
+    console.log({
+      isBuffer: Buffer.isBuffer(rawBody),
+      type: typeof rawBody,
+      constructor: rawBody?.constructor?.name,
+      preview: Buffer.isBuffer(rawBody)
+        ? rawBody.toString('utf8').slice(0, 100)
+        : JSON.stringify(rawBody).slice(0, 100)
+    })
 
     event = stripe.webhooks.constructEvent(
-      payload,
+      rawBody,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!
     )
