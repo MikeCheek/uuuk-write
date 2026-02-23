@@ -40,7 +40,7 @@ const Checkout = ({ items }: { items: Metadata[] }) => {
         body: JSON.stringify({
           sessionId: data_1.sessionId,
           cartItems: items,
-          livemode: process.env.NODE_ENV === 'production'
+          livemode: process.env.GATSBY_STRIPE_PUBLISHABLE_KEY?.includes("pk_live") || false
         }),
       })
 
