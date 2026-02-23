@@ -35,13 +35,19 @@ const useSiteMetadata = (): {
           keywords
         }
       }
-      featuredImage: file(absolutePath: { glob: "**/src/images/logo-og.jpg" }) {
+      featuredImage: file(absolutePath: { glob: "**/src/images/logo.png" }) {
         childImageSharp {
-          gatsbyImageData(layout: FIXED, width: 1200)
+          gatsbyImageData(layout: FIXED, width: 720)
         }
       }
     }
   `)
+
+  // featuredImage: file(absolutePath: { glob: "**/src/images/logo-og.jpg" }) {
+  //   childImageSharp {
+  //     gatsbyImageData(layout: FIXED, width: 1200)
+  //   }
+  // }
 
   return { metadata: data.site.siteMetadata, featuredImage: data.featuredImage }
 }

@@ -58,6 +58,9 @@ export default async function handler (
         shipping_address_collection: {
           allowed_countries: ['IT']
         },
+        phone_number_collection: {
+          enabled: true
+        },
         shipping_options: [
           {
             shipping_rate: selectedShipping
@@ -69,6 +72,7 @@ export default async function handler (
           cartItems: JSON.stringify(sanitizedMetadata).substring(0, 500) // Truncate to 500 chars if needed
         },
         allow_promotion_codes: true
+
         // payment_intent_data: {
         //   metadata: sanitizedMetadata
         // }
