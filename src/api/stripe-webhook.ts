@@ -199,7 +199,7 @@ const sendEmailJsOrderConfirmation = async (payload: {
     .join('\n')
 
   const templateParams = {
-    to_email: payload.toEmail,
+    email: payload.toEmail,
     to_name: payload.toName,
     order_id: payload.orderId,
     order_total: formatAmount(payload.amount, payload.currency),
