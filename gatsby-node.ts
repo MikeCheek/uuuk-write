@@ -6,6 +6,7 @@ import { getProducts } from './src/utilities/stripeHelper'
 
 import dotenv from 'dotenv'
 import { slugify } from './src/utilities/arenaHelpers'
+
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
 
 export const createPages = async ({ actions }: any) => {
