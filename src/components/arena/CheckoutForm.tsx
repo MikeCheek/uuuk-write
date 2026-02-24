@@ -7,6 +7,8 @@ const CheckoutForm = () => {
   const checkoutState = useCheckout();
   const [loading, setLoading] = useState(false);
   const [promoCode, setPromoCode] = useState<string>();
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   // Configuration for a tighter UI
@@ -23,11 +25,33 @@ const CheckoutForm = () => {
     event.preventDefault();
 
     if (checkoutState.type === 'loading' || checkoutState.type === 'error') return;
+
+    const emailTrimmed = customerEmail.trim();
+    const phoneTrimmed = customerPhone.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(emailTrimmed)) {
+      setError('Inserisci una email valida.');
+      return;
+    }
+
+    if (phoneTrimmed.length < 6) {
+      setError('Inserisci un numero di telefono valido.');
+      return;
+    }
+
+    // if (!checkoutState.checkout.shippingAddress?.name) {
+    //   console.log('Shipping address incomplete:', checkoutState.checkout);
+    //   setError('Inserisci nome e indirizzo di spedizione completi.');
+    //   return;
+    // }
+
     setLoading(true);
 
     const { checkout } = checkoutState;
     const result = await checkout.confirm({
-      email: 'customer@example.com' // Ensure this is dynamically populated
+      email: emailTrimmed,
+      phoneNumber: phoneTrimmed
     });
 
     if (result.type === 'error') {
@@ -72,6 +96,35 @@ const CheckoutForm = () => {
         Desktop: Two columns to avoid long scrolling
       */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-start">
+
+        {/* Section 0: Contact Info */}
+        <section className="bg-white/5 p-4 rounded-lg border border-beige/20 md:col-span-2">
+          <h3 className="text-sm font-bold uppercase tracking-wider mb-4 text-brown">Contatti</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs mb-1 text-brown">Email *</label>
+              <input
+                type="email"
+                required
+                value={customerEmail}
+                onChange={(e) => setCustomerEmail(e.target.value)}
+                placeholder="nome@esempio.com"
+                className="w-full px-3 py-2 text-sm border border-beige/30 rounded bg-white/5 text-brown placeholder-gray-400 focus:outline-none focus:border-brown"
+              />
+            </div>
+            <div>
+              <label className="block text-xs mb-1 text-brown">Telefono *</label>
+              <input
+                type="tel"
+                required
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                placeholder="+39 333 1234567"
+                className="w-full px-3 py-2 text-sm border border-beige/30 rounded bg-white/5 text-brown placeholder-gray-400 focus:outline-none focus:border-brown"
+              />
+            </div>
+          </div>
+        </section>
 
         {/* Section 1: Shipping */}
         <section className="bg-white/5 p-4 rounded-lg border border-beige/20">

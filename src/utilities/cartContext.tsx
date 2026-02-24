@@ -21,11 +21,14 @@ const CartContext = createContext<{
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const { showSnackbar } = useSnackbar();
   // 1. Initialize state from LocalStorage or empty array
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    if (typeof window === 'undefined') return [];
+  const [cart, setCart] = useState<CartItem[]>([]);
+
+  useEffect(() => {
     const savedCart = localStorage.getItem('shopping_cart');
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
 
   // 2. Persist to LocalStorage whenever the cart changes
   useEffect(() => {

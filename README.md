@@ -6,7 +6,6 @@
 [![npm](https://img.shields.io/badge/npm-6.14.13-blue.svg)](https://www.npmjs.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-
 <p align="center">
   <a href="https://www.gatsbyjs.com/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts">
     <img alt="Gatsby" src="https://www.gatsbyjs.com/Gatsby-Monogram.svg" width="60" />
@@ -43,7 +42,6 @@
     Edit `src/pages/index.tsx` to see your site update in real-time!
 
 4.  **Learn more**
-
     - [Documentation](https://www.gatsbyjs.com/docs/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
     - [Tutorials](https://www.gatsbyjs.com/docs/tutorial/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
     - [Guides](https://www.gatsbyjs.com/docs/how-to/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
@@ -56,3 +54,17 @@
 Deploy this starter with one click on [Netlify](https://app.netlify.com/signup):
 
 [<img src="https://www.netlify.com/img/deploy/button.svg" alt="Deploy to Netlify" />](https://app.netlify.com/start/deploy?repository=https://github.com/gatsbyjs/gatsby-starter-minimal-ts)
+
+## Environment variables
+
+For checkout, webhook processing, and transactional emails, configure these variables in your local and deploy environments:
+
+- STRIPE_API_KEY
+- STRIPE_WEBHOOK_SECRET
+- FIREBASE_SERVICE_ACCOUNT
+- EMAILJS_SERVICE_ID
+- EMAILJS_TEMPLATE_ID
+- EMAILJS_PUBLIC_KEY
+- EMAILJS_PRIVATE_KEY
+
+The webhook at src/api/stripe-webhook.ts sends a confirmation email after checkout.session.completed with order line items and invoice/receipt links (when available).

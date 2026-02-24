@@ -11,15 +11,14 @@ const CartFloatingButton = ({ setIsSidebarOpen }: { setIsSidebarOpen: (isOpen: b
       className="fixed top-6 right-6 z-50 p-3 bg-yellow rounded-full shadow-strong hover:scale-110 transition-transform text-black cursor-pointer"
     >
       <ShoppingCart size={24} />
-      {
-        typeof window !== 'undefined' ? (
-          <div className="absolute -top-1 -right-1 bg-red text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold"
-            style={{ opacity: totalItems > 0 ? 1 : 0, transition: 'opacity 0.3s ease-in-out' }}
-          >
-            {totalItems}
-          </div>
-        ) : <></>
-      }
+      {totalItems > 0 ? (
+        <div
+          className="absolute -top-1 -right-1 bg-red text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold"
+          style={{ opacity: 1, transition: 'opacity 0.3s ease-in-out' }}
+        >
+          {totalItems}
+        </div>
+      ) : null}
     </div>
   )
 }
