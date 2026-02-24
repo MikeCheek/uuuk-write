@@ -17,7 +17,8 @@ const Grazie = () => {
     <Layout >
       <div className='flex flex-col w-full items-center justify-center h-full text-center gap-8'>
         <Typography variant="h1" className='text-beige'>Grazie del tuo acquisto!</Typography>
-        <Typography variant='p' render='h2' className='!text-brown'>Stiamo preparando il tuo UUUK. Ti contatteremo al più presto.</Typography>
+        <Typography variant='p' render='h2' className='!text-brown'>Stiamo preparando il tuo UUUK!</Typography>
+        <Typography variant='p' render='p' className='!text-gray-700'>Ti arriverà a breve una mail di conferma del tuo ordine dalla quale potrai seguire lo stato del tuo ordine.</Typography>
         <Button text="Torna alla home" href="/" />
       </div>
     </Layout>
