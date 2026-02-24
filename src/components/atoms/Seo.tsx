@@ -13,32 +13,9 @@ export type SeoProps = {
   noIndex?: boolean;
   images?: string[];
   bgColor?: string;
-
   price?: number;
   currency?: string;
   sku?: string;
-};
-
-export type Meta = ConcatArray<PropertyMetaObj | NameMetaObj>;
-
-export type PropertyMetaObj = {
-  property: string;
-  content: string;
-};
-
-export type NameMetaObj = {
-  name: string;
-  content: string;
-};
-
-export type QueryTypes = {
-  site: {
-    siteMetadata: {
-      title: string;
-      description: string;
-      author: string;
-    };
-  };
 };
 
 const Index = ({
@@ -57,84 +34,83 @@ const Index = ({
 }: SeoProps) => {
   const { metadata, featuredImage } = useSiteMetadata();
 
-  metadata.siteUrl = metadata.siteUrl.endsWith('/') ? metadata.siteUrl : metadata.siteUrl + '/';
+  // Ensure siteUrl always ends with a slash for consistent path building
+  const siteUrl = metadata.siteUrl.endsWith('/') ? metadata.siteUrl : `${metadata.siteUrl}/`;
 
   const seo = {
-    title: title && pathname != '/' ? title + ' | ' + metadata.title : metadata.title,
+    title: title && pathname !== '/' ? `${title} | ${metadata.title}` : metadata.title,
     description: description || metadata.description,
-    url: `${metadata.siteUrl}${pathname || ``}`,
+    url: `${siteUrl}${pathname?.replace(/^\//, '') || ''}`, // Prevents double slashes like https://uuuk.it//prodotto
     image: featuredImage?.childImageSharp?.gatsbyImageData,
     keywords: keywords || metadata.keywords,
   };
 
-  const fallbackImage = seo.image?.images.fallback
-  const mainImage = images.length > 0 ? images[0].startsWith('http') ? images[0] : metadata.siteUrl + images[0] : metadata.siteUrl + (fallbackImage?.src || "");
+  const fallbackImageSrc = seo.image?.images?.fallback?.src || "";
 
+  // Safely determine the main image
+  let mainImage = `${siteUrl}${fallbackImageSrc.replace(/^\//, '')}`;
+  if (images.length > 0 && images[0]) {
+    mainImage = images[0].startsWith('http') ? images[0] : `${siteUrl}${images[0].replace(/^\//, '')}`;
+  }
+
+  // 1. Fixed JSON-LD Graph Structure (Context only at root)
   const microData: any = {
     '@context': 'https://schema.org',
     '@graph': [
       {
-        '@context': 'https://www.schema.org',
         '@type': 'WebSite',
         url: seo.url,
         name: seo.title,
         description: seo.description,
-        image: [mainImage, ...images.map((image) => (image.startsWith('http') ? image : metadata.siteUrl + image))],
-        inLanguage: 'IT',
+        inLanguage: lang.toUpperCase(),
       },
       {
-        '@context': 'https://www.schema.org',
         '@type': 'Organization',
         name: metadata.title,
-        url: metadata.siteUrl,
-        logo: metadata.siteUrl + fallbackImage?.src,
+        url: siteUrl,
+        logo: `${siteUrl}${fallbackImageSrc.replace(/^\//, '')}`,
         description: metadata.description,
       },
     ],
   };
 
   if (price) {
-    microData['@graph'].push({
+    const productSchema: any = {
       '@type': 'Product',
       name: title,
       description: seo.description,
-      image: [mainImage, ...images.map((img) => (img.startsWith('http') ? img : metadata.siteUrl + img))],
-      sku: sku || pathname?.split('/').pop(),
+      image: [
+        mainImage,
+        ...images.map((img) => (img.startsWith('http') ? img : `${siteUrl}${img.replace(/^\//, '')}`))
+      ],
+      sku: sku || pathname?.split('/').filter(Boolean).pop(),
       brand: {
         '@type': 'Brand',
         name: 'UUUK',
       },
-      aggregateRating: {
-        // '@type': 'AggregateRating',
-        // ratingValue: '4.5',
-        // reviewCount: '1',
-      },
-      review: [
-        // {
-        //   '@type': 'Review',
-        //   reviewRating: {
-        //     '@type': 'Rating',
-        //     ratingValue: '5',
-        //   },
-        //   author: {
-        //     '@type': 'Person',
-        //     name: 'Customer',
-        //   },
-        //   reviewBody: 'Great product!',
-        // },
-      ],
       offers: {
-        '@type': 'AggregateOffer',
+        '@type': 'Offer',
         priceCurrency: currency,
         price: price,
-        lowPrice: price,
-        highPrice: price,
-        offerCount: '1',
         url: seo.url,
         availability: 'https://schema.org/InStock',
         itemCondition: 'https://schema.org/NewCondition',
+        shippingDetails: {
+          '@type': 'OfferShippingDetails',
+          shippingRate: {
+            '@type': 'MonetaryAmount',
+            value: '0',
+            currency: currency,
+          },
+          shippingDestination: {
+            '@type': 'DefinedRegion',
+            addressCountry: 'IT',
+          },
+        },
       },
-    });
+    };
+
+    microData['@graph'].push(productSchema);
   }
 
   return (
@@ -142,45 +118,49 @@ const Index = ({
       <html lang={lang} />
       <title>{seo.title}</title>
       <meta name="description" content={seo.description} />
-      <meta name="keywords" content={seo.keywords} />
-      <meta name="image" content={mainImage ?? metadata.siteUrl + fallbackImage?.src} />
+      {seo.keywords && <meta name="keywords" content={seo.keywords} />}
+      <meta name="image" content={mainImage} />
+
+      {/* Open Graph */}
       <meta property="og:title" content={seo.title} />
-      <meta property="og:locale" content={'it_IT'} />
-      <meta property="og:image" content={mainImage ?? metadata.siteUrl + fallbackImage?.src} />
-      <meta property="og:image:type" content={'image/jpg'} />
+      <meta property="og:locale" content={lang === 'it' ? 'it_IT' : 'en_US'} />
+      <meta property="og:image" content={mainImage} />
+      <meta property="og:image:type" content="image/jpeg" />
       <meta property="og:image:alt" content={seo.title} />
-      <meta property="og:image:secure_url" content={mainImage ?? metadata.siteUrl + fallbackImage?.src} />
-      <meta property="og:image:width" content={`${seo.image?.width ?? '900'}`} />
-      <meta property="og:image:height" content={`${seo.image?.height ?? '1200'}`} />
+      <meta property="og:image:secure_url" content={mainImage} />
+      {seo.image?.width && <meta property="og:image:width" content={`${seo.image.width}`} />}
+      {seo.image?.height && <meta property="og:image:height" content={`${seo.image.height}`} />}
       <meta property="og:url" content={seo.url} />
-      <meta property="og:site_name" content={seo.title} />
-      <meta property="og:description" content={description} />
+      <meta property="og:site_name" content={metadata.title} />
+
+      {/* 2. Fixed og:description fallback */}
+      <meta property="og:description" content={seo.description} />
       <meta property="og:type" content={price ? 'product' : 'website'} />
-      <meta name="twitter:card" content="summary" />
+
+      {/* Twitter - 3. Upgraded to summary_large_image */}
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={seo.title} />
       <meta name="twitter:url" content={seo.url} />
       <meta name="twitter:description" content={seo.description} />
-      <meta name="twitter:image" content={mainImage ?? metadata.siteUrl + fallbackImage?.src} />
+      <meta name="twitter:image" content={mainImage} />
 
-      <meta name="robots" content="max-image-preview:standard" />
+      {/* Robots Control */}
+      {noIndex ? (
+        <meta name="robots" content="noindex,nofollow" />
+      ) : (
+        <meta name="robots" content="index,follow,max-image-preview:large" />
+      )}
 
-      {structuredData ? <Script type="application/ld+json">{JSON.stringify(microData)}</Script> : <></>}
-      {noIndex ? <meta name="robots" content="noindex,nofollow" /> : <></>}
+      {/* JSON-LD Script */}
+      {structuredData && (
+        <Script type="application/ld+json">{JSON.stringify(microData)}</Script>
+      )}
 
-      {/* <link rel="dns-prefetch" href="https://static.mailerlite.com/" /> */}
-      {/* <link rel="dns-prefetch" href="https://www.googletagmanager.com" /> */}
-      {/* <link rel="dns-prefetch" href="https://assets.mlcdn.com" /> */}
-      {/* <link rel="preconnect" href="https://static.mailerlite.com/" /> */}
-      {/* <link rel="preconnect" href="https://www.googletagmanager.com" /> */}
-      {/* <link rel="preconnect" href="https://assets.mlcdn.com" /> */}
-
+      {/* 4. Restored crossOrigin for proper Font Loading */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com"
-      // crossOrigin='anonymous'
-      />
-
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link href="https://fonts.googleapis.com/css2?family=Calligraffitti&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
-      {/* <meta name="twitter:creator" content={seo.twitterUsername} /> */}
+
       {children}
     </>
   );
