@@ -295,11 +295,25 @@ export default async function handler (
       fullSession.customer_details?.name ||
       null
 
-    const orderRef = db.collection(collectionName).doc(session.id)
-    const currentOrderSnapshot = await orderRef.get()
-    const currentOrderData = currentOrderSnapshot.exists
-      ? currentOrderSnapshot.data()
-      : null
+    // Query for existing order by orderId (sessionId) to maintain idempotency
+    const existingOrderQuery = db
+      .collection(collectionName)
+      .where('orderId', '==', session.id)
+      .limit(1)
+    const existingOrderSnapshot = await existingOrderQuery.get()
+
+    let orderRef: any
+    let currentOrderData: any = null
+
+    if (!existingOrderSnapshot.empty) {
+      // Order exists, use existing document reference
+      orderRef = existingOrderSnapshot.docs[0].ref
+      currentOrderData = existingOrderSnapshot.docs[0].data()
+    } else {
+      // New order, create with auto-generated ID
+      orderRef = db.collection(collectionName).doc()
+    }
+
     const alreadySentEmail = currentOrderData?.emailNotification?.sent === true
 
     const emailResult = alreadySentEmail
@@ -307,7 +321,8 @@ export default async function handler (
       : await sendEmailJsOrderConfirmation({
           toEmail: customerEmail,
           toName: customerName,
-          orderId: session.id,
+          orderId: orderRef.id,
+          // sessionId: session.id,
           amount: fullSession.amount_total,
           currency: fullSession.currency,
           orderLineItems,
@@ -319,7 +334,9 @@ export default async function handler (
     const nowIso = new Date().toISOString()
 
     const orderPayload: Record<string, unknown> = {
-      orderId: session.id,
+      orderId: orderRef.id,
+      sessionId: session.id,
+      documentId: orderRef.id, // Store the auto-generated doc ID
       stripeCustomerId:
         typeof fullSession.customer === 'string'
           ? fullSession.customer

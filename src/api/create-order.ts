@@ -33,18 +33,21 @@ async function createOrderDocument (
   if (!sessionId) throw new Error('Missing sessionId')
 
   const collection = livemode ? 'orders' : 'orders-test'
-  const docRef = db.collection(collection).doc(sessionId)
+  const docRef = db.collection(collection).doc() // Firestore auto-generates ID
 
   await docRef.set(
     {
-      orderId: sessionId,
+      orderId: sessionId, // Keep sessionId as a field for reference
+      documentId: docRef.id, // Store the auto-generated doc ID
       items: cartItems,
       status: 'pending',
       isTest: !livemode,
       createdAt: new Date().toISOString()
     },
-    { merge: true } // merge ensures idempotency
+    { merge: true }
   )
+
+  return docRef.id // Return the generated ID
 }
 
 // Gatsby Function Handler
@@ -63,9 +66,9 @@ export default async function handler (
       return res.status(400).json({ error: 'Missing sessionId or cartItems' })
     }
 
-    await createOrderDocument(sessionId, cartItems, livemode)
+    const documentId = await createOrderDocument(sessionId, cartItems, livemode)
 
-    return res.json({ success: true })
+    return res.json({ success: true, documentId, sessionId })
   } catch (err: any) {
     console.error('Error creating order document:', err)
     return res.status(500).json({ error: err.message })
