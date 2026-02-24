@@ -150,13 +150,13 @@ const Index = ({
       <meta property="og:image:type" content={'image/jpg'} />
       <meta property="og:image:alt" content={seo.title} />
       <meta property="og:image:secure_url" content={mainImage ?? metadata.siteUrl + fallbackImage?.src} />
-      <meta property="og:image:width" content={`${seo.image?.width ?? '1200'}`} />
-      <meta property="og:image:height" content={`${seo.image?.height ?? '630'}`} />
+      <meta property="og:image:width" content={`${seo.image?.width ?? '900'}`} />
+      <meta property="og:image:height" content={`${seo.image?.height ?? '1200'}`} />
       <meta property="og:url" content={seo.url} />
       <meta property="og:site_name" content={seo.title} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content={'website'} />
-      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:card" content="summary" />
       <meta name="twitter:title" content={seo.title} />
       <meta name="twitter:url" content={seo.url} />
       <meta name="twitter:description" content={seo.description} />
