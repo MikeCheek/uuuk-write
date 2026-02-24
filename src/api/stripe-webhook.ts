@@ -143,7 +143,7 @@ const sendEmailJsOrderConfirmation = async (payload: {
   orderId: string
   amount: number | null
   currency: string | null
-  lineItems: OrderLineItem[]
+  orderLineItems: OrderLineItem[]
   invoice: InvoiceDetails
   shippingAddress: Stripe.Address | null
   shippingName: string | null
@@ -167,7 +167,7 @@ const sendEmailJsOrderConfirmation = async (payload: {
     }
   }
 
-  const orderItemsText = payload.lineItems
+  const orderItemsText = payload.orderLineItems
     .map(
       item =>
         `- ${item.name} x${item.quantity} (${formatAmount(
@@ -270,7 +270,7 @@ export default async function handler (
       expand: ['customer', 'payment_intent']
     })
 
-    const lineItems = await getOrderLineItems(session.id)
+    const orderLineItems = await getOrderLineItems(session.id)
     const invoice = await getInvoiceDetails(fullSession)
     const customerObject =
       typeof fullSession.customer !== 'string' ? fullSession.customer : null
@@ -310,7 +310,7 @@ export default async function handler (
           orderId: session.id,
           amount: fullSession.amount_total,
           currency: fullSession.currency,
-          lineItems,
+          orderLineItems,
           invoice,
           shippingAddress,
           shippingName
@@ -329,7 +329,7 @@ export default async function handler (
       customer_details: fullSession.customer_details,
       shipping_details:
         fullSession.collected_information?.shipping_details || null,
-      items: lineItems,
+      orderLineItems,
       invoice,
       status: 'paid',
       isTest: !session.livemode,
