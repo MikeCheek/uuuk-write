@@ -1,11 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Layout from '../components/organisms/Layout'
 import Typography from '../components/atoms/Typography'
 import { HeadProps, Link } from 'gatsby'
 import Button from '../components/atoms/Button'
 import Seo from '../components/atoms/Seo'
+import { useCart } from '../utilities/cartContext'
 
 const Grazie = () => {
+  const { clearCart, cart } = useCart();
+
+  useEffect(() => {
+    clearCart();
+  }, [cart, clearCart]);
+
   return (
     <Layout >
       <div className='flex flex-col w-full items-center justify-center h-full text-center gap-8'>
