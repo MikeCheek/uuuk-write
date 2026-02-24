@@ -68,7 +68,7 @@ const Index = ({
   };
 
   const fallbackImage = seo.image?.images.fallback
-  const mainImage = metadata.siteUrl + (fallbackImage?.src || "");
+  const mainImage = images.length > 0 ? images[0].startsWith('http') ? images[0] : metadata.siteUrl + images[0] : metadata.siteUrl + (fallbackImage?.src || "");
 
   const microData: any = {
     '@context': 'https://schema.org',
@@ -79,7 +79,7 @@ const Index = ({
         url: seo.url,
         name: seo.title,
         description: seo.description,
-        image: [metadata.siteUrl + fallbackImage?.src, ...images.map((image) => metadata.siteUrl + image)],
+        image: [mainImage, ...images.map((image) => (image.startsWith('http') ? image : metadata.siteUrl + image))],
         inLanguage: 'IT',
       },
       {
@@ -143,13 +143,13 @@ const Index = ({
       <title>{seo.title}</title>
       <meta name="description" content={seo.description} />
       <meta name="keywords" content={seo.keywords} />
-      <meta name="image" content={metadata.siteUrl + fallbackImage?.src} />
+      <meta name="image" content={mainImage ?? metadata.siteUrl + fallbackImage?.src} />
       <meta property="og:title" content={seo.title} />
       <meta property="og:locale" content={'it_IT'} />
-      <meta property="og:image" content={metadata.siteUrl + fallbackImage?.src} />
+      <meta property="og:image" content={mainImage ?? metadata.siteUrl + fallbackImage?.src} />
       <meta property="og:image:type" content={'image/jpg'} />
       <meta property="og:image:alt" content={seo.title} />
-      <meta property="og:image:secure_url" content={metadata.siteUrl + fallbackImage?.src} />
+      <meta property="og:image:secure_url" content={mainImage ?? metadata.siteUrl + fallbackImage?.src} />
       <meta property="og:image:width" content={`${seo.image?.width ?? '1200'}`} />
       <meta property="og:image:height" content={`${seo.image?.height ?? '630'}`} />
       <meta property="og:url" content={seo.url} />
@@ -160,7 +160,7 @@ const Index = ({
       <meta name="twitter:title" content={seo.title} />
       <meta name="twitter:url" content={seo.url} />
       <meta name="twitter:description" content={seo.description} />
-      <meta name="twitter:image" content={metadata.siteUrl + fallbackImage?.src} />
+      <meta name="twitter:image" content={mainImage ?? metadata.siteUrl + fallbackImage?.src} />
 
       <meta name="robots" content="max-image-preview:large" />
 
