@@ -2,16 +2,12 @@ import {
   AgendaFormat,
   Collection,
   CoverImageTemplate,
-  MoodTemplate,
   imageAssets,
-  TriadicTemplate,
   moodTemplates,
   triadicTemplates,
   TextPosition,
   FontSize,
-  ExtendedTextPosition,
-  ColorOption,
-  Module
+  ExtendedTextPosition
 } from './arenaSettings'
 
 export const slugify = (text: string) =>

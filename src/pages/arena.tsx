@@ -31,6 +31,10 @@ const Arena = () => {
     getPresetFromId(Number(queryParams.get('preset_id')!))
     : getPresetFromKey("Punto A5")!;
 
+  const isCustom = queryParams.has('custom') ? queryParams.get('custom') === 'true' : false;
+
+  const customSteps = isCustom ? steps : steps.filter(s => s !== 'Copertina Anteriore');
+
   const step = queryParams.has('paynow') ? steps.length - 1 : preset.currentStep || 0;
 
   const [currentStep, setCurrentStep] = useState(step);
@@ -117,9 +121,9 @@ const Arena = () => {
   };
 
   const handleNext = () => {
-    if (currentStep < steps.length - 1) {
+    if (currentStep < customSteps.length - 1) {
       setCurrentStep(currentStep + 1);
-      if (steps[currentStep] === 'Sidebars') {
+      if (customSteps[currentStep] === 'Sidebars') {
         setActiveModuleIndex(0);
       }
     }
@@ -128,7 +132,7 @@ const Arena = () => {
   const handlePrev = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
-      if (steps[currentStep] === 'Copertina Posteriore') {
+      if (customSteps[currentStep] === 'Copertina Posteriore') {
         setActiveModuleIndex(modules.length - 1);
       }
     }
@@ -221,89 +225,70 @@ const Arena = () => {
         </h1>
 
         {/* Progress Bar */}
-        <CompactProgressCircle steps={steps} currentStep={currentStep} />
+        <CompactProgressCircle steps={customSteps} currentStep={currentStep} />
 
         <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl animate-fadeIn">
           {/* Customization Options Panel */}
           <div className="lg:w-1/2 bg-gray-800 p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-white">Step {currentStep + 1}: {steps[currentStep]}</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-white">
+              {/* Step {currentStep + 1}:  */}
+              {customSteps[currentStep]}</h2>
             <hr className="mb-4" />
 
-            {/* Step 1: Format */}
-            {currentStep === 0 && (
-              <Format formats={formats} setFormat={setFormat} format={format} />
-            )}
-
-            {/* Step 2: Front Cover (Template, Color, Graphic, Text) */}
-            {currentStep === 1 && (
-              <FrontCover
-                frontCoverCollection={frontCoverCollection}
-                setFrontCoverCollection={setFrontCoverCollection}
-                frontCoverTemplate={frontCoverTemplate}
-                setFrontCoverTemplate={setFrontCoverTemplate}
-                frontCoverColor={frontCoverColor}
-                setFrontCoverColor={setFrontCoverColor}
-                frontCoverText={frontCoverText}
-                setFrontCoverText={setFrontCoverText}
-                availableTemplates={availableTemplates}
-                fontSizes={fontSizes}
-                setFrontCoverFontSize={setFrontCoverFontSize}
-                frontCoverTextColor={frontCoverTextColor}
-                setFrontCoverTextColor={setFrontCoverTextColor}
-                frontCoverFontSize={frontCoverFontSize}
-                textPositions={textPositions}
-                setFrontCoverPosition={setFrontCoverPosition}
-                frontCoverPosition={frontCoverPosition}
-                collections={collections}
-              />
-            )}
-
-            {/* Step 3: Modules */}
-            {currentStep === 2 && activeModule && (
-              <Modules
-                modules={modules}
-                setActiveModuleIndex={setActiveModuleIndex}
-                activeModuleIndex={activeModuleIndex}
-                addModule={addModule}
-                removeModule={removeModule}
-                updateModule={updateModule}
-                colors={colors}
-                pageInteriors={pageInteriors}
-              />
-            )}
-
-
-            {/* Step 4: Back Cover (Color, Graphic, Text) */}
-            {currentStep === 3 && (
-              <BackCover
-                backCoverColor={backCoverColor}
-                setBackCoverColor={setBackCoverColor}
-                backCoverText={backCoverText}
-                backCoverTextColor={backCoverTextColor}
-                setBackCoverTextColor={setBackCoverTextColor}
-                setBackCoverText={setBackCoverText}
-                backCoverFontSize={backCoverFontSize}
-                setBackCoverFontSize={setBackCoverFontSize}
-                backCoverPosition={backCoverPosition}
-                setBackCoverPosition={setBackCoverPosition}
-                fontSizes={fontSizes}
-                textPositions={textPositions}
-                colors={colors}
-              />
-            )}
-
-            {/* Step 5: Review (Updated to include new fields) */}
-            {currentStep === 4 && (
-              <Review
-                item={previewProduct}
-              />
-            )}
-
-            {/* {
-              currentStep === steps.length - 1 ? (
-                <Checkout items={[metadata]} />
-              ) : <></>
-            } */}
+            {
+              customSteps[currentStep] === 'Formato' ? (
+                <Format formats={formats} setFormat={setFormat} format={format} />
+              ) : customSteps[currentStep] === 'Copertina Anteriore' && isCustom ? (
+                <FrontCover
+                  frontCoverCollection={frontCoverCollection}
+                  setFrontCoverCollection={setFrontCoverCollection}
+                  frontCoverTemplate={frontCoverTemplate}
+                  setFrontCoverTemplate={setFrontCoverTemplate}
+                  frontCoverColor={frontCoverColor}
+                  setFrontCoverColor={setFrontCoverColor}
+                  frontCoverText={frontCoverText}
+                  setFrontCoverText={setFrontCoverText}
+                  availableTemplates={availableTemplates}
+                  fontSizes={fontSizes}
+                  setFrontCoverFontSize={setFrontCoverFontSize}
+                  frontCoverTextColor={frontCoverTextColor}
+                  setFrontCoverTextColor={setFrontCoverTextColor}
+                  frontCoverFontSize={frontCoverFontSize}
+                  textPositions={textPositions}
+                  setFrontCoverPosition={setFrontCoverPosition}
+                  frontCoverPosition={frontCoverPosition}
+                  collections={collections}
+                />
+              ) : customSteps[currentStep] === 'Sidebars' && activeModule ? (
+                <Modules
+                  modules={modules}
+                  setActiveModuleIndex={setActiveModuleIndex}
+                  activeModuleIndex={activeModuleIndex}
+                  addModule={addModule}
+                  removeModule={removeModule}
+                  updateModule={updateModule}
+                  colors={colors}
+                  pageInteriors={pageInteriors}
+                />
+              ) : customSteps[currentStep] === 'Copertina Posteriore' ? (
+                <BackCover
+                  backCoverColor={backCoverColor}
+                  setBackCoverColor={setBackCoverColor}
+                  backCoverText={backCoverText}
+                  backCoverTextColor={backCoverTextColor}
+                  setBackCoverTextColor={setBackCoverTextColor}
+                  setBackCoverText={setBackCoverText}
+                  backCoverFontSize={backCoverFontSize}
+                  setBackCoverFontSize={setBackCoverFontSize}
+                  backCoverPosition={backCoverPosition}
+                  setBackCoverPosition={setBackCoverPosition}
+                  fontSizes={fontSizes}
+                  textPositions={textPositions}
+                  colors={colors}
+                />
+              ) : customSteps[currentStep] === 'Revisione' ?
+                <Review item={previewProduct} />
+                : <></>}
           </div>
 
           {/* 3D Preview Panel (Updated for text size/position) */}
@@ -320,7 +305,7 @@ const Arena = () => {
         >
           {'<'}
         </button>
-        {currentStep < steps.length - 1 ? (
+        {currentStep < customSteps.length - 1 ? (
           <button
             onClick={handleNext}
             className="px-6 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors font-semibold fixed bottom-1/2 -translate-y-1/2 right-4"

@@ -153,7 +153,7 @@ export const triadicTemplates: TriadicTemplate[] = imageAssets
 export const MAX_MODULES = 3
 
 export const steps = [
-  'Formato',
+  // 'Formato',
   'Copertina Anteriore',
   'Sidebars',
   'Copertina Posteriore',
