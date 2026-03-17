@@ -8,55 +8,52 @@ import { StaticImage } from "gatsby-plugin-image";
 const UUUKForever = () => {
 
   return (
-    // <Section id="section2" bgColor="bg-gradient-to-b from-1% from-white via-50% via-red to-99% to-blue" shapeColor="text-white" preset="left">
-    <Section id="section2" bgColor="bg-beige" shapeColor="text-darkBrown" preset="left">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_15%,rgba(249,117,22,0.2),transparent_38%),radial-gradient(circle_at_82%_75%,rgba(37,41,169,0.18),transparent_42%)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(11,17,34,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(11,17,34,0.08)_1px,transparent_1px)] [background-size:28px_28px]" />
+    <Section id="section2" bgColor="bg-[#f3ebde]" shapeColor="text-darkBrown" preset="center">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(249,117,22,0.22),transparent_36%),radial-gradient(circle_at_90%_80%,rgba(37,41,169,0.16),transparent_42%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(11,17,34,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(11,17,34,0.08)_1px,transparent_1px)] [background-size:28px_28px]" />
 
-      <ShowOnView className="relative z-10 text-left md:text-center text-darkBrown self-start mt-20" fadeIn="leftRight">
-        <div className="self-start">
-          <Typography variant="h2" render="div" className="font-bold uppercase mr-auto !text-black opacity-90 text-center md:text-left [perspective:400px] max-w-[330px] md:max-w-[530px] md:ml-[5vw]" >
-            <h2 className="text-3xl md:text-5xl w-fit scale-y-125 ml-4">Un UUUK</h2>
-            <h2 className="[transform:rotateY(-35deg)_rotateZ(2deg)] text-5xl md:text-7xl w-fit text-shadow-lg -mb-2 ml-24 md:ml-32">è per</h2>
-            <h2 className="[transform:rotateY(50deg)_rotateZ(5deg)] text-7xl md:text-8xl w-fit text-shadow-lg -mt-2  md:ml-8">sempre</h2>
+      <div className="relative z-10 grid w-full max-w-6xl grid-cols-1 items-center gap-10 py-14 md:grid-cols-12 md:py-20">
+        <ShowOnView className="!items-start !text-left md:col-span-6" fadeIn="leftRight">
+          <span className="inline-flex rounded-full border border-[#f97516]/40 bg-[#f97516]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#b05a10]">
+            Modularità
+          </span>
+
+          <Typography variant="h2" render="div" className="font-bold uppercase !text-[#0b1122] mt-6 mb-6 [perspective:450px]" >
+            <h2 className="text-4xl md:text-6xl w-fit">Un UUUK</h2>
+            <h2 className="[transform:rotateY(-26deg)] text-6xl md:text-8xl w-fit -mt-2 ml-10 md:ml-14 text-shadow-lg">e per</h2>
+            <h2 className="text-5xl md:text-7xl w-fit -mt-2 ml-2 text-[#1e2e63]">sempre</h2>
           </Typography>
 
+          <div className="rounded-2xl border border-[#0b1122]/10 /80 p-5 shadow-[0_14px_34px_rgba(11,17,34,0.12)] md:max-w-[30rem]">
+            <Typography variant="p" className="!mx-0 !max-w-none !mt-0 text-left !text-[#2f241c]">
+              {renderText("Puoi sempre cambiare le parti del tuo UUUK e personalizzarlo secondo le tue ***esigenze***")}
+            </Typography>
+          </div>
+        </ShowOnView>
 
-          <Typography variant="p" className="mr-auto ml-0 text-center md:text-left bg-opacity-80 rounded-lg self-center justify-self-center !md:max-w-[33vw] md:ml-28 md:mt-40">
-            {renderText("Puoi sempre cambiare le parti del tuo UUUK e personalizzarlo secondo le tue ***esigenze***")}
-          </Typography>
-        </div>
-        {/* <ul className="space-y-5 text-beige mt-10 text-sm md:text-xl">
-            <li className="flex items-center justify-start">
-              <ModuleIconWarm className="w-5 h-5 md:w-8 md:h-8 text-yellow mr-3 flex-shrink-0 mt-1" />
-              <span><strong className="font-semibold text-black opacity-80">Brainstorming Hub:</strong> Mind maps, idea lists, visual thinking tools.</span>
-            </li>
-            <li className="flex items-center justify-start">
-              <ModuleIconWarm className="w-5 h-5 md:w-8 md:h-8 text-yellow mr-3 flex-shrink-0 mt-1" />
-              <span><strong className="font-semibold text-black opacity-80">Goal Tracker:</strong> Set objectives, track progress, celebrate milestones.</span>
-            </li>
-            <li className="flex items-center justify-start">
-              <ModuleIconWarm className="w-5 h-5 md:w-8 md:h-8 text-yellow mr-3 flex-shrink-0 mt-1" />
-              <span><strong className="font-semibold text-black opacity-80">Habit Builder:</strong> Monitor daily routines and build positive habits.</span>
-            </li>
-            <li className="flex items-center justify-start">
-              <ModuleIconWarm className="w-5 h-5 md:w-8 md:h-8 text-yellow mr-3 flex-shrink-0 mt-1" />
-              <span><strong className="font-semibold text-black opacity-80">Sketch Pad:</strong> Simple drawing tools for quick visual notes.</span>
-            </li>
-          </ul> */}
-      </ShowOnView>
-      <div className="absolute !w-screen left-0 bottom-[5vh] -z-10">
-        <ShowOnView className="flex flex-row !items-end !justify-end" fadeIn="rightLeft">
-          <StaticImage
-            src="../../images/triadic-render.png"
-            alt="Triadic Ballet Render"
-            width={600}
-            height={400}
-            className="max-h-[30vh] md:max-h-[50vh]"
-            objectFit="contain"
-            objectPosition="right"
-            layout="fixed"
-          />
+        <ShowOnView className="relative md:col-span-6" fadeIn="rightLeft">
+          <div className="relative mx-auto w-full max-w-[34rem]">
+            <div className="pointer-events-none absolute -left-8 top-8 h-28 w-28 rounded-full bg-[#f97516]/25 blur-2xl" />
+            <div className="pointer-events-none absolute -right-8 bottom-10 h-28 w-28 rounded-full bg-[#1e2e63]/20 blur-2xl" />
+
+            <div className="rounded-[28px] border border-[#0b1122]/10 p-4 shadow-[0_18px_40px_rgba(11,17,34,0.2)] backdrop-blur-sm">
+              <StaticImage
+                src="../../images/triadic-render.png"
+                alt="Triadic Ballet Render"
+                width={760}
+                height={520}
+                className="rounded-2xl"
+                objectFit="contain"
+                objectPosition="center"
+                layout="constrained"
+              />
+            </div>
+
+            <div className="absolute -bottom-5 -left-3 w-24 md:w-28 rotate-[-8deg] rounded-xl border border-[#0b1122]/15  p-1 shadow-[0_12px_24px_rgba(11,17,34,0.2)]">
+              <StaticImage src="../../images/collezioni/TRIADIC/A7/Flusso.png" alt="Flusso cover" className="rounded-lg" />
+            </div>
+
+          </div>
         </ShowOnView>
       </div>
     </Section>
