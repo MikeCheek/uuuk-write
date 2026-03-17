@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import { graphql, useStaticQuery } from 'gatsby'
+import { graphql, useStaticQuery, navigate } from 'gatsby'
 import Showcase from '../molecules/Showcase'
 import Button from '../atoms/Button'
 import Typography from '../atoms/Typography'
@@ -136,7 +136,7 @@ const NewHero = () => {
         <ButtonTop
           onClick={toggleGallery}
           text={galleryOpen ? "X" : "Galleria"}
-          onClickScrolled={() => setModalOpen(true)}
+          onClickScrolled={() => navigate('/galleria')}
           textScrolled='Ordina ora'
         />
       </div>
