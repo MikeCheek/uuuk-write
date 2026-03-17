@@ -7,6 +7,7 @@ import Footer from '../components/molecules/Footer';
 import Personal from '../components/molecules/Personal';
 import Banner from '../components/atoms/Banner';
 import Infinite from '../components/molecules/Infinite';
+import ProjectIdentity from '../components/molecules/ProjectIdentity';
 import { HeadProps } from 'gatsby';
 
 const IndexPage = () => {
@@ -15,6 +16,7 @@ const IndexPage = () => {
     <Layout>
       <NewHero />
       <UUUKForever />
+      <ProjectIdentity />
       <Banner />
       <Personal />
       <Infinite />
