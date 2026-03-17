@@ -189,7 +189,7 @@ const NewHero = () => {
 
 
       <div className='relative z-20'>
-        <Button onClick={() => setModalOpen(true)} />
+        <Button href="/galleria" />
       </div>
 
       <div className={`absolute left-0 top-0 flex h-[95vh] w-full items-center justify-center transition-all duration-300 md:h-screen ${galleryOpen ? 'z-40 opacity-100 bg-[#0b1122]/95' : 'z-10 opacity-35 saturate-75 bg-transparent pointer-events-none'}`}>
