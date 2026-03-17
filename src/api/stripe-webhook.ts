@@ -182,7 +182,7 @@ const sendTelegramNotification = async (payload: {
     : 'N/A'
 
   const message = `
-🎉 <b>Nuovo Ordine!</b>
+🎉 <b>CARUSI! Nuovo Ordine!</b>
 ${payload.isTest ? '⚠️ <b>[TEST MODE]</b>' : '✅ <b>[LIVE]</b>'}
 
 👤 <b>Cliente:</b> ${payload.customerName}
