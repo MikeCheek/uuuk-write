@@ -38,6 +38,7 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
       ...preset,
       price: stripeData.default_price.unit_amount ? Number((stripeData.default_price.unit_amount / 100)) : undefined,
       productId: stripeData.id,
+      priceId: stripeData.default_price.id,
       name: name,
       image: stripeData.images[0] || getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template),
       id: preset.id

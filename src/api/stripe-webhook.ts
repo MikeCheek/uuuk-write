@@ -137,6 +137,104 @@ const getInvoiceDetails = async (
   }
 }
 
+const sendTelegramNotification = async (payload: {
+  orderLineItems: OrderLineItem[]
+  customerName: string
+  customerEmail: string | null
+  amount: number | null
+  currency: string | null
+  shippingAddress: Stripe.Address | null
+  shippingName: string | null
+  isTest: boolean
+}): Promise<{ sent: boolean; reason: string | null }> => {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN
+  const chatId = process.env.TELEGRAM_CHAT_ID
+  const topicId = process.env.TELEGRAM_TOPIC_ID
+
+  if (!botToken || !chatId) {
+    return {
+      sent: false,
+      reason: 'Telegram configuration is missing'
+    }
+  }
+
+  const orderItemsText = payload.orderLineItems
+    .map(
+      item =>
+        `• ${item.name} x${item.quantity} (${formatAmount(
+          item.totalAmount,
+          item.currency
+        )})`
+    )
+    .join('\n')
+
+  const shippingAddressText = payload.shippingAddress
+    ? [
+        payload.shippingAddress.line1,
+        payload.shippingAddress.line2,
+        payload.shippingAddress.postal_code,
+        payload.shippingAddress.city,
+        payload.shippingAddress.state,
+        payload.shippingAddress.country
+      ]
+        .filter(Boolean)
+        .join(', ')
+    : 'N/A'
+
+  const message = `
+🎉 <b>Nuovo Ordine!</b>
+${payload.isTest ? '⚠️ <b>[TEST MODE]</b>' : '✅ <b>[LIVE]</b>'}
+
+👤 <b>Cliente:</b> ${payload.customerName}
+📧 <b>Email:</b> ${payload.customerEmail || 'N/A'}
+
+📦 <b>Articoli:</b>
+${orderItemsText}
+
+💰 <b>Totale:</b> ${formatAmount(payload.amount, payload.currency)}
+
+📍 <b>Indirizzo di spedizione:</b>
+${shippingAddressText}
+
+---
+${new Date().toLocaleString('it-IT')}
+  `.trim()
+
+  try {
+    const messageBody: any = {
+      chat_id: chatId,
+      text: message,
+      parse_mode: 'HTML'
+    }
+
+    // Add topic ID if configured (for Telegram channel topics/threads)
+    if (topicId) {
+      messageBody.message_thread_id = parseInt(topicId)
+    }
+
+    const response = await fetch(
+      `https://api.telegram.org/bot${botToken}/sendMessage`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(messageBody)
+      }
+    )
+
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(`Telegram API error: ${error}`)
+    }
+
+    return { sent: true, reason: null }
+  } catch (error: any) {
+    console.error('Telegram send error:', error?.message || error)
+    return { sent: false, reason: error?.message || 'Unknown Telegram error' }
+  }
+}
+
 const sendEmailJsOrderConfirmation = async (payload: {
   toEmail: string | null
   toName: string
@@ -331,6 +429,18 @@ export default async function handler (
           shippingName
         })
 
+    // Send Telegram notification
+    const telegramResult = await sendTelegramNotification({
+      orderLineItems,
+      customerName: customerName,
+      customerEmail: customerEmail,
+      amount: fullSession.amount_total,
+      currency: fullSession.currency,
+      shippingAddress,
+      shippingName,
+      isTest: !session.livemode
+    })
+
     const nowIso = new Date().toISOString()
 
     const orderPayload: Record<string, unknown> = {
@@ -364,6 +474,13 @@ export default async function handler (
         recipient: customerEmail,
         attemptedAt: nowIso
       }
+    }
+
+    // Add Telegram notification result
+    orderPayload.telegramNotification = {
+      sent: telegramResult.sent,
+      reason: telegramResult.reason,
+      attemptedAt: nowIso
     }
 
     await orderRef.set(orderPayload, { merge: true })

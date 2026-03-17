@@ -12,6 +12,7 @@ const Review = (
     addToCart({
       ...item,
       price: item.price,
+      priceId: item.priceId,
       name: item.name,
       image: item.image || getPresetImageFromId(item.id),
       id: item.id
