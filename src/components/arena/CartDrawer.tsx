@@ -77,32 +77,45 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
                       </p>
                     </div>
 
-                    <details className="mt-2 rounded-md border border-white/10 bg-[#0b1531]/70 p-2 text-[11px] text-[#cddcff]">
-                      <summary className="cursor-pointer select-none text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">
+                    <details className="mt-2 rounded-md border border-white/10 bg-[#0b1531]/70 p-1.5 text-[10px] text-[#cddcff]">
+                      <summary className="cursor-pointer select-none text-[9px] font-bold uppercase tracking-wide text-[#8ea2d0]">
                         Dettagli personalizzazione
                       </summary>
-                      <div className="mt-2 space-y-2">
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Anteriore</p>
-                          <p>{item.frontCover.collection} / {item.frontCover.template ?? 'Custom'} - {item.frontCover.color.name}</p>
-                          <p>{item.frontCover.text?.trim() ? `"${item.frontCover.text}"` : 'Nessun testo'} ({item.frontCover.fontSize}, {item.frontCover.position})</p>
+                      <div className="mt-1.5 space-y-1.5">
+                        <div className="rounded border border-white/10 bg-[#101d3f]/70 p-1.5">
+                          <p className="mb-1 text-[9px] font-bold uppercase tracking-wide text-[#8ea2d0]">Anteriore</p>
+                          <div className="flex flex-wrap gap-1">
+                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">{item.frontCover.collection}</span>
+                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">{item.frontCover.template ?? 'Custom'}</span>
+                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">Colore: {item.frontCover.color.name}</span>
+                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">Testo: {item.frontCover.text?.trim() ? item.frontCover.text : 'Nessuno'}</span>
+                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">{item.frontCover.fontSize}</span>
+                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">{item.frontCover.position}</span>
+                          </div>
                         </div>
 
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Moduli</p>
-                          <div className="space-y-1">
+                        <div className="rounded border border-white/10 bg-[#101d3f]/70 p-1.5">
+                          <p className="mb-1 text-[9px] font-bold uppercase tracking-wide text-[#8ea2d0]">Moduli ({item.modules.length})</p>
+                          <div className="flex max-h-14 flex-wrap gap-1 overflow-y-auto pr-1">
                             {item.modules.map((mod, modIndex) => (
-                              <p key={`${item.cartId}-drawer-mod-${mod.id}-${modIndex}`}>
-                                {modIndex + 1}. {mod.sidebarText} ({mod.sidebarColor.name}){mod.isDouble ? ' - Doppio' : ''}
-                              </p>
+                              <span
+                                key={`${item.cartId}-drawer-mod-${mod.id}-${modIndex}`}
+                                className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5"
+                              >
+                                {mod.sidebarText} · {mod.sidebarColor.name}{mod.isDouble ? ' · Doppio' : ''}
+                              </span>
                             ))}
                           </div>
                         </div>
 
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Posteriore</p>
-                          <p>{item.backCover.color.name}</p>
-                          <p>{item.backCover.text?.trim() ? `"${item.backCover.text}"` : 'Nessun testo'} ({item.backCover.fontSize}, {item.backCover.position})</p>
+                        <div className="rounded border border-white/10 bg-[#101d3f]/70 p-1.5">
+                          <p className="mb-1 text-[9px] font-bold uppercase tracking-wide text-[#8ea2d0]">Posteriore</p>
+                          <div className="flex flex-wrap gap-1">
+                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">Colore: {item.backCover.color.name}</span>
+                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">Testo: {item.backCover.text?.trim() ? item.backCover.text : 'Nessuno'}</span>
+                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">{item.backCover.fontSize}</span>
+                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">{item.backCover.position}</span>
+                          </div>
                         </div>
                       </div>
                     </details>

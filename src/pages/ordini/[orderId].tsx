@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { HeadProps } from 'gatsby'
 import Layout from '../../components/organisms/Layout'
 import Seo from '../../components/atoms/Seo'
+import Modal from '../../components/atoms/Modal'
 import { format } from 'date-fns'
 import { it } from 'date-fns/locale'
 import { CheckCircle, Clock, AlertCircle, Package, Mail, Download, ExternalLink, Truck, Home } from 'lucide-react'
+import { useSnackbar } from '../../utilities/snackbarContext'
 
 type OrderData = {
   orderId: string
@@ -51,6 +53,8 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
   const [order, setOrder] = useState<OrderData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [helpModalOpen, setHelpModalOpen] = useState(false)
+  const { showSnackbar } = useSnackbar()
 
   useEffect(() => {
     if (!orderId) {
@@ -152,6 +156,42 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
 
   const currentStatus = statusConfig[order.status] || statusConfig.pending
   const totalAmount = (order.amount / 100).toFixed(2)
+  const detailedItems = Array.isArray(order.items) ? order.items : []
+  const customerName =
+    order.shipping_details?.name ||
+    ((order as any)?.customer_details?.name as string | undefined) ||
+    'Cliente'
+
+  const helpMailTo = `mailto:uuuk.thefuture@gmail.com?subject=${encodeURIComponent(
+    `Supporto ordine ${order.orderId}`
+  )}&body=${encodeURIComponent(
+    `Ciao team UUUK,%0D%0Aho bisogno di supporto per il mio ordine ${order.orderId}.%0D%0A` +
+    `Motivo: info/modifiche/problema.%0D%0A%0D%0AGrazie!`
+  )}`
+
+  const copyToClipboard = async (text: string, successMessage: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      showSnackbar(successMessage, 'success')
+    } catch {
+      showSnackbar('Impossibile copiare automaticamente. Copia manualmente.', 'error')
+    }
+  }
+
+  const resolveItemImageSrc = (image: any): string => {
+    if (typeof image === 'string' && image.trim()) {
+      return image
+    }
+
+    if (image && typeof image === 'object') {
+      const fallbackSrc = image?.images?.fallback?.src
+      if (typeof fallbackSrc === 'string' && fallbackSrc.trim()) {
+        return fallbackSrc
+      }
+    }
+
+    return '/placeholder-agenda.png'
+  }
 
   const orderSteps = ['In Preparazione', 'Spedito', 'Consegnato']
   const stepIndex = orderSteps.findIndex(step =>
@@ -159,12 +199,51 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
   )
   const currentStepIndex = stepIndex !== -1 ? stepIndex : 0
 
-  console.log('Order data:', currentStepIndex, order['order-status'], order)
-
   return (
     <Layout>
+      <Modal show={helpModalOpen} onClose={() => setHelpModalOpen(false)} showCursor>
+        <div className="flex max-w-md flex-col gap-4 p-2 text-[#f3f7ff]">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8ea2d0]">Supporto ordine</p>
+          <h3 className="text-2xl font-black uppercase leading-tight">Come vuoi contattarci?</h3>
+          <p className="text-sm text-[#c4d4ff]">
+            Scegli un&apos;azione rapida per ricevere assistenza su ordine, modifiche o informazioni.
+          </p>
+
+          <div className="mt-2 flex flex-col gap-3">
+            <a
+              href={helpMailTo}
+              className="inline-flex items-center justify-center rounded-lg border border-[#f97316]/35 bg-[#f97316] px-4 py-3 text-center text-sm font-black uppercase tracking-wide text-[#1e293b] transition-all hover:bg-[#fb8a35]"
+            >
+              Apri email precompilata
+            </a>
+
+            <button
+              type="button"
+              onClick={() => copyToClipboard('uuuk.thefuture@gmail.com', 'Email copiata')}
+              className="rounded-lg border border-white/20 bg-[#22325d] px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-[#2a3f73]"
+            >
+              Copia indirizzo email
+            </button>
+
+            <button
+              type="button"
+              onClick={() => copyToClipboard(order.orderId, 'ID ordine copiato')}
+              className="rounded-lg border border-white/20 bg-[#22325d] px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-[#2a3f73]"
+            >
+              Copia ID ordine
+            </button>
+          </div>
+        </div>
+      </Modal>
+
       <div className="min-h-screen bg-[#070d1e] bg-[radial-gradient(circle_at_top_left,_#142a52_0%,_#070d1e_60%)] px-4 py-12 text-white">
         <div className="mx-auto max-w-3xl">
+          <div className="mb-6 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-5 shadow-[0_12px_36px_rgba(6,10,20,0.45)]">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8ea2d0]">Benvenuto</p>
+            <h2 className="mt-1 text-2xl font-black tracking-tight text-[#f6f8ff]">Ciao {customerName}!</h2>
+            <p className="mt-2 text-sm text-[#b6c8f2]">Qui trovi stato, dettagli e documenti del tuo ordine.</p>
+          </div>
+
           {/* Status Header */}
           <div className={`mb-8 rounded-2xl border border-white/10 border-l-4 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)] ${currentStatus.color.replace('text-', 'border-')}`}>
             <div className="flex items-center gap-4 mb-4">
@@ -278,15 +357,66 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
               Articoli ordinati
             </h2>
             <div className="space-y-4">
-              {order.orderLineItems?.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between border-b border-white/10 pb-4 last:border-0">
-                  <div>
-                    <p className="font-semibold text-white">{item.name}</p>
-                    <p className="text-sm text-[#8ea2d0]">Quantità: {item.quantity}</p>
+              {(detailedItems.length > 0 ? detailedItems : order.orderLineItems || []).map((item: any, idx: number) => (
+                <div key={idx} className="rounded-xl border border-white/10 bg-[#101d3f]/70 p-4">
+                  <div className="mb-3 flex items-start justify-between gap-4 border-b border-white/10 pb-3">
+                    <div className="flex items-start gap-3">
+                      <div className="h-20 w-14 flex-shrink-0 overflow-hidden rounded-lg border border-white/10 bg-[#0b1531]">
+                        <img
+                          src={resolveItemImageSrc(item.image)}
+                          alt={item.name || 'Agenda personalizzata'}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+
+                      <div>
+                        <p className="font-semibold text-white">{item.name || 'Agenda personalizzata'}</p>
+                        <p className="text-sm text-[#8ea2d0]">Quantità: {item.quantity || 1}</p>
+                      </div>
+                    </div>
+                    <p className="font-bold text-[#ffb170]">
+                      {typeof item.totalAmount === 'number'
+                        ? `€${(item.totalAmount / 100).toFixed(2)}`
+                        : `€${((item.price || 0) * (item.quantity || 1)).toFixed(2)}`}
+                    </p>
                   </div>
-                  <p className="font-bold text-[#ffb170]">
-                    €{(item.totalAmount / 100).toFixed(2)}
-                  </p>
+
+                  {item.frontCover && item.backCover ? (
+                    <div className="space-y-2 text-xs text-[#d8e5ff]">
+                      <div className="rounded-lg border border-white/10 bg-[#0b1531]/70 p-2">
+                        <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Copertina anteriore</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.frontCover.collection}</span>
+                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.frontCover.template ?? 'Custom'}</span>
+                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Colore: {item.frontCover.color?.name}</span>
+                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Testo: {item.frontCover.text?.trim() ? item.frontCover.text : 'Nessuno'}</span>
+                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.frontCover.fontSize}</span>
+                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.frontCover.position}</span>
+                        </div>
+                      </div>
+
+                      <div className="rounded-lg border border-white/10 bg-[#0b1531]/70 p-2">
+                        <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Moduli ({item.modules?.length || 0})</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {(item.modules || []).map((mod: any, modIndex: number) => (
+                            <span key={`order-mod-${idx}-${mod.id || modIndex}`} className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">
+                              {mod.sidebarText} · {mod.sidebarColor?.name}{mod.isDouble ? ' · Doppio' : ''}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="rounded-lg border border-white/10 bg-[#0b1531]/70 p-2">
+                        <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Copertina posteriore</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Colore: {item.backCover.color?.name}</span>
+                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Testo: {item.backCover.text?.trim() ? item.backCover.text : 'Nessuno'}</span>
+                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.backCover.fontSize}</span>
+                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.backCover.position}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               ))}
             </div>
@@ -389,11 +519,19 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
 
           {/* Back Link */}
           <div className="text-center">
-            <a href="/carrello" className="font-semibold text-[#ffb170] hover:underline">
-              ← Torna al carrello
+            <a href="/galleria" className="font-semibold text-[#ffb170] hover:underline">
+              ← Acquista ancora
             </a>
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setHelpModalOpen(true)}
+          className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full border border-[#f97316]/45 bg-[#f97316] px-5 py-3 text-sm font-black uppercase tracking-wide text-[#1e293b] shadow-[0_14px_30px_rgba(249,115,22,0.35)] transition-all hover:bg-[#fb8a35]"
+        >
+          Aiuto
+        </button>
       </div>
     </Layout>
   )
