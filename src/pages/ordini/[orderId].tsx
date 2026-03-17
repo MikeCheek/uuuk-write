@@ -82,10 +82,10 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
   if (loading) {
     return (
       <Layout>
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center bg-[#070d1e] text-[#d5e2ff]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brown mx-auto mb-4"></div>
-            <p className="text-brown">Caricamento ordine...</p>
+            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-[#f97316]"></div>
+            <p>Caricamento ordine...</p>
           </div>
         </div>
       </Layout>
@@ -95,12 +95,12 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
   if (error || !order) {
     return (
       <Layout>
-        <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="min-h-screen flex items-center justify-center bg-[#070d1e] px-4 text-white">
           <div className="text-center max-w-md">
-            <AlertCircle size={48} className="mx-auto mb-4 text-red-500" />
-            <h1 className="text-2xl font-bold text-brown mb-2">Ordine non trovato</h1>
-            <p className="text-gray-600 mb-6">{error}</p>
-            <a href="/carrello" className="text-brown hover:underline">
+            <AlertCircle size={48} className="mx-auto mb-4 text-[#f97316]" />
+            <h1 className="mb-2 text-2xl font-bold">Ordine non trovato</h1>
+            <p className="mb-6 text-[#a4b8e8]">{error}</p>
+            <a href="/carrello" className="text-[#ffb170] hover:underline">
               Torna al carrello
             </a>
           </div>
@@ -140,42 +140,42 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
 
   return (
     <Layout>
-      <div className="min-h-screen py-12 px-4">
-        <div className="max-w-3xl mx-auto">
+      <div className="min-h-screen bg-[#070d1e] bg-[radial-gradient(circle_at_top_left,_#142a52_0%,_#070d1e_60%)] px-4 py-12 text-white">
+        <div className="mx-auto max-w-3xl">
           {/* Status Header */}
-          <div className={`bg-gray-800 rounded-2xl shadow-lg p-8 mb-8 border-l-4 ${currentStatus.color.replace('text-', 'border-')}`}>
+          <div className={`mb-8 rounded-2xl border border-white/10 border-l-4 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)] ${currentStatus.color.replace('text-', 'border-')}`}>
             <div className="flex items-center gap-4 mb-4">
               <div className={currentStatus.color}>{currentStatus.icon}</div>
               <div>
-                <h1 className="text-3xl font-bold text-brown">Ordine {order.orderId}</h1>
+                <h1 className="text-3xl font-black uppercase tracking-tight text-white">Ordine {order.orderId}</h1>
                 <p className={`text-lg font-semibold ${currentStatus.color}`}>
                   {currentStatus.label}
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200">
+            <div className="mt-6 grid grid-cols-2 gap-4 border-t border-white/10 pt-6 md:grid-cols-4">
               <div>
-                <p className="text-xs text-gray-400 uppercase">Data ordine</p>
-                <p className="font-semibold text-brown">
+                <p className="text-xs uppercase text-[#8ea2d0]">Data ordine</p>
+                <p className="font-semibold text-white">
                   {format(new Date(order.createdAt), 'dd MMM yyyy', { locale: it })}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400 uppercase">Totale</p>
-                <p className="font-semibold text-brown">
+                <p className="text-xs uppercase text-[#8ea2d0]">Totale</p>
+                <p className="font-semibold text-white">
                   €{totalAmount} {order.currency.toUpperCase()}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400 uppercase">Modalità</p>
-                <p className="font-semibold text-brown">
+                <p className="text-xs uppercase text-[#8ea2d0]">Modalità</p>
+                <p className="font-semibold text-white">
                   {order.isTest ? 'Test' : 'Live'}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400 uppercase">Ultimo aggiornamento</p>
-                <p className="font-semibold text-brown">
+                <p className="text-xs uppercase text-[#8ea2d0]">Ultimo aggiornamento</p>
+                <p className="font-semibold text-white">
                   {format(new Date(order.updatedAt), 'HH:mm', { locale: it })}
                 </p>
               </div>
@@ -183,15 +183,15 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
           </div>
 
           {/* Order Status Stepper */}
-          <div className="bg-gray-800 rounded-2xl shadow-lg p-8 mb-8">
-            <h2 className="text-2xl font-bold text-brown mb-8">Stato della spedizione</h2>
+          <div className="mb-8 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
+            <h2 className="mb-8 text-2xl font-black uppercase tracking-tight text-white">Stato della spedizione</h2>
             <div className="relative">
               <div className="flex justify-between items-start">
                 {/* Step 1: In Preparazione */}
                 <div className="flex flex-col items-center flex-1 relative">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 font-bold text-lg transition-all ${currentStepIndex >= 0
                     ? 'bg-green-500 text-white'
-                    : 'bg-gray-600 text-gray-300'
+                    : 'bg-[#2a375a] text-[#9fb1dc]'
                     }`}>
                     {currentStepIndex > 0 ? (
                       <CheckCircle size={28} />
@@ -199,21 +199,21 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
                       <Package size={28} />
                     )}
                   </div>
-                  <p className="text-sm font-semibold text-brown text-center">In Preparazione</p>
-                  <p className="text-xs text-gray-400 text-center mt-1">1-2 giorni</p>
+                  <p className="text-center text-sm font-semibold text-white">In Preparazione</p>
+                  <p className="mt-1 text-center text-xs text-[#8ea2d0]">1-2 giorni</p>
                 </div>
 
                 {/* Connecting line 1 */}
                 <div className={`flex-1 h-1 mt-6 mx-2 transition-all ${currentStepIndex >= 1
                   ? 'bg-green-500'
-                  : 'bg-gray-600'
+                  : 'bg-[#2a375a]'
                   }`} />
 
                 {/* Step 2: Spedito */}
                 <div className="flex flex-col items-center flex-1 relative">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 font-bold text-lg transition-all ${currentStepIndex >= 1
                     ? 'bg-green-500 text-white'
-                    : 'bg-gray-600 text-gray-300'
+                    : 'bg-[#2a375a] text-[#9fb1dc]'
                     }`}>
                     {currentStepIndex > 1 ? (
                       <CheckCircle size={28} />
@@ -221,21 +221,21 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
                       <Truck size={28} />
                     )}
                   </div>
-                  <p className="text-sm font-semibold text-brown text-center">Spedito</p>
-                  <p className="text-xs text-gray-400 text-center mt-1">3-5 giorni</p>
+                  <p className="text-center text-sm font-semibold text-white">Spedito</p>
+                  <p className="mt-1 text-center text-xs text-[#8ea2d0]">3-5 giorni</p>
                 </div>
 
                 {/* Connecting line 2 */}
                 <div className={`flex-1 h-1 mt-6 mx-2 transition-all ${currentStepIndex >= 2
                   ? 'bg-green-500'
-                  : 'bg-gray-600'
+                  : 'bg-[#2a375a]'
                   }`} />
 
                 {/* Step 3: Consegnato */}
                 <div className="flex flex-col items-center flex-1 relative">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 font-bold text-lg transition-all ${currentStepIndex >= 2
                     ? 'bg-green-500 text-white'
-                    : 'bg-gray-600 text-gray-300'
+                    : 'bg-[#2a375a] text-[#9fb1dc]'
                     }`}>
                     {currentStepIndex >= 2 ? (
                       <CheckCircle size={28} />
@@ -243,25 +243,25 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
                       <Home size={28} />
                     )}
                   </div>
-                  <p className="text-sm font-semibold text-brown text-center">Consegnato</p>
-                  <p className="text-xs text-gray-400 text-center mt-1">Completato</p>
+                  <p className="text-center text-sm font-semibold text-white">Consegnato</p>
+                  <p className="mt-1 text-center text-xs text-[#8ea2d0]">Completato</p>
                 </div>
               </div>
             </div>
           </div>
-          <div className="bg-gray-800 rounded-2xl shadow-lg p-8 mb-8">
-            <h2 className="text-2xl font-bold text-brown mb-6 flex items-center gap-2">
+          <div className="mb-8 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
+            <h2 className="mb-6 flex items-center gap-2 text-2xl font-black uppercase tracking-tight text-white">
               <Package size={24} />
               Articoli ordinati
             </h2>
             <div className="space-y-4">
               {order.orderLineItems?.map((item, idx) => (
-                <div key={idx} className="flex justify-between items-center pb-4 border-b border-gray-200 last:border-0">
+                <div key={idx} className="flex items-center justify-between border-b border-white/10 pb-4 last:border-0">
                   <div>
-                    <p className="font-semibold text-brown">{item.name}</p>
-                    <p className="text-sm text-gray-400">Quantità: {item.quantity}</p>
+                    <p className="font-semibold text-white">{item.name}</p>
+                    <p className="text-sm text-[#8ea2d0]">Quantità: {item.quantity}</p>
                   </div>
-                  <p className="font-bold text-brown">
+                  <p className="font-bold text-[#ffb170]">
                     €{(item.totalAmount / 100).toFixed(2)}
                   </p>
                 </div>
@@ -271,13 +271,13 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
 
           {/* Shipping Details */}
           {order.shipping_details && (
-            <div className="bg-gray-800 rounded-2xl shadow-lg p-8 mb-8">
-              <h2 className="text-2xl font-bold text-brown mb-6">Indirizzo di spedizione</h2>
-              <div className="border-white border-2 p-6 rounded-xl">
-                <p className="font-semibold text-brown text-lg mb-2">
+            <div className="mb-8 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
+              <h2 className="mb-6 text-2xl font-black uppercase tracking-tight text-white">Indirizzo di spedizione</h2>
+              <div className="rounded-xl border border-white/20 bg-[#101d3f] p-6">
+                <p className="mb-2 text-lg font-semibold text-white">
                   {order.shipping_details.name}
                 </p>
-                <p className="text-gray-400 whitespace-pre-line">
+                <p className="whitespace-pre-line text-[#afc1ea]">
                   {order.shipping_details.address.line1}
                   {order.shipping_details.address.line2 && `\n${order.shipping_details.address.line2}`}
                   {`\n${order.shipping_details.address.postal_code} ${order.shipping_details.address.city}`}
@@ -289,8 +289,8 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
 
           {/* Email Notification Status */}
           {order.emailNotification && (
-            <div className="bg-gray-800 rounded-2xl shadow-lg p-8 mb-8">
-              <h2 className="text-2xl font-bold text-brown mb-6 flex items-center gap-2">
+            <div className="mb-8 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
+              <h2 className="mb-6 flex items-center gap-2 text-2xl font-black uppercase tracking-tight text-white">
                 <Mail size={24} />
                 Conferma email
               </h2>
@@ -314,14 +314,14 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
 
           {/* Invoice & Receipt */}
           {order.invoice && (order.invoice.hostedInvoiceUrl || order.invoice.invoicePdf || order.invoice.receiptUrl) && (
-            <div className="bg-gray-800 rounded-2xl shadow-lg p-8 mb-8">
-              <h2 className="text-2xl font-bold text-brown mb-6 flex items-center gap-2">
+            <div className="mb-8 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
+              <h2 className="mb-6 flex items-center gap-2 text-2xl font-black uppercase tracking-tight text-white">
                 <Download size={24} />
                 Documenti
               </h2>
               <div className="space-y-3">
                 {order.invoice.invoiceNumber && (
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-[#b8c9f1]">
                     <strong>Numero fattura:</strong> {order.invoice.invoiceNumber}
                   </p>
                 )}
@@ -331,7 +331,7 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
                       href={order.invoice.hostedInvoiceUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-brown text-white rounded-lg hover:bg-opacity-90 transition-all w-fit"
+                      className="inline-flex w-fit items-center gap-2 rounded-lg border border-[#f97316]/30 bg-[#f97316] px-4 py-2 font-semibold text-[#17213a] transition-all hover:bg-[#fb8a35]"
                     >
                       <ExternalLink size={16} />
                       Visualizza Fattura
@@ -342,7 +342,7 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
                       href={order.invoice.invoicePdf}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-opacity-90 transition-all w-fit"
+                      className="inline-flex w-fit items-center gap-2 rounded-lg border border-white/20 bg-[#22325d] px-4 py-2 text-white transition-all hover:bg-[#2a3f73]"
                     >
                       <Download size={16} />
                       Scarica PDF
@@ -353,7 +353,7 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
                       href={order.invoice.receiptUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-opacity-90 transition-all w-fit"
+                      className="inline-flex w-fit items-center gap-2 rounded-lg border border-white/20 bg-[#2a3f73] px-4 py-2 text-white transition-all hover:bg-[#31508f]"
                     >
                       <ExternalLink size={16} />
                       Ricevuta Pagamento
@@ -366,7 +366,7 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
 
           {/* Back Link */}
           <div className="text-center">
-            <a href="/carrello" className="text-brown hover:underline font-semibold">
+            <a href="/carrello" className="font-semibold text-[#ffb170] hover:underline">
               ← Torna al carrello
             </a>
           </div>

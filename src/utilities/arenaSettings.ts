@@ -3,7 +3,6 @@ import { getCoverTemplateImagePath } from './arenaHelpers'
 
 // Define types for customization options
 export type AgendaFormat = 'A5' | 'A6' | 'A7'
-export type PageInterior = 'Righe' | 'Punti' | 'Vuoto'
 export type Collection = 'M(O_O)D' | 'Triadic' | 'Custom'
 export type MoodTemplate =
   | '(◣ _ ◢)'
@@ -16,7 +15,7 @@ export type TriadicTemplate = 'Flusso' | 'Occhio' | 'Punto'
 export type CoverImageTemplate = MoodTemplate | TriadicTemplate | undefined
 
 // --- NEW TEXT CUSTOMIZATION TYPES ---
-export type FontSize = 'Piccolo' | 'Medio' | 'Grande'
+export type FontSize = 'Medio' | 'Grande'
 export type TextPosition = 'Sopra' | 'Sotto'
 export type ExtendedTextPosition = TextPosition | 'Centro'
 
@@ -29,7 +28,6 @@ export interface Module {
   id: string
   sidebarColor: ColorOption
   sidebarText: string
-  pageInterior: PageInterior
   isDouble?: boolean
 }
 
@@ -53,7 +51,7 @@ export const colorsMood: ColorOption[] = colors.filter(c =>
   colorsNamesForMood.includes(c.name)
 )
 
-export const fontSizes: FontSize[] = ['Piccolo', 'Medio', 'Grande']
+export const fontSizes: FontSize[] = ['Medio', 'Grande']
 export const textPositions: TextPosition[] = ['Sopra', 'Sotto']
 export const extendedTextPositions: ExtendedTextPosition[] = [
   'Sopra',
@@ -139,7 +137,6 @@ export const imageAssets: Record<
   }
 }
 
-export const pageInteriors: PageInterior[] = ['Righe', 'Punti', 'Vuoto']
 export const collections: Collection[] = imageAssets
   ? (Object.keys(imageAssets).reverse() as Collection[])
   : []
@@ -175,14 +172,12 @@ const modules: Module[] = [
   {
     id: 'mod1',
     sidebarColor: getColor('Bianco'),
-    sidebarText: 'Idee',
-    pageInterior: 'Righe'
+    sidebarText: 'Idee'
   },
   {
     id: 'mod2',
     sidebarColor: getColor('Bianco'),
     sidebarText: 'Progetti',
-    pageInterior: 'Punti',
     isDouble: true
   }
 ]

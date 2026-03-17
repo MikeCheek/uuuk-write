@@ -13,7 +13,7 @@ const Layout = ({ children, showCustomCursor = true, shoppingCart = false }: { c
     <SnackbarProvider>
       <CartProvider>
         <SectionProvider>
-          <div className={`font-helvetica relative h-screen max-h-screen ${showCustomCursor ? "cursor-none" : ""}`}>
+          <div className={`font-helvetica relative min-h-screen ${showCustomCursor ? "cursor-none" : ""}`}>
             {
               showCustomCursor ? <Cursor /> : <></>
             }

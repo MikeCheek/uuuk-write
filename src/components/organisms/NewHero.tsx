@@ -125,30 +125,34 @@ const NewHero = () => {
   }, [galleryOpen]);
 
   return (
-    <div className='relative h-full flex flex-col items-center justify-center gap-40'>
+    <div className='relative flex min-h-screen flex-col items-center justify-center gap-32 overflow-hidden bg-[#0b1122] text-[#f3f7ff]'>
       <Modal show={modalOpen} onClose={() => setModalOpen(false)} />
 
-      <Logo className='w-[60px]' />
+      <div className='relative z-30'>
+        <Logo className='w-[60px]' />
+      </div>
 
-      <ButtonTop
-        onClick={toggleGallery}
-        text={galleryOpen ? "X" : "Galleria"}
-        onClickScrolled={() => setModalOpen(true)}
-        textScrolled='Ordina ora'
-      />
+      <div className='relative z-50'>
+        <ButtonTop
+          onClick={toggleGallery}
+          text={galleryOpen ? "X" : "Galleria"}
+          onClickScrolled={() => setModalOpen(true)}
+          textScrolled='Ordina ora'
+        />
+      </div>
 
       {galleryOpen && (
-        <div className="absolute w-max scale-[.8] sm:scale-100 top-16 left-1/2 border-2 text-beige border-beige transform -translate-x-1/2 flex flex-wrap justify-center gap-4 z-50 bg-black bg-opacity-70 p-3 rounded-lg">
-          <p className='absolute -top-8 left-1/2 -translate-x-1/2'>Filtri</p>
+        <div className="absolute top-20 left-1/2 z-50 flex w-max -translate-x-1/2 scale-[.84] flex-wrap justify-center gap-4 rounded-xl border border-white/20 bg-[#0d1732]/95 p-4 text-[#f2f6ff] sm:scale-100">
+          <p className='absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-bold uppercase tracking-[0.2em] text-[#aac0ef]'>Filtri</p>
 
           <div className="flex gap-2 flex-col items-center justify-center">
-            <p className="font-semibold mr-2">Collezioni:</p>
+            <p className="mr-2 text-sm font-bold uppercase tracking-wide text-[#ffb170]">Collezioni</p>
             <div className="flex gap-2 flex-wrap">
               {collections.map(col => (
                 <button
                   key={col}
                   onClick={() => toggleFilter(col)}
-                  className={`px-3 py-1 rounded-md text-sm font-semibold border transition-colors ${selectedFilters.has(col) ? 'bg-beige text-darkBrown border-darkBrown' : 'text-beige border-beige'
+                  className={`rounded-md border px-3 py-1 text-sm font-semibold transition-colors ${selectedFilters.has(col) ? 'border-[#ffb170]/40 bg-gradient-to-r from-[#f97516] to-[#ff9d57] text-[#0b1122]' : 'border-white/25 text-[#e6eeff] hover:border-[#9ad0ff]/45'
                     }`}
                 >
                   {col}
@@ -158,13 +162,13 @@ const NewHero = () => {
           </div>
 
           <div className="flex gap-2 flex-col items-center justify-center ml-4">
-            <p className="font-semibold mr-2">Formati:</p>
+            <p className="mr-2 text-sm font-bold uppercase tracking-wide text-[#ffb170]">Formati</p>
             <div className="flex gap-2 flex-wrap">
               {formats.map(fmt => (
                 <button
                   key={fmt}
                   onClick={() => toggleFilter(fmt)}
-                  className={`px-3 py-1 rounded-md text-sm font-semibold border transition-colors ${selectedFilters.has(fmt) ? 'bg-beige text-darkBrown border-darkBrown' : 'text-beige border-beige'
+                  className={`rounded-md border px-3 py-1 text-sm font-semibold transition-colors ${selectedFilters.has(fmt) ? 'border-[#ffb170]/40 bg-gradient-to-r from-[#f97516] to-[#ff9d57] text-[#0b1122]' : 'border-white/25 text-[#e6eeff] hover:border-[#9ad0ff]/45'
                     }`}
                 >
                   {fmt}
@@ -175,13 +179,20 @@ const NewHero = () => {
         </div>
       )}
 
-      <Typography variant="h1" className="uppercase mb-4 md:mb-0 mt-20 text-beige font-roboto font-medium [text-shadow:_0_10px_10px_#1a1615ee] w-full text-center opacity-100">
+      <Typography variant="h1" className="uuuk-reveal relative z-20 mt-0 w-full text-center font-roboto font-medium uppercase tracking-[0.06em] text-[#eef6ff] bg-gradient-to-r from-[#f5f9ff] via-[#9ad0ff] to-[#8ee4c4] bg-clip-text text-transparent drop-shadow-[0_14px_24px_rgba(0,0,0,0.35)] md:mb-0">
         Write your story
       </Typography>
 
-      <Button onClick={() => setModalOpen(true)} />
+      <p className="relative z-20 -mt-24 mb-4 max-w-2xl px-6 text-center text-sm font-medium uppercase tracking-[0.18em] text-[#c7d8ff] md:-mt-20 md:text-base">
+        L'agenda personalizzabile stampata in 3d
+      </p>
 
-      <div className={`w-full h-[95vh] md:h-screen flex items-center justify-center absolute top-0 left-0 transition-all duration-200 ${galleryOpen ? 'z-10 opacity-100 bg-black' : '-z-10 opacity-40 bg-transparent'}`}>
+
+      <div className='relative z-20'>
+        <Button onClick={() => setModalOpen(true)} />
+      </div>
+
+      <div className={`absolute left-0 top-0 flex h-[95vh] w-full items-center justify-center transition-all duration-300 md:h-screen ${galleryOpen ? 'z-40 opacity-100 bg-[#0b1122]/95' : 'z-10 opacity-35 saturate-75 bg-transparent pointer-events-none'}`}>
         <Showcase data={filteredEdges} opened={galleryOpen} openModal={() => setModalOpen(true)} />
       </div>
     </div>

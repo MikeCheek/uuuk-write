@@ -12,19 +12,19 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
   return (
     <>
       {/* Sidebar Panel */}
-      <div className={`fixed top-0 right-0 h-full min-w-[30vw] bg-gray-900 z-[1001] shadow-2xl transform transition-transform duration-500 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed top-0 right-0 z-[1001] h-full w-full max-w-[460px] transform border-l border-white/10 bg-gradient-to-b from-[#0b132a] to-[#0a1022] shadow-2xl transition-transform duration-500 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="p-6 h-full flex flex-col">
 
           {/* Header */}
-          <div className="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <ShoppingCart size={22} className="text-indigo-400" />
+          <div className="mb-8 flex items-center justify-between border-b border-white/10 pb-4">
+            <h3 className="flex items-center gap-2 text-xl font-bold tracking-tight text-white">
+              <ShoppingCart size={22} className="text-[#f97316]" />
               Il Tuo Carrello
-              <span className="ml-2 text-xs bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded-full">
+              <span className="ml-2 rounded-full border border-[#f97316]/40 bg-[#f97316]/10 px-2 py-1 text-xs text-[#ffb170]">
                 {totalItems}
               </span>
             </h3>
-            <button onClick={() => setIsSidebarOpen(false)} className="text-gray-400 hover:text-white transition-colors">
+            <button onClick={() => setIsSidebarOpen(false)} className="text-gray-400 transition-colors hover:text-white">
               <X size={24} />
             </button>
           </div>
@@ -32,15 +32,15 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
           {/* Cart Items List */}
           <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
             {cart.length === 0 ? (
-              <div className="h-40 flex flex-col items-center justify-center text-gray-500 italic">
+              <div className="flex h-40 flex-col items-center justify-center rounded-xl border border-dashed border-white/20 text-gray-400 italic">
                 <p>Il carrello è vuoto</p>
               </div>
             ) : (
               cart.map((item) => (
-                <div key={item.id} className="mb-4 flex gap-4 bg-gray-800/40 p-3 rounded-xl border border-gray-800 relative group">
+                <div key={item.cartId} className="group relative mb-4 flex gap-4 rounded-xl border border-white/10 bg-[#101c3c]/70 p-3 transition-colors hover:border-[#f97316]/40">
 
                   {/* 1. Image */}
-                  <div className="w-12 h-16 flex-shrink-0 bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+                  <div className="h-16 w-12 flex-shrink-0 overflow-hidden rounded-lg border border-white/10 bg-[#0a1022]">
                     {item.image && typeof item.image === 'object' && 'images' in item.image ? (
                       <GatsbyImage
                         image={item.image}
@@ -59,17 +59,17 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
                   {/* 2. Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start pr-6">
-                      <h4 className="text-white font-bold text-sm truncate uppercase tracking-tight">
+                      <h4 className="truncate text-sm font-bold uppercase tracking-tight text-white">
                         {item.name || 'Agenda Personalizzata'}
                       </h4>
                     </div>
 
-                    <p className="text-[10px] text-gray-500 font-bold uppercase mt-1">
-                      Formato: <span className="text-gray-300 font-normal">{item.format}</span>
+                    <p className="mt-1 text-[10px] font-bold uppercase text-gray-500">
+                      Formato: <span className="font-normal text-gray-300">{item.format}</span>
                     </p>
 
                     <div className="flex justify-between items-end mt-2 gap-12">
-                      <p className="text-xs text-indigo-300 font-medium">
+                      <p className="text-xs font-medium text-[#9ad0ff]">
                         Q.tà: {item.quantity || 1}
                       </p>
                       <p className="text-sm font-bold text-white">
@@ -81,7 +81,7 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
                   {/* 3. Remove Button */}
                   <button
                     onClick={() => removeFromCart(item.cartId)}
-                    className="absolute top-3 right-3 text-gray-600 hover:text-red-400 transition-colors"
+                    className="absolute right-3 top-3 text-gray-600 transition-colors hover:text-[#f97316]"
                     aria-label="Rimuovi"
                   >
                     <Trash2 size={16} />
@@ -92,11 +92,11 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
           </div>
 
           {/* Footer Action */}
-          <div className="pt-6 border-t border-gray-800">
+          <div className="border-t border-white/10 pt-6">
             <Link
               onClick={() => setIsSidebarOpen(false)}
               to="/carrello"
-              className="group w-full py-4 bg-indigo-600 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-xl font-bold hover:bg-indigo-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20"
+              className="group flex w-full items-center justify-center gap-2 rounded-xl border border-[#f97316]/40 bg-[#f97316] py-4 font-bold text-[#1f2937] transition-all hover:bg-[#fb8a35]"
             >
               Vai al carrello
               <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -108,7 +108,7 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
       {/* Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1000] animate-in fade-in duration-300"
+          className="fixed inset-0 z-[1000] animate-in bg-black/70 backdrop-blur-sm fade-in duration-300"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}

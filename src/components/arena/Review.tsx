@@ -1,6 +1,5 @@
 import React from 'react'
 import { getPresetImageFromId, Metadata } from '../../utilities/arenaSettings';
-import Button from '../atoms/Button';
 import { useCart } from '../../utilities/cartContext';
 import { navigate } from 'gatsby';
 
@@ -22,58 +21,67 @@ const Review = (
 
 
   return (
-    <div className="space-y-4 text-gray-100">
-      <p><strong>Formato:</strong> {item.format}</p>
+    <div className="space-y-6 text-[#d5e2ff]">
+      <div className="rounded-xl border border-white/10 bg-[#101d3f] p-4">
+        <p className="text-xs font-bold uppercase tracking-wider text-[#8ea2d0]">Formato</p>
+        <p className="mt-1 text-lg font-black text-white">{item.format}</p>
+      </div>
 
-      <div className="border-l-2 border-indigo-200 pl-3">
-        <p><strong>Copertina Anteriore:</strong></p>
-        <ul className="list-disc list-inside pl-4 text-sm space-y-1">
-          <li>Colore: {item.frontCover.color.name}</li>
-          <li>Collezione/Template: "{item.frontCover.collection}" / {item.frontCover.template}</li>
+      <div className="rounded-xl border border-[#9ad0ff]/20 bg-[#0b1531] p-4">
+        <p className="mb-2 text-sm font-black uppercase tracking-wider text-[#9ad0ff]">Copertina Anteriore</p>
+        <ul className="space-y-1 text-sm leading-relaxed">
+          <li><span className="text-[#8ea2d0]">Colore:</span> <span className="text-white">{item.frontCover.color.name}</span></li>
+          <li><span className="text-[#8ea2d0]">Collezione/Template:</span> <span className="text-white">{item.frontCover.collection} / {item.frontCover.template}</span></li>
           {
-            item.frontCover.text.trim() != '' ? (<>
-              <li>Testo: "{item.frontCover.text}"</li>
-              <li>Dimensione Testo: {item.frontCover.fontSize}</li>
-              <li>Posizione Testo: {item.frontCover.position}</li>
+            item.frontCover.text.trim() !== '' ? (<>
+              <li><span className="text-[#8ea2d0]">Testo:</span> <span className="text-white">"{item.frontCover.text}"</span></li>
+              <li><span className="text-[#8ea2d0]">Dimensione Testo:</span> <span className="text-white">{item.frontCover.fontSize}</span></li>
+              <li><span className="text-[#8ea2d0]">Posizione Testo:</span> <span className="text-white">{item.frontCover.position}</span></li>
             </>
             )
               :
-              <li>Nessun testo aggiunto.</li>
+              <li className="italic text-[#9fb1dc]">Nessun testo aggiunto.</li>
           }
-
         </ul>
       </div>
 
-      <div className="pl-4 border-l-2 border-gray-200 space-y-2">
-        <p className="font-semibold">Sidebars ({item.modules.length}):</p>
-        {item.modules.map((mod, index) => (
-          <div key={mod.id} className="text-sm">
-            <p><em>Sidebar {index + 1}:</em> Colore: {mod.sidebarColor.name}, Testo: "{mod.sidebarText}" | Pagine: {mod.pageInterior}</p>
-          </div>
-        ))}
+      <div className="rounded-xl border border-white/10 bg-[#0b1531] p-4">
+        <p className="mb-3 text-sm font-black uppercase tracking-wider text-[#ffb170]">Sidebars ({item.modules.length})</p>
+        <div className="space-y-2">
+          {item.modules.map((mod, index) => (
+            <div key={mod.id} className="rounded-lg border border-white/10 bg-[#101d3f] p-3 text-sm">
+              <p className="font-semibold text-white">Sidebar {index + 1}</p>
+              <p className="text-[#b6c8f2]">Colore: {mod.sidebarColor.name}</p>
+              <p className="text-[#b6c8f2]">Testo: "{mod.sidebarText}"</p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="border-l-2 border-rose-200 pl-3 mb-12">
-        <p><strong>Copertina Posteriore:</strong></p>
-        <ul className="list-disc list-inside pl-4 text-sm space-y-1">
-          <li>Colore: {item.backCover.color.name}</li>
+      <div className="rounded-xl border border-[#f97316]/25 bg-[#0b1531] p-4">
+        <p className="mb-2 text-sm font-black uppercase tracking-wider text-[#ffb170]">Copertina Posteriore</p>
+        <ul className="space-y-1 text-sm leading-relaxed">
+          <li><span className="text-[#8ea2d0]">Colore:</span> <span className="text-white">{item.backCover.color.name}</span></li>
           {
             item.backCover.text.trim() !== '' ?
               <>
-                <li>Testo: "{item.backCover.text}"</li>
-                <li>Dimensione Testo: {item.backCover.fontSize}</li>
-                <li>Posizione Testo: {item.backCover.position}</li>
+                <li><span className="text-[#8ea2d0]">Testo:</span> <span className="text-white">"{item.backCover.text}"</span></li>
+                <li><span className="text-[#8ea2d0]">Dimensione Testo:</span> <span className="text-white">{item.backCover.fontSize}</span></li>
+                <li><span className="text-[#8ea2d0]">Posizione Testo:</span> <span className="text-white">{item.backCover.position}</span></li>
               </> :
-              <li>Nessun testo aggiunto.</li>
+              <li className="italic text-[#9fb1dc]">Nessun testo aggiunto.</li>
           }
         </ul>
       </div>
 
-      <Button
-        text="Aggiungi al carrello"
-        onClick={handleAddToCart}
-      />
-
+      <div className="pt-2">
+        <button
+          onClick={handleAddToCart}
+          className="w-full rounded-xl border border-[#f97316]/35 bg-[#f97316] px-6 py-3 text-base font-black text-[#1e293b] transition-colors hover:bg-[#fb8a35]"
+        >
+          Aggiungi al carrello
+        </button>
+      </div>
     </div>
   )
 }

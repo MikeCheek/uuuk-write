@@ -4,7 +4,6 @@ import { Link } from 'gatsby'
 import { getCoverTemplateImagePath } from '../../utilities/arenaHelpers'
 import { useCart } from '../../utilities/cartContext'
 import { useSnackbar } from '../../utilities/snackbarContext'
-import Button from '../atoms/Button'
 import Preview3DWrapper from './Preview3DWrapper'
 import Switch from './Switch'
 import { Metadata } from '../../utilities/arenaSettings'
@@ -20,8 +19,13 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
 
   const name = presetName ?? stripeData.name ?? `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`
 
-  const linkProduct = stripeData ? `/arena?preset_id=${preset.id}&pid=${stripeData.id}&price_id=${stripeData.default_price.id}` : `/arena?preset_id=${preset.id}`
-  const linkProductPay = linkProduct + '&paynow=true'
+  const priceValue = stripeData?.default_price?.unit_amount
+    ? Number(stripeData.default_price.unit_amount) / 100
+    : undefined
+
+  const linkProduct = stripeData
+    ? `/arena?preset_id=${preset.id}&pid=${stripeData.id}&price_id=${stripeData.default_price.id}&pname=${encodeURIComponent(name)}${priceValue !== undefined ? `&pprice=${priceValue}` : ''}`
+    : `/arena?preset_id=${preset.id}`
 
   const handleAddToCart = () => {
     if (!stripeData) {
@@ -49,20 +53,20 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
   }, [stripeData])
 
   return (
-    <div className="min-h-screen bg-beige flex flex-col items-center justify-center p-4 md:p-12">
-      <div className="max-w-6xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+    <div className="min-h-screen bg-[#070d1e] bg-[radial-gradient(circle_at_top,_#132a52_0%,_#070d1e_60%)] p-4 md:p-12">
+      <div className="mx-auto w-full max-w-6xl overflow-hidden rounded-3xl border border-white/10 bg-[#0f1b3c]/90 shadow-[0_24px_70px_rgba(6,10,20,0.55)]">
 
         {/* Breadcrumb / Back Link */}
-        <div className="p-6 border-b border-gray-100">
-          <Link to="/galleria" className="text-sm text-gray-500 hover:text-blue-600 flex items-center gap-1">
+        <div className="border-b border-white/10 p-6">
+          <Link to="/galleria" className="flex items-center gap-1 text-sm text-[#9ad0ff] hover:text-[#ffb170]">
             ← Torna alla galleria
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 p-8 lg:p-12">
+        <div className="grid grid-cols-1 gap-12 p-8 md:grid-cols-2 lg:p-12">
 
           {/* LEFT COLUMN: Visual Preview */}
-          <div className="flex flex-col items-center justify-center bg-gray-50 rounded-xl p-8 relative min-h-[500px]">
+          <div className="relative flex min-h-[500px] flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#0b1531] p-8">
             <div className="absolute top-4 right-4 z-20">
               <Switch isOn={mode === '3D'} toggleSwitch={() => setMode(mode === 'flat' ? '3D' : 'flat')} />
             </div>
@@ -87,21 +91,21 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
           {/* RIGHT COLUMN: Product Details */}
           <div className="flex flex-col justify-center gap-6">
             <div>
-              <h3 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-2">
+              <h3 className="mb-2 text-sm font-black uppercase tracking-widest text-[#ffb170]">
                 {preset.frontCover.collection}
               </h3>
-              <h1 className="text-4xl font-extrabold text-gray-900 mb-4">{name}</h1>
+              <h1 className="mb-4 text-4xl font-black uppercase tracking-tight text-white">{name}</h1>
               <div className="flex items-center gap-4">
-                <span className="inline-block bg-gray-100 text-gray-800 text-xs px-3 py-1 rounded-full font-semibold">
+                <span className="inline-block rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-semibold text-[#d5e2ff]">
                   Formato {preset.format}
                 </span>
-                <span className="inline-block bg-gray-100 text-gray-800 text-xs px-3 py-1 rounded-full font-semibold">
+                <span className="inline-block rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-semibold text-[#d5e2ff]">
                   {preset.modules.length} Moduli
                 </span>
               </div>
             </div>
 
-            <div className="text-gray-600 leading-relaxed">
+            <div className="leading-relaxed text-[#b6c8f2]">
               <p>
                 Agenda {preset.format} della collezione {preset.frontCover.collection}.
                 Include template personalizzati e {preset.modules.length} sezioni interne.
@@ -109,26 +113,28 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
               </p>
             </div>
 
-            <div className="mt-4 pt-6 border-t border-gray-100">
+            <div className="mt-4 border-t border-white/10 pt-6">
               <div className="flex items-end gap-4 mb-8">
                 {formattedPrice ? (
-                  <span className="text-4xl font-bold text-gray-900">{formattedPrice}</span>
+                  <span className="text-4xl font-black text-white">{formattedPrice}</span>
                 ) : (
-                  <span className="text-gray-400 italic">Prezzo non disponibile</span>
+                  <span className="italic text-[#8ea2d0]">Prezzo non disponibile</span>
                 )}
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  text="Aggiungi al carrello"
+                <button
                   onClick={handleAddToCart}
-                />
-                <Button
-                  text="Personalizza"
-                  variant="secondary"
-                  theme="blue"
-                  href={linkProduct}
-                />
+                  className="rounded-xl border border-[#f97316]/35 bg-[#f97316] px-6 py-3 text-base font-black text-[#1e293b] transition-colors hover:bg-[#fb8a35]"
+                >
+                  Aggiungi al carrello
+                </button>
+                <Link
+                  to={linkProduct}
+                  className="inline-flex items-center justify-center rounded-xl border border-[#9ad0ff]/35 bg-[#9ad0ff]/10 px-6 py-3 text-base font-bold text-[#d8ecff] transition-colors hover:bg-[#9ad0ff]/20"
+                >
+                  Personalizza
+                </Link>
               </div>
             </div>
           </div>

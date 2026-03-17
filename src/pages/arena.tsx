@@ -1,8 +1,8 @@
 import type { ExtendedTextPosition, Metadata, Module } from '../utilities/arenaSettings';
 import React, { useState, useMemo } from 'react';
-import { ShoppingCart, X, RotateCcw, Play } from 'lucide-react'; // Suggested icon library
+import { RotateCcw, Play } from 'lucide-react';
 import {
-  AgendaFormat, ColorOption, colors, Collection, CoverImageTemplate, FontSize, TextPosition, MAX_MODULES, formats, fontSizes, textPositions, collections, pageInteriors, steps,
+  AgendaFormat, ColorOption, colors, Collection, CoverImageTemplate, FontSize, TextPosition, MAX_MODULES, formats, fontSizes, textPositions, collections, steps,
   getPresetFromKey,
   getPresetFromId
 } from '../utilities/arenaSettings';
@@ -33,6 +33,13 @@ const Arena = () => {
 
   const isCustom = queryParams.has('custom') ? queryParams.get('custom') === 'true' : false;
 
+  const selectedProductId = queryParams.get('pid') || preset.productId;
+  const selectedPriceId = queryParams.get('price_id') || preset.priceId;
+  const selectedName = queryParams.get('pname') || preset.name;
+  const selectedPrice = queryParams.get('pprice')
+    ? Number(queryParams.get('pprice'))
+    : preset.price;
+
   const customSteps = isCustom ? steps : steps.filter(s => s !== 'Copertina Anteriore');
 
   const step = queryParams.has('paynow') ? steps.length - 1 : preset.currentStep || 0;
@@ -51,7 +58,7 @@ const Arena = () => {
 
   // Modules State
   const [modules, setModules] = useState<Module[]>(preset.modules.length > 0 ? preset.modules : [
-    { id: 'initial-mod', sidebarColor: colors[4], sidebarText: 'Idee', pageInterior: 'Righe' }
+    { id: 'initial-mod', sidebarColor: colors[4], sidebarText: 'Idee' }
   ]);
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
 
@@ -72,10 +79,14 @@ const Arena = () => {
     frontCover: { color: frontCoverColor, collection: frontCoverCollection, template: frontCoverTemplate, text: frontCoverText, fontSize: frontCoverFontSize, position: frontCoverPosition, textColor: frontCoverTextColor },
     modules,
     backCover: { color: backCoverColor, text: backCoverText, fontSize: backCoverFontSize, position: backCoverPosition, textColor: backCoverTextColor },
+    name: selectedName || `${format} - ${frontCoverCollection} - ${frontCoverTemplate ?? 'Custom'}`,
+    productId: selectedProductId,
+    priceId: selectedPriceId,
+    price: selectedPrice,
     lastUpdated: undefined,
     currentStep,
     id: preset.id || -1
-  }), [format, frontCoverColor, frontCoverCollection, frontCoverTemplate, frontCoverText, frontCoverFontSize, frontCoverPosition, frontCoverTextColor, modules, backCoverColor, backCoverText, backCoverFontSize, backCoverPosition, backCoverTextColor, currentStep]);
+  }), [format, frontCoverColor, frontCoverCollection, frontCoverTemplate, frontCoverText, frontCoverFontSize, frontCoverPosition, frontCoverTextColor, modules, backCoverColor, backCoverText, backCoverFontSize, backCoverPosition, backCoverTextColor, currentStep, selectedName, selectedProductId, selectedPriceId, selectedPrice, preset.id]);
 
   // 2. LOCALSTORAGE: LOAD ON MOUNT
   // useEffect(() => {
@@ -144,8 +155,7 @@ const Arena = () => {
       const newModule: Module = {
         id: Date.now().toString(),
         sidebarColor: colors[Math.floor(Math.random() * (colors.length - 1))],
-        sidebarText: `Sidebar ${modules.length + 1}`,
-        pageInterior: 'Righe',
+        sidebarText: `Sidebar ${modules.length + 1}`
       };
       setModules([...modules, newModule]);
       setActiveModuleIndex(modules.length);
@@ -194,6 +204,10 @@ const Arena = () => {
       position: backCoverPosition,
       textColor: backCoverTextColor
     },
+    name: selectedName || `${format} - ${frontCoverCollection} - ${frontCoverTemplate ?? 'Custom'}`,
+    productId: selectedProductId,
+    priceId: selectedPriceId,
+    price: selectedPrice,
     currentStep: 0,
     id: preset.id || -1
   } as Metadata;
@@ -203,23 +217,23 @@ const Arena = () => {
       {/* RESUME MODAL */}
       <Modal show={showResumeModal} onClose={() => setShowResumeModal(false)} showCursor>
         <div className="flex flex-col items-center text-center p-4">
-          <h3 className="text-2xl font-bold text-beige mb-4 uppercase">Bentornato!</h3>
-          <p className="text-white mb-8">Abbiamo trovato una sessione non completata. Vuoi riprendere da dove avevi lasciato?</p>
+          <h3 className="mb-4 text-2xl font-black uppercase text-[#f6f8ff]">Bentornato!</h3>
+          <p className="mb-8 text-[#c4d4ff]">Abbiamo trovato una sessione non completata. Vuoi riprendere da dove avevi lasciato?</p>
           <div className="flex gap-4">
-            <button onClick={handleRestart} className="flex items-center gap-2 px-6 py-3 rounded-lg bg-red/20 text-red border border-red hover:bg-red hover:text-white transition-all">
+            <button onClick={handleRestart} className="flex items-center gap-2 rounded-lg border border-red-400/40 bg-red-500/10 px-6 py-3 text-red-200 transition-all hover:bg-red-500/20">
               <RotateCcw size={18} /> Ricomincia
             </button>
-            <button onClick={handleResume} className="flex items-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg transition-all">
+            <button onClick={handleResume} className="flex items-center gap-2 rounded-lg border border-[#f97316]/35 bg-[#f97316] px-6 py-3 font-bold text-[#1e293b] shadow-lg transition-all hover:bg-[#fb8a35]">
               <Play size={18} /> Riprendi
             </button>
           </div>
         </div>
       </Modal>
 
-      <div className="min-h-screen bg-black mt-16 md:mt-0 p-4 md:p-8 flex flex-col items-center font-sans">
-        <h1 className="text-4xl md:text-6xl font-heading font-extrabold mb-8 animate-fadeIn">
-          <span className="text-beige">Build Your </span>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue via-purple to-magenta drop-shadow-sm">
+      <div className="mt-16 flex min-h-screen flex-col items-center bg-[#070d1e] bg-[radial-gradient(circle_at_top,_#152f5d_0%,_#070d1e_60%)] p-4 font-sans text-white md:mt-0 md:p-8">
+        <h1 className="mb-8 text-4xl font-black uppercase tracking-tight animate-fadeIn md:text-6xl">
+          <span className="text-[#f6f8ff]">Build Your </span>
+          <span className="bg-gradient-to-r from-[#f97316] via-[#ffb170] to-[#9ad0ff] bg-clip-text text-transparent">
             UUUK
           </span>
         </h1>
@@ -227,13 +241,13 @@ const Arena = () => {
         {/* Progress Bar */}
         <CompactProgressCircle steps={customSteps} currentStep={currentStep} />
 
-        <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl animate-fadeIn">
+        <div className="flex w-full max-w-6xl flex-col gap-8 animate-fadeIn lg:flex-row">
           {/* Customization Options Panel */}
-          <div className="lg:w-1/2 bg-gray-800 p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-white">
+          <div className="rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-6 shadow-[0_16px_40px_rgba(6,10,20,0.45)] lg:w-1/2">
+            <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-white">
               {/* Step {currentStep + 1}:  */}
               {customSteps[currentStep]}</h2>
-            <hr className="mb-4" />
+            <hr className="mb-4 border-white/10" />
 
             {
               customSteps[currentStep] === 'Formato' ? (
@@ -268,7 +282,6 @@ const Arena = () => {
                   removeModule={removeModule}
                   updateModule={updateModule}
                   colors={colors}
-                  pageInteriors={pageInteriors}
                 />
               ) : customSteps[currentStep] === 'Copertina Posteriore' ? (
                 <BackCover
@@ -292,7 +305,7 @@ const Arena = () => {
           </div>
 
           {/* 3D Preview Panel (Updated for text size/position) */}
-          <div className="lg:w-1/2 flex flex-col items-center justify-center bg-gray-800 p-6 rounded-xl shadow-lg min-h-[400px]">
+          <div className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-6 shadow-[0_16px_40px_rgba(6,10,20,0.45)] lg:w-1/2">
             <Preview3DWrapper product={previewProduct} />
           </div>
         </div>
@@ -301,20 +314,19 @@ const Arena = () => {
         <button
           onClick={handlePrev}
           disabled={currentStep === 0}
-          className="px-4 py-2 rounded-lg bg-gray-300 text-black hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors fixed bottom-1/2 -translate-y-1/2 left-4"
+          className="fixed bottom-1/2 left-4 -translate-y-1/2 rounded-full border border-white/20 bg-[#0f1b3c]/90 px-4 py-3 text-[#d2ddfb] transition-colors hover:border-[#f97316]/35 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           {'<'}
         </button>
         {currentStep < customSteps.length - 1 ? (
           <button
             onClick={handleNext}
-            className="px-6 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors font-semibold fixed bottom-1/2 -translate-y-1/2 right-4"
+            className="fixed bottom-1/2 right-4 -translate-y-1/2 rounded-full border border-[#f97316]/35 bg-[#f97316] px-6 py-3 font-black text-[#1e293b] transition-colors hover:bg-[#fb8a35]"
           >
             {'>'}
           </button>
         ) : <></>}
       </div>
-      <p className="text-beige md:mx-48 text-center pb-10 -z-10 animate-fadeIn">⚠️ Questa pagina è ancora in fase di sviluppo. Gli ordini effettuati qui non verranno presi in considerazione e non saremo responsabili per eventuali problemi derivanti dall'utilizzo. ⚠️</p>
     </Layout>
   );
 };

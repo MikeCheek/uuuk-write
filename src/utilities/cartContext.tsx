@@ -39,14 +39,29 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const addToCart = (product: Metadata) => {
     setCart((prev) => {
       const existing = false // prev.find((item) => item.id === product.id);
-      const cartId = Date.now(); // Unique ID for cart item instance
+
+      const usedCartIds = new Set(prev.map(item => item.cartId));
+      let cartId = Date.now();
+      while (usedCartIds.has(cartId)) {
+        cartId += 1;
+      }
+
+      const usedItemIds = new Set(prev.map(item => item.id));
+      let safeItemId = product.id;
+      if (usedItemIds.has(safeItemId)) {
+        safeItemId = Date.now();
+        while (usedItemIds.has(safeItemId)) {
+          safeItemId += 1;
+        }
+      }
+
       if (existing) {
         return prev.map((item) =>
           item.id === product.id ? { ...item, quantity: (item.quantity || 0) + 1 } : item
         );
       }
       showSnackbar(`${product.name ?? 'Prodotto'} aggiunto al carrello!`, 'success');
-      return [...prev, { ...product, quantity: 1, cartId }];
+      return [...prev, { ...product, id: safeItemId, quantity: 1, cartId }];
     });
   };
 

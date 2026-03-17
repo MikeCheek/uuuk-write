@@ -1,5 +1,5 @@
 import React from 'react'
-import { ColorOption, MAX_MODULES, Module, PageInterior } from '../../utilities/arenaSettings'
+import { ColorOption, MAX_MODULES, Module } from '../../utilities/arenaSettings'
 import ColorButton from './ColorButton';
 import InputText from './InputText';
 
@@ -11,8 +11,7 @@ const Modules = (
     addModule,
     removeModule,
     updateModule,
-    colors,
-    pageInteriors
+    colors
   }: {
     modules: Module[];
     setActiveModuleIndex: (index: number) => void;
@@ -21,7 +20,6 @@ const Modules = (
     removeModule: (index: number) => void;
     updateModule: (index: number, updatedFields: Partial<Module>) => void;
     colors: ColorOption[];
-    pageInteriors: PageInterior[];
   }
 ) => {
   const activeModule = modules[activeModuleIndex];
@@ -112,26 +110,6 @@ const Modules = (
           )}
         </div>
 
-        {/*
-        <div className="space-y-4">
-          <p className="text-gray-300 font-medium">Page Interior:</p>
-          <div className="flex flex-col gap-2">
-            {pageInteriors.map((p) => (
-              <button
-                key={p}
-                onClick={() => updateModule(activeModuleIndex, { pageInterior: p })}
-                className={`px-3 py-1.5 text-left rounded-lg border-2 transition-all text-sm ${activeModule.pageInterior === p ? 'border-indigo-500 bg-indigo-100 text-indigo-700 font-semibold' : 'border-gray-300 hover:border-indigo-300'}`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-          <div className="w-full h-24 bg-white border border-gray-300 rounded p-2 mt-2 overflow-hidden">
-            {activeModule.pageInterior === 'Lined' && <div className="space-y-2 h-full border-l border-red-200 pl-2"><div className="h-px bg-blue-200"></div><div className="h-px bg-blue-200"></div><div className="h-px bg-blue-200"></div><div className="h-px bg-blue-200"></div><div className="h-px bg-blue-200"></div></div>}
-            {activeModule.pageInterior === 'Dotted' && <div className="h-full bg-[radial-gradient(#d1d5db_0.5px,transparent_0.5px)] [background-size:10px_10px]"></div>}
-            {activeModule.pageInterior === 'Blank' && <div className="h-full"></div>}
-          </div>
-        </div> */}
       </div>
     </div>
   )

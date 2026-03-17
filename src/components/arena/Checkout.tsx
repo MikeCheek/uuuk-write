@@ -58,9 +58,9 @@ const Checkout = ({ items }: { items: Metadata[] }) => {
 
 
   return error ?
-    <div className="text-white" >
-      <p>Errore:</p>
-      <p>{error}</p>
+    <div className="rounded-2xl border border-red-400/40 bg-red-500/10 p-4 text-red-100" >
+      <p className="text-xs uppercase tracking-wide text-red-200">Errore</p>
+      <p className="mt-1 text-sm">{error}</p>
     </div>
     :
     // priceId === null || priceId.trim() === '' ?
@@ -75,13 +75,15 @@ const Checkout = ({ items }: { items: Metadata[] }) => {
           appearance: {
             theme: 'stripe',
             variables: {
-              colorPrimary: '#4f46e5',
-              colorBackground: '#1f2937',
-              colorText: '#ffffff',
+              colorPrimary: '#f97316',
+              colorBackground: '#0f1a36',
+              colorText: '#f8fbff',
               colorDanger: '#ef4444',
-              fontFamily: 'Arial, sans-serif',
-              spacingUnit: '4px',
-              borderRadius: '4px',
+              colorTextSecondary: '#9db2de',
+              colorSuccess: '#1aae67',
+              fontFamily: 'Helvetica, sans-serif',
+              spacingUnit: '6px',
+              borderRadius: '10px',
             },
           },
         },

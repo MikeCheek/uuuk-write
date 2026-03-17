@@ -4,24 +4,23 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        black: '#1a1615',
-        purple: '#4f186b',
-        blue: '#3e4db4',
-        magenta: '#91144e',
+        black: '#0b1122',
+        blue: '#132140',
         red: '#ea1f25',
-        brown: '#ac6d37',
-        darkBrown: '#5c3b1e', // Adjusted to complement the brown palette
-        yellow: '#f1ca00',
-        beige: '#ecddbe',
-
-        redBrick: '#a3635e',
+        brown: '#f97516',
+        darkBrown: '#0a1226',
+        yellow: '#ffcf66',
+        beige: '#ececef',
+        redBrick: '#253a68',
+        mint: '#1bb57f',
+        silver: '#b8c0cf',
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        heading: ['Poppins', 'sans-serif'],
+        sans: ['Space Grotesk', 'sans-serif'],
+        heading: ['Archivo Black', 'sans-serif'],
         calligraph: ['Calligraffitti', 'cursive'],
-        roboto: ['Roboto', 'sans-serif'],
-        helvetica: ['Helvetica', 'sans-serif'],
+        roboto: ['Space Grotesk', 'sans-serif'],
+        helvetica: ['Space Grotesk', 'sans-serif'],
       },
       borderRadius: {
         xl: '1rem',

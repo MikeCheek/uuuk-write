@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import { Metadata, presets } from '../../utilities/arenaSettings'
-import Button from '../atoms/Button'
+import { Link } from 'gatsby'
 import { graphql, useStaticQuery } from 'gatsby'
 import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
 import Switch from './Switch'
@@ -41,19 +41,11 @@ const TemplateItem = ({
 
   return (
     <div
-      className="
-    /* Layout & Base Styles */
-    border border-gray-600 rounded-lg p-4 overflow-hidden gap-8 flex flex-col items-center relative pt-16
-   opacity-0 transition-all duration-300 ease-out animate-fadeIn
-    /* Hover Effects */
-    hover:-translate-y-1 
-    hover:border-blue-500/50
-    hover:shadow-[0_0_20px_rgba(37,99,235,0.15)] 
-  "
+      className="uuuk-surface relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
       style={{ animationDelay: `${index * 0.1}s` }}
     >
-      <div className="absolute top-0 left-0 bg-gradient-to-br from-blue-600 to-blue-700 text-white px-4 py-2 rounded-br-lg shadow-lg z-10">
-        <div className="font-bold text-sm tracking-wide">{name}</div>
+      <div className="absolute left-0 top-0 z-10 rounded-br-xl border-b border-r border-[#f97316]/40 bg-gradient-to-br from-[#f97316] to-[#ff9d57] px-4 py-2 text-[#1f2937] shadow-lg">
+        <div className="text-sm font-bold tracking-wide">{name}</div>
         <div className="text-xs opacity-90 capitalize">{preset.frontCover.collection}</div>
       </div>
 
@@ -76,35 +68,22 @@ const TemplateItem = ({
       {/* Price Display */}
       <div className="w-full flex justify-center -mb-4 z-10">
         {formattedPrice ? (
-          <span className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-0.5 rounded border border-green-200">
+          <span className="rounded border border-[#37b87d]/40 bg-[#37b87d]/15 px-2.5 py-0.5 text-xs font-bold text-[#8fe7be]">
             {formattedPrice}
           </span>
         ) : (
           // Placeholder for loading price
-          <span className="h-5 w-16 animate-pulse rounded"></span>
+          <span className="h-5 w-16 animate-pulse rounded bg-white/10"></span>
         )}
       </div>
 
       <div className='flex flex-row gap-2 items-end justify-center w-full mt-auto pt-6'>
-        {/* <Button
-          text="Compra ora"
-          // We can append the stripe Price ID if needed by your checkout logic
-          href={linkProductPay}
-          small
-        />
-        <Button
-          text="Modifica"
-          href={linkProduct}
-          smaller
-          variant='secondary'
-        /> */}
-        <Button
-          text="Vedi prodotto"
-          // This links to the new static page we created
-          href={`/prodotto/${slugify(preset?.slug ?? name)}`}
-          variant="primary"
-          small
-        />
+        <Link
+          to={`/prodotto/${slugify(preset?.slug ?? name)}`}
+          className="uuuk-btn-primary !px-4 !py-2 !text-xs"
+        >
+          Vedi prodotto
+        </Link>
         <button
           onClick={() => addToCart({
             ...preset,
@@ -114,7 +93,7 @@ const TemplateItem = ({
             image: image ? image : preset.frontCover.template ? getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template) : undefined,
             name
           })}
-          className="bg-transparent relative border-2 border-beige text-beige hover:bg-beige hover:text-brown hover:border-brown rounded-lg px-3 py-2 transition-colors flex items-center gap-1"
+          className="uuuk-btn-secondary relative flex items-center gap-1 !px-3 !py-2 !text-xs"
         >
           <ShoppingCartIcon className="inline-block mr-1" size={16} />
           <PlusIcon className="inline-block absolute top-px right-px" size={16} />
@@ -253,16 +232,16 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
 
   // --- 4. Render ---
   return (
-    <div className="flex flex-col gap-6 p-6 w-[80vw]">
+    <div className="flex w-full flex-col gap-6 rounded-3xl p-6">
       {/* Filter Controls */}
-      <div className="p-4 rounded-lg flex flex-col md:flex-row gap-4 items-center justify-between animate-fadeIn">
+      <div className="uuuk-surface flex flex-col items-center justify-between gap-4 rounded-xl p-4 animate-fadeIn md:flex-row">
         {/* Search Bar: Full width on mobile, auto on desktop */}
         <div className="w-full md:flex-1 md:min-w-[200px]">
           <div className="relative">
             <input
               type="text"
               placeholder="Cerca per nome..."
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 md:py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+              className="uuuk-input rounded-xl px-4 py-3 md:py-2"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -272,7 +251,7 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
         {/* Selectors Container: Grid on mobile, flex on desktop */}
         <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full md:w-auto items-center">
           <select
-            className="border border-gray-200 rounded-lg px-3 py-2.5 md:py-2 text-sm bg-white cursor-pointer appearance-none md:appearance-auto shadow-sm"
+            className="uuuk-select cursor-pointer appearance-none rounded-lg py-2.5 md:appearance-auto md:py-2"
             value={selectedCollection}
             onChange={(e) => setSelectedCollection(e.target.value)}
           >
@@ -281,7 +260,7 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
           </select>
 
           <select
-            className="border border-gray-200 rounded-lg px-3 py-2.5 md:py-2 text-sm bg-white cursor-pointer shadow-sm"
+            className="uuuk-select cursor-pointer rounded-lg py-2.5 md:py-2"
             value={selectedFormat}
             onChange={(e) => setSelectedFormat(e.target.value)}
           >
@@ -290,7 +269,7 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
           </select>
 
           <select
-            className="border border-gray-200 rounded-lg px-3 py-2.5 md:py-2 text-sm bg-white cursor-pointer shadow-sm col-span-1"
+            className="uuuk-select col-span-1 cursor-pointer rounded-lg py-2.5 md:py-2"
             value={selectedTemplate}
             onChange={(e) => setSelectedTemplate(e.target.value)}
           >
@@ -307,7 +286,7 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
                 setSelectedFormat('')
                 setSelectedTemplate('')
               }}
-              className="col-span-1 sm:ml-2 flex items-center justify-center text-brown hover:text-red-600 transition-colors py-2 px-4 md:px-2"
+              className="col-span-1 flex items-center justify-center px-4 py-2 text-[#ffb170] transition-colors hover:text-[#f97316] sm:ml-2 md:px-2"
               aria-label="Reset filters"
             >
               <span className="text-xs font-bold tracking-tighter uppercase md:hidden">Reset</span>
@@ -317,7 +296,7 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
         </div>
       </div>
 
-      <div className="text-sm text-gray-500 px-1 animate-fadeIn flex justify-between">
+      <div className="flex justify-between px-1 text-sm text-[#8ea2d0] animate-fadeIn">
         <span>Mostrando {filteredPresets.length} risultati</span>
       </div>
 
@@ -336,7 +315,7 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
           />
         ))}
         {filteredPresets.length === 0 && (
-          <div className="col-span-full py-12 text-center text-gray-400">
+          <div className="col-span-full py-12 text-center text-[#8ea2d0]">
             Nessun risultato trovato per i filtri selezionati.
           </div>
         )}
