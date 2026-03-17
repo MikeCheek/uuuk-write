@@ -30,30 +30,25 @@ const Button = ({
     ? 'text-xs px-3 py-1.5'
     : small
       ? 'text-sm px-5 py-2'
-      : 'text-lg px-8 py-3'
+      : 'text-base px-8 py-3'
 
   const loadingClasses = loading ? 'cursor-not-allowed opacity-70' : ''
 
   const baseStyle = `
     inline-flex items-center justify-center 
-    font-semibold rounded-lg 
+    font-bold rounded-lg uppercase tracking-wide
     transition-all duration-200 ease-in-out
-    focus:outline-none focus:ring-2 focus:ring-offset-2 
+    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0b1122]
     active:scale-95 transform
     ${sizeClasses}
     ${loadingClasses}
   `
 
   const variantStyle = variant === "primary"
-    ?
-    // theme === "blue"
-    //   ? 
-    "bg-blue text-beige shadow-md hover:shadow-lg hover:bg-opacity-90 focus:ring-blue"
-    // : 
-    // "bg-beige text-blue shadow-md hover:shadow-lg hover:bg-opacity-90 focus:ring-beige"
+    ? "bg-gradient-to-r from-[#f97516] to-[#ff9d57] text-[#0b1122] border border-[#ffb170]/40 shadow-[0_10px_24px_rgba(249,117,22,0.28)] hover:brightness-105 focus:ring-[#f97516]"
     : theme === "blue"
-      ? "bg-transparent border-2 border-blue text-blue hover:bg-blue hover:text-beige focus:ring-blue"
-      : "bg-transparent border-2 border-beige text-beige hover:bg-beige hover:text-blue focus:ring-beige"
+      ? "bg-[#9ad0ff]/12 border border-[#9ad0ff]/45 text-[#d8ecff] hover:bg-[#9ad0ff]/20 focus:ring-[#9ad0ff]"
+      : "bg-[#101d3f] border border-white/15 text-[#f2f5ff] hover:bg-[#18274d] focus:ring-[#f97516]"
 
   const style = `${baseStyle} ${variantStyle}`
 

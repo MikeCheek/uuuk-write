@@ -3,7 +3,7 @@ import Shapes from "../atoms/Shapes";
 
 const Section = ({
   id,
-  bgColor = "bg-black",
+  bgColor = "bg-[#0b1122]",
   shapeColor = "text-brown",
   children,
   preset = "center"
@@ -18,7 +18,7 @@ const Section = ({
   return (
     <section
       id={id}
-      className={`${bgColor} min-h-screen flex items-center z-20 relative ${preset === "center" ? "justify-center" : preset === "left" ? "justify-start" : "justify-end"} px-[10vw] md:px-20 relative overflow-x-hidden`}
+      className={`${bgColor} uuuk-grid-bg min-h-screen flex items-center z-20 relative ${preset === "center" ? "justify-center" : preset === "left" ? "justify-start" : "justify-end"} px-[8vw] md:px-20 overflow-x-hidden`}
     >
       {/* <Shapes color={shapeColor} /> */}
       {/* <span className="z-20 relative min-h-screen"> */}

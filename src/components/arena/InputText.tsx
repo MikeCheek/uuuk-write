@@ -24,7 +24,7 @@ const InputText = (
         onChange={onChange}
         maxLength={30}
         placeholder="ex. Write the future"
-        className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+        className="w-full p-2 text-black border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 bg-white"
       />
     </>
   )

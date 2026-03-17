@@ -2,16 +2,12 @@ import {
   AgendaFormat,
   Collection,
   CoverImageTemplate,
-  MoodTemplate,
   imageAssets,
-  TriadicTemplate,
   moodTemplates,
   triadicTemplates,
   TextPosition,
   FontSize,
-  ExtendedTextPosition,
-  ColorOption,
-  Module
+  ExtendedTextPosition
 } from './arenaSettings'
 
 export const slugify = (text: string) =>
@@ -67,8 +63,6 @@ export const getPositionClasses = (
 // --- Helper for Font Size Classes ---
 export const getFontSizeClass = (size: FontSize): string => {
   switch (size) {
-    case 'Piccolo':
-      return 'text-[8px]'
     case 'Medio':
       return 'text-[10px]'
     case 'Grande':

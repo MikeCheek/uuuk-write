@@ -23,6 +23,11 @@ export default async function handler (
       // const { PRICE_ID, SITE_URL, metadata } = req.body
       const { SITE_URL, metadata } = req.body
 
+      // Validate metadata
+      if (!metadata || !Array.isArray(metadata) || metadata.length === 0) {
+        return res.status(400).send({ message: 'Cart items are required' })
+      }
+
       // 2. Define your threshold (e.g., €50.00)
       const THRESHOLD = process.env.SHIPPING_THRESHOLD
         ? parseInt(process.env.SHIPPING_THRESHOLD)
@@ -33,6 +38,16 @@ export default async function handler (
       // 1. Build line items from metadata array
       let totalAmount = 0
       const line_items = metadata.map((item: CartItem) => {
+        // Validate that priceId exists
+        if (!item.priceId) {
+          console.error('Missing priceId in cart item:', item)
+          throw new Error(
+            `Missing priceId for item: ${
+              item.name || 'unknown'
+            }. Each item must have a valid Stripe priceId.`
+          )
+        }
+
         totalAmount += item.price || 0
         return {
           price: item.priceId,

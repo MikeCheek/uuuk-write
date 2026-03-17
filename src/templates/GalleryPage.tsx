@@ -9,14 +9,16 @@ const GalleryPage = ({ pageContext }: any) => {
 
   return (
     <Layout showCustomCursor={false} shoppingCart={true}>
-      <div className='flex flex-col items-center justify-center'>
-        <h1 className="text-4xl md:text-6xl font-heading font-extrabold my-8 animate-fadeIn text-center">
-          <span className="text-beige">Scegli un template o </span>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue via-purple to-magenta drop-shadow-sm">
-            personalizza
-          </span>
-        </h1>
-        <TemplateGallery serverProducts={allStripeProducts} />
+      <div className="min-h-screen w-full bg-[#070d1e] bg-[radial-gradient(circle_at_top,_#152f5d_0%,_#070d1e_60%)] px-4 py-10 text-white">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-8">
+          <h1 className="my-12 text-center text-4xl font-black uppercase tracking-tight md:text-6xl">
+            <span className="text-[#f5f8ff]">Scegli un template o </span>
+            <span className="bg-gradient-to-r from-[#f97316] via-[#ffb170] to-[#9ad0ff] bg-clip-text text-transparent">
+              personalizza
+            </span>
+          </h1>
+          <TemplateGallery serverProducts={allStripeProducts} />
+        </div>
       </div>
     </Layout>
   )

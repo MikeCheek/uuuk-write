@@ -54,7 +54,7 @@ const Showcase = ({ data, opened, openModal }: { data: any[], opened: boolean, o
     return (
       <button
         type="button"
-        className={`top-1/2 -translate-y-1/2 absolute flex items-center justify-center w-10 h-10 rounded-full bg-black text-beige ring-2 ring-beige transition-all hover:scale-105 ${opened ? 'opacity-100' : 'opacity-0'}`}
+        className={`top-1/2 -translate-y-1/2 absolute flex items-center justify-center w-10 h-10 rounded-full border border-[#ffb170]/30 bg-[#0b1122] text-[#f4f7ff] transition-all hover:scale-105 ${opened ? 'opacity-100' : 'opacity-0'}`}
         style={{ ...style, display: "flex", right: opened ? "20px" : "-50px", zIndex: 20 }}
         onClick={onClick}
         aria-label="Next slide"
@@ -71,7 +71,7 @@ const Showcase = ({ data, opened, openModal }: { data: any[], opened: boolean, o
     return (
       <button
         type="button"
-        className={`top-1/2 -translate-y-1/2 absolute flex items-center justify-center w-10 h-10 rounded-full bg-black text-beige ring-2 ring-beige transition-all hover:scale-105 ${opened ? 'opacity-100' : 'opacity-0'}`}
+        className={`top-1/2 -translate-y-1/2 absolute flex items-center justify-center w-10 h-10 rounded-full border border-[#ffb170]/30 bg-[#0b1122] text-[#f4f7ff] transition-all hover:scale-105 ${opened ? 'opacity-100' : 'opacity-0'}`}
         style={{ ...style, display: "flex", left: opened ? "20px" : "-50px", zIndex: 20 }}
         onClick={onClick}
         aria-label="Previous slide"
@@ -88,10 +88,10 @@ const Showcase = ({ data, opened, openModal }: { data: any[], opened: boolean, o
       <div className='w-screen relative'>
         {/* left/right gradient */}
         <div className="absolute left-0 top-0 bottom-0 w-20 pointer-events-none z-10">
-          <div className="h-full bg-gradient-to-r from-black to-transparent" />
+          <div className="h-full bg-gradient-to-r from-[#0b1122] to-transparent" />
         </div>
         <div className="absolute right-0 top-0 bottom-0 w-20 pointer-events-none z-10">
-          <div className="h-full bg-gradient-to-l from-black to-transparent" />
+          <div className="h-full bg-gradient-to-l from-[#0b1122] to-transparent" />
         </div>
 
         <Slider nextArrow={<NextArrow />} prevArrow={<PrevArrow />} {...sliderSettings}>
@@ -106,10 +106,10 @@ const Showcase = ({ data, opened, openModal }: { data: any[], opened: boolean, o
                   alt={`Cover Image ${index + 1}`}
                 />
               </div>
-              <p className={`text-beige text-xl font-bold transition-opacity duration-1000 ${opened ? 'opacity-100' : 'opacity-0'}`}>{node.name}</p>
+              <p className={`text-[#f4f7ff] text-xl font-bold transition-opacity duration-1000 ${opened ? 'opacity-100' : 'opacity-0'}`}>{node.name}</p>
               <div className={`flex gap-2 mt-2 transition-opacity duration-1000 ${opened ? 'opacity-100' : 'opacity-0'}`}>
-                <span className="text-sm bg-black text-beige px-3 border-2 border-beige py-1 rounded-full uppercase tracking-wide">{collection}</span>
-                <span className="text-sm bg-black text-beige px-3 border-2 border-beige py-1 rounded-full uppercase tracking-wide">{format}</span>
+                <span className="text-sm bg-[#0b1122] text-[#f4f7ff] px-3 border border-white/20 py-1 rounded-full uppercase tracking-wide">{collection}</span>
+                <span className="text-sm bg-[#0b1122] text-[#f4f7ff] px-3 border border-white/20 py-1 rounded-full uppercase tracking-wide">{format}</span>
               </div>
             </div>
           ))}
