@@ -10,7 +10,10 @@ const UUUKForever = () => {
   return (
     // <Section id="section2" bgColor="bg-gradient-to-b from-1% from-white via-50% via-red to-99% to-blue" shapeColor="text-white" preset="left">
     <Section id="section2" bgColor="bg-beige" shapeColor="text-darkBrown" preset="left">
-      <ShowOnView className="text-left md:text-center text-darkBrown self-start mt-20" fadeIn="leftRight">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_15%,rgba(249,117,22,0.2),transparent_38%),radial-gradient(circle_at_82%_75%,rgba(37,41,169,0.18),transparent_42%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(11,17,34,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(11,17,34,0.08)_1px,transparent_1px)] [background-size:28px_28px]" />
+
+      <ShowOnView className="relative z-10 text-left md:text-center text-darkBrown self-start mt-20" fadeIn="leftRight">
         <div className="self-start">
           <Typography variant="h2" render="div" className="font-bold uppercase mr-auto !text-black opacity-90 text-center md:text-left [perspective:400px] max-w-[330px] md:max-w-[530px] md:ml-[5vw]" >
             <h2 className="text-3xl md:text-5xl w-fit scale-y-125 ml-4">Un UUUK</h2>

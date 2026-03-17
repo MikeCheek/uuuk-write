@@ -76,6 +76,36 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
                         €{item.price?.toFixed(2)}
                       </p>
                     </div>
+
+                    <details className="mt-2 rounded-md border border-white/10 bg-[#0b1531]/70 p-2 text-[11px] text-[#cddcff]">
+                      <summary className="cursor-pointer select-none text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">
+                        Dettagli personalizzazione
+                      </summary>
+                      <div className="mt-2 space-y-2">
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Anteriore</p>
+                          <p>{item.frontCover.collection} / {item.frontCover.template ?? 'Custom'} - {item.frontCover.color.name}</p>
+                          <p>{item.frontCover.text?.trim() ? `"${item.frontCover.text}"` : 'Nessun testo'} ({item.frontCover.fontSize}, {item.frontCover.position})</p>
+                        </div>
+
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Moduli</p>
+                          <div className="space-y-1">
+                            {item.modules.map((mod, modIndex) => (
+                              <p key={`${item.cartId}-drawer-mod-${mod.id}-${modIndex}`}>
+                                {modIndex + 1}. {mod.sidebarText} ({mod.sidebarColor.name}){mod.isDouble ? ' - Doppio' : ''}
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Posteriore</p>
+                          <p>{item.backCover.color.name}</p>
+                          <p>{item.backCover.text?.trim() ? `"${item.backCover.text}"` : 'Nessun testo'} ({item.backCover.fontSize}, {item.backCover.position})</p>
+                        </div>
+                      </div>
+                    </details>
                   </div>
 
                   {/* 3. Remove Button */}

@@ -39,6 +39,7 @@ const Arena = () => {
   const selectedPrice = queryParams.get('pprice')
     ? Number(queryParams.get('pprice'))
     : preset.price;
+  const selectedImage = queryParams.get('pimage') || (typeof preset.image === 'string' ? preset.image : undefined);
 
   const customSteps = isCustom ? steps : steps.filter(s => s !== 'Copertina Anteriore');
 
@@ -83,10 +84,11 @@ const Arena = () => {
     productId: selectedProductId,
     priceId: selectedPriceId,
     price: selectedPrice,
+    image: selectedImage,
     lastUpdated: undefined,
     currentStep,
     id: preset.id || -1
-  }), [format, frontCoverColor, frontCoverCollection, frontCoverTemplate, frontCoverText, frontCoverFontSize, frontCoverPosition, frontCoverTextColor, modules, backCoverColor, backCoverText, backCoverFontSize, backCoverPosition, backCoverTextColor, currentStep, selectedName, selectedProductId, selectedPriceId, selectedPrice, preset.id]);
+  }), [format, frontCoverColor, frontCoverCollection, frontCoverTemplate, frontCoverText, frontCoverFontSize, frontCoverPosition, frontCoverTextColor, modules, backCoverColor, backCoverText, backCoverFontSize, backCoverPosition, backCoverTextColor, currentStep, selectedName, selectedProductId, selectedPriceId, selectedPrice, selectedImage, preset.id]);
 
   // 2. LOCALSTORAGE: LOAD ON MOUNT
   // useEffect(() => {
@@ -208,6 +210,7 @@ const Arena = () => {
     productId: selectedProductId,
     priceId: selectedPriceId,
     price: selectedPrice,
+    image: selectedImage,
     currentStep: 0,
     id: preset.id || -1
   } as Metadata;

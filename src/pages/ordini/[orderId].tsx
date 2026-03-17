@@ -82,10 +82,33 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
   if (loading) {
     return (
       <Layout>
-        <div className="min-h-screen flex items-center justify-center bg-[#070d1e] text-[#d5e2ff]">
-          <div className="text-center">
-            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-[#f97316]"></div>
-            <p>Caricamento ordine...</p>
+        <div className="min-h-screen bg-[#070d1e] bg-[radial-gradient(circle_at_top_left,_#142a52_0%,_#070d1e_60%)] px-4 py-12 text-[#d5e2ff]">
+          <div className="mx-auto max-w-3xl">
+            <div className="mb-8 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
+              <div className="mb-6 flex items-center gap-4">
+                <div className="h-12 w-12 animate-spin rounded-full border-2 border-white/20 border-t-[#f97316]"></div>
+                <div>
+                  <p className="text-sm uppercase tracking-[0.2em] text-[#8ea2d0]">Recupero dati ordine</p>
+                  <h1 className="text-2xl font-black uppercase tracking-tight text-white">Caricamento in corso</h1>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-6 md:grid-cols-4">
+                <div className="h-12 animate-pulse rounded-lg bg-white/10" />
+                <div className="h-12 animate-pulse rounded-lg bg-white/10" />
+                <div className="h-12 animate-pulse rounded-lg bg-white/10" />
+                <div className="h-12 animate-pulse rounded-lg bg-white/10" />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
+              <div className="mb-6 h-7 w-56 animate-pulse rounded bg-white/10" />
+              <div className="space-y-4">
+                <div className="h-20 animate-pulse rounded-xl bg-white/10" />
+                <div className="h-20 animate-pulse rounded-xl bg-white/10" />
+                <div className="h-20 animate-pulse rounded-xl bg-white/10" />
+              </div>
+            </div>
           </div>
         </div>
       </Layout>

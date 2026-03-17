@@ -18,13 +18,14 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
   const { showSnackbar } = useSnackbar()
 
   const name = presetName ?? stripeData.name ?? `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`
+  const originalImage = stripeData?.images?.[0] || getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template)
 
   const priceValue = stripeData?.default_price?.unit_amount
     ? Number(stripeData.default_price.unit_amount) / 100
     : undefined
 
   const linkProduct = stripeData
-    ? `/arena?preset_id=${preset.id}&pid=${stripeData.id}&price_id=${stripeData.default_price.id}&pname=${encodeURIComponent(name)}${priceValue !== undefined ? `&pprice=${priceValue}` : ''}`
+    ? `/arena?preset_id=${preset.id}&pid=${stripeData.id}&price_id=${stripeData.default_price.id}&pname=${encodeURIComponent(name)}${priceValue !== undefined ? `&pprice=${priceValue}` : ''}${originalImage ? `&pimage=${encodeURIComponent(originalImage)}` : ''}`
     : `/arena?preset_id=${preset.id}`
 
   const handleAddToCart = () => {

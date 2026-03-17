@@ -8,11 +8,18 @@ import { useCart } from '../utilities/cartContext'
 import { CheckCircle2 } from 'lucide-react'
 
 const Grazie = () => {
-  const { clearCart, cart } = useCart();
+  const { clearCart } = useCart();
 
   useEffect(() => {
-    clearCart();
-  }, [cart, clearCart]);
+    if (typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+
+    if (sessionId) {
+      clearCart();
+    }
+  }, [clearCart]);
 
   return (
     <Layout >

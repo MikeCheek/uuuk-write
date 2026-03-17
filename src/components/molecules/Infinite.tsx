@@ -11,7 +11,10 @@ const Infinite = () => {
   return (
     // <Section id="section2" bgColor="bg-gradient-to-b from-1% from-white via-50% via-red to-99% to-blue" shapeColor="text-white" preset="left">
     <Section id="section3" bgColor="bg-beige" shapeColor="text-darkBrown" preset="left">
-      <ShowOnView className="text-left md:text-center text-darkBrown self-start mt-20" fadeIn="leftRight">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_78%,rgba(27,181,127,0.2),transparent_40%),radial-gradient(circle_at_85%_20%,rgba(249,117,22,0.16),transparent_36%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-20 [background-image:repeating-linear-gradient(135deg,rgba(11,17,34,0.14)_0_1px,transparent_1px_12px)]" />
+
+      <ShowOnView className="relative z-10 text-left md:text-center text-darkBrown self-start mt-20" fadeIn="leftRight">
         <div className="self-start">
           <Typography variant="h2" render="div" className="font-bold uppercase mr-auto !text-black opacity-90 text-center md:text-left [perspective:400px] mb-10 md:mb-20 max-w-[330px] md:max-w-[530px] md:ml-[5vw]" >
             <h2 className="[transform:rotateY(40deg)_rotateZ(0deg)] text-7xl md:text-8xl w-fit text-shadow-lg mt-10 md:ml-8">Infinita</h2>

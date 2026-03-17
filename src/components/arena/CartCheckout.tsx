@@ -101,6 +101,36 @@ const CartCheckout = () => {
                               <p className="text-gray-100">{item.quantity || 1}</p>
                             </div>
                           </div>
+
+                          <div className="mt-4 space-y-3 rounded-xl border border-white/10 bg-[#101d3f]/75 p-3 text-xs text-[#d8e5ff]">
+                            <div>
+                              <p className="text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Copertina anteriore</p>
+                              <p>Colore: {item.frontCover.color.name}</p>
+                              <p>Collezione/Template: {item.frontCover.collection} / {item.frontCover.template ?? 'Custom'}</p>
+                              <p>Testo: {item.frontCover.text?.trim() ? `"${item.frontCover.text}"` : 'Nessun testo'}</p>
+                              <p>Font/Posizione: {item.frontCover.fontSize} - {item.frontCover.position}</p>
+                              <p>Colore testo: {item.frontCover.textColor.name}</p>
+                            </div>
+
+                            <div>
+                              <p className="text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Moduli ({item.modules.length})</p>
+                              <div className="space-y-1">
+                                {item.modules.map((mod, modIndex) => (
+                                  <p key={`${item.cartId}-mod-${mod.id}-${modIndex}`}>
+                                    {modIndex + 1}. {mod.sidebarText} ({mod.sidebarColor.name}){mod.isDouble ? ' - Doppio' : ''}
+                                  </p>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div>
+                              <p className="text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Copertina posteriore</p>
+                              <p>Colore: {item.backCover.color.name}</p>
+                              <p>Testo: {item.backCover.text?.trim() ? `"${item.backCover.text}"` : 'Nessun testo'}</p>
+                              <p>Font/Posizione: {item.backCover.fontSize} - {item.backCover.position}</p>
+                              <p>Colore testo: {item.backCover.textColor.name}</p>
+                            </div>
+                          </div>
                         </div>
 
                         {/* 3. Trash Icon / Remove Option */}

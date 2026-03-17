@@ -390,29 +390,29 @@ const rawPresets: Record<string, RawMetadata> = {
     getColor('Viola'),
     getColor('Nero'),
     'neutral A7'
-  ),
+  )
 
-  Custom: {
-    format: 'A6',
-    frontCover: {
-      color: colors.find(c => c.name === 'Nero')!,
-      collection: 'Custom',
-      template: undefined,
-      text: 'La tua scritta',
-      fontSize: 'Medio',
-      position: 'Centro',
-      textColor: colors.find(c => c.name === 'Arancione')!
-    },
-    modules: modules,
-    backCover: {
-      color: colors.find(c => c.name === 'Nero')!,
-      text: 'La tua scritta',
-      fontSize: 'Medio',
-      position: 'Sotto',
-      textColor: colors.find(c => c.name === 'Arancione')!
-    },
-    ...common
-  }
+  // Custom: {
+  //   format: 'A6',
+  //   frontCover: {
+  //     color: colors.find(c => c.name === 'Nero')!,
+  //     collection: 'Custom',
+  //     template: undefined,
+  //     text: 'La tua scritta',
+  //     fontSize: 'Medio',
+  //     position: 'Centro',
+  //     textColor: colors.find(c => c.name === 'Arancione')!
+  //   },
+  //   modules: modules,
+  //   backCover: {
+  //     color: colors.find(c => c.name === 'Nero')!,
+  //     text: 'La tua scritta',
+  //     fontSize: 'Medio',
+  //     position: 'Sotto',
+  //     textColor: colors.find(c => c.name === 'Arancione')!
+  //   },
+  //   ...common
+  // }
 }
 
 // Export presets with id for each that are increasing numbers like 0, 1, 2, 3, ...

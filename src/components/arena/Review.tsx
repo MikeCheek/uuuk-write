@@ -13,7 +13,7 @@ const Review = (
       ...item,
       price: item.price,
       name: item.name,
-      image: getPresetImageFromId(item.id),
+      image: item.image || getPresetImageFromId(item.id),
       id: item.id
     })
     navigate('/galleria')
