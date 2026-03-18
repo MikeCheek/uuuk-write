@@ -212,7 +212,7 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
                         <img
                           src={product.images[0]}
                           alt={product.name}
-                          className="h-full w-full object-cover group-hover:scale-105 transition-transform"
+                          className="h-full w-full object-cover group-hover:scale-105 transition-transform "
                         />
                       )}
                     </div>
