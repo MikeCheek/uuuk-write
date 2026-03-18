@@ -4,9 +4,17 @@ const path = require('path')
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `UUUK | La tua agenda stampata in 3D`,
+    title: `UUUK | Agenda stampata 3D personalizzabile`,
+    description: `UUUK crea agende stampate in 3D personalizzabili: scegli formato, copertina e moduli per realizzare la tua agenda unica, prodotta in Italia.`,
     siteUrl: siteUrl,
-    keywords: [`personalizzabile`, 'agenda', 'uuuk', 'creatività', 'stampa 3d']
+    keywords: [
+      'agenda stampata 3d',
+      'agenda stampata in 3d',
+      'agenda personalizzabile',
+      'agenda 3d',
+      'planner personalizzato',
+      'uuuk'
+    ]
   },
   // More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
   // If you use VSCode you can also use the GraphQL plugin
@@ -19,7 +27,20 @@ const config: GatsbyConfig = {
     'gatsby-plugin-postcss',
     // 'gatsby-plugin-google-gtag',
     'gatsby-plugin-image',
-    'gatsby-plugin-sitemap',
+    {
+      resolve: 'gatsby-plugin-sitemap',
+      options: {
+        output: '/sitemap.xml',
+        excludes: [
+          '/404',
+          '/404.html',
+          '/carrello',
+          '/grazie',
+          '/arena',
+          '/ordini/**'
+        ]
+      }
+    },
     {
       resolve: 'gatsby-plugin-manifest',
       options: {
@@ -28,7 +49,23 @@ const config: GatsbyConfig = {
     },
     'gatsby-plugin-sharp',
     'gatsby-transformer-sharp',
-    'gatsby-plugin-robots-txt',
+    {
+      resolve: 'gatsby-plugin-robots-txt',
+      options: {
+        host: siteUrl,
+        sitemap: `${siteUrl}/sitemap.xml`,
+        policy: [
+          {
+            userAgent: '*',
+            allow: '/'
+          },
+          {
+            userAgent: '*',
+            disallow: ['/api/', '/carrello', '/grazie', '/arena', '/ordini/']
+          }
+        ]
+      }
+    },
     {
       resolve: 'gatsby-source-filesystem',
       options: {

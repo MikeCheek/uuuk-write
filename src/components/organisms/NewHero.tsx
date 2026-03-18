@@ -184,7 +184,7 @@ const NewHero = () => {
       </Typography>
 
       <p className="relative z-20 -mt-24 mb-4 max-w-2xl px-6 text-center text-sm font-medium uppercase tracking-[0.18em] text-[#c7d8ff] md:-mt-20 md:text-base">
-        L'agenda personalizzabile stampata in 3d
+        L'agenda stampata 3D personalizzabile
       </p>
 
 
