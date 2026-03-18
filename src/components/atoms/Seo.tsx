@@ -16,6 +16,7 @@ export type SeoProps = {
   price?: number;
   currency?: string;
   sku?: string;
+  type?: 'website' | 'article' | 'product';
 };
 
 const Index = ({
@@ -30,7 +31,8 @@ const Index = ({
   images = [],
   price,
   currency = 'EUR',
-  sku
+  sku,
+  type = 'website'
 }: SeoProps) => {
   const { metadata, featuredImage } = useSiteMetadata();
 
@@ -39,10 +41,13 @@ const Index = ({
 
   const seo = {
     title: title && pathname !== '/' ? `${title} | ${metadata.title}` : metadata.title,
-    description: description || metadata.description,
+    description:
+      description ||
+      metadata.description ||
+      "UUUK crea agende stampate in 3D personalizzabili: scegli formato, copertina e moduli per realizzare la tua agenda unica.",
     url: `${siteUrl}${pathname?.replace(/^\//, '') || ''}`, // Prevents double slashes like https://uuuk.it//prodotto
     image: featuredImage?.childImageSharp?.gatsbyImageData,
-    keywords: keywords || metadata.keywords,
+    keywords: keywords || metadata.keywords?.join(', '),
   };
 
   const fallbackImageSrc = seo.image?.images?.fallback?.src || "";
@@ -53,24 +58,46 @@ const Index = ({
     mainImage = images[0].startsWith('http') ? images[0] : `${siteUrl}${images[0].replace(/^\//, '')}`;
   }
 
-  // 1. Fixed JSON-LD Graph Structure (Context only at root)
+  // Structured data graph for richer Search features.
   const microData: any = {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'WebSite',
-        url: seo.url,
-        name: seo.title,
-        description: seo.description,
-        inLanguage: lang.toUpperCase(),
+        '@id': `${siteUrl}#website`,
+        url: siteUrl,
+        name: metadata.title,
+        description: metadata.description,
+        inLanguage: lang,
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: `${siteUrl}galleria`,
+          'query-input': 'required name=search_term_string'
+        }
       },
       {
         '@type': 'Organization',
+        '@id': `${siteUrl}#organization`,
         name: metadata.title,
         url: siteUrl,
         logo: `${siteUrl}${fallbackImageSrc.replace(/^\//, '')}`,
         description: metadata.description,
       },
+      {
+        '@type': 'WebPage',
+        '@id': `${seo.url}#webpage`,
+        url: seo.url,
+        name: seo.title,
+        description: seo.description,
+        inLanguage: lang,
+        isPartOf: {
+          '@id': `${siteUrl}#website`
+        },
+        primaryImageOfPage: {
+          '@type': 'ImageObject',
+          url: mainImage
+        }
+      }
     ],
   };
 
@@ -117,9 +144,13 @@ const Index = ({
     <>
       <html lang={lang} />
       <title>{seo.title}</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="description" content={seo.description} />
       {seo.keywords && <meta name="keywords" content={seo.keywords} />}
       <meta name="image" content={mainImage} />
+      <link rel="canonical" href={seo.url} />
+      <link rel="alternate" hrefLang={lang} href={seo.url} />
+      <link rel="alternate" hrefLang="x-default" href={siteUrl} />
 
       {/* Open Graph */}
       <meta property="og:title" content={seo.title} />
@@ -135,7 +166,7 @@ const Index = ({
 
       {/* 2. Fixed og:description fallback */}
       <meta property="og:description" content={seo.description} />
-      <meta property="og:type" content={price ? 'product' : 'website'} />
+      <meta property="og:type" content={price ? 'product' : type} />
 
       {/* Twitter - 3. Upgraded to summary_large_image */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -146,9 +177,15 @@ const Index = ({
 
       {/* Robots Control */}
       {noIndex ? (
-        <meta name="robots" content="noindex,nofollow" />
+        <>
+          <meta name="robots" content="noindex,nofollow,noarchive" />
+          <meta name="googlebot" content="noindex,nofollow,noarchive" />
+        </>
       ) : (
-        <meta name="robots" content="index,follow,max-image-preview:large" />
+        <>
+          <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+          <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+        </>
       )}
 
       {/* JSON-LD Script */}

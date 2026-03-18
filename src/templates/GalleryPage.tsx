@@ -31,9 +31,10 @@ export const Head = ({ location }: HeadProps) => {
   return (
     <Seo
       lang={"it"}
-      title={'Galleria'}
+      title={'Galleria agende stampate 3D'}
       pathname={location.pathname}
-      description={"Esplora la nostra galleria di prodotti. Scopri design unici, collezioni esclusive e idee creative per personalizzare la tua agenda 3D. Scegli il template che più ti rappresenta e inizia a creare la tua UUUK su misura."}
+      description={"Esplora la galleria UUUK di agende stampate 3D: scopri collezioni, confronta template e scegli la base perfetta da personalizzare."}
+      keywords={'galleria agenda stampata 3d, template agenda 3d, agenda personalizzata, uuuk galleria'}
       structuredData
     />
   )

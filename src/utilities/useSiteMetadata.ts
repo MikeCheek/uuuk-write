@@ -5,7 +5,7 @@ type SiteMetadata = {
   title: string
   description: string
   siteUrl: string
-  keywords: string
+  keywords: string[]
 }
 
 type QueryResult = {

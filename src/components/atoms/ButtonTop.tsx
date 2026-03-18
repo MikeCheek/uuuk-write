@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 const ButtonTop = ({ onClick, text, onClickScrolled, textScrolled }: { onClick: () => void, text: string, onClickScrolled?: () => void, textScrolled?: string }) => {
 
-  const [scrolled, setScrolled] = useState<boolean>(() => typeof window !== 'undefined' ? window.scrollY > 200 : false)
+  const [scrolled, setScrolled] = useState<boolean>(false)
   const targetText = scrolled && textScrolled ? textScrolled : text
-  const [displayedText, setDisplayedText] = useState<string>(targetText)
+  const [displayedText, setDisplayedText] = useState<string>(text)
   const timeoutRef = useRef<number | null>(null)
   const displayedRef = useRef<string>(displayedText)
 
@@ -15,6 +15,8 @@ const ButtonTop = ({ onClick, text, onClickScrolled, textScrolled }: { onClick: 
 
   // update scrolled state on scroll
   useEffect(() => {
+    if (typeof window === 'undefined') return
+
     const onScroll = () => {
       const isScrolled = window.scrollY > 100
       setScrolled(prev => {

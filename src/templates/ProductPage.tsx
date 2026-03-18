@@ -43,8 +43,8 @@ export const Head = ({ location, pageContext }: HeadProps<null, HeadPageContext>
 
   // Construct a clean description
   const description = preset
-    ? `Scopri l'agenda ${presetName} della collezione ${preset.frontCover.collection}. Formato ${preset.format}, personalizzala o acquistala subito!`
-    : `Scopri la nostra agenda personalizzata UUUK. Design unico e qualità premium.`;
+    ? `Scopri l'agenda stampata 3D ${presetName} della collezione ${preset.frontCover.collection}. Formato ${preset.format}, personalizzabile e pronta all'acquisto online.`
+    : `Scopri la nostra agenda stampata 3D personalizzata UUUK. Design unico e qualità premium.`;
 
   const seoImages = stripeData?.images?.length
     ? stripeData.images
@@ -65,6 +65,8 @@ export const Head = ({ location, pageContext }: HeadProps<null, HeadPageContext>
       currency={stripeData?.default_price?.currency?.toUpperCase() || 'EUR'}
       sku={stripeData?.id}
       images={seoImages}
+      keywords={`agenda stampata 3d ${presetName}, agenda ${preset.format}, agenda personalizzabile ${preset.frontCover.collection}`}
+      type='product'
     />
   )
 }

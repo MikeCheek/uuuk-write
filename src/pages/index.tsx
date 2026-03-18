@@ -37,9 +37,10 @@ export const Head = ({ location, data, pageContext }: HeadProps) => {
       lang={"it"
         // (pageContext as any).language
       }
-      title={''}
+      title={'Agenda stampata 3D personalizzabile'}
       pathname={location.pathname}
-      description={"UUUK è l'agenda personalizzabile stampata in 3D. Scopri le nostre collezioni, scegli il tuo design e personalizzala per renderla veramente tua. Riscopri il piacere della scrittura."}
+      description={"UUUK è l'agenda stampata 3D personalizzabile. Configura formato, copertina e moduli interni per creare una planner unica, realizzata in Italia."}
+      keywords={'agenda stampata 3d, agenda stampata in 3d, agenda personalizzabile, planner 3d, uuuk'}
       structuredData
     />
   )
