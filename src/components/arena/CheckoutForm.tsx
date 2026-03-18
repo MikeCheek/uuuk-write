@@ -172,7 +172,7 @@ const CheckoutForm = () => {
               </div>
             </div>
             <p className="mb-2 text-xs text-[#8ea2d0]">
-              Spedizione gratuita per ordini sopra {process.env.SHIPPING_THRESHOLD ? (parseInt(process.env.SHIPPING_THRESHOLD) / 100).toFixed(2) : '30.00'}€
+              Spedizione gratuita per ordini sopra {process.env.SHIPPING_THRESHOLD ? (parseInt(process.env.SHIPPING_THRESHOLD) / 100).toFixed(2) : '50.00'}€
             </p>
             {/* Discount Code Section */}
             <div className="mb-4 rounded-lg border border-white/10 bg-[#101d3f] p-3">

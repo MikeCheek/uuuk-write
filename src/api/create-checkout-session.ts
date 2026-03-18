@@ -31,7 +31,7 @@ export default async function handler (
       // 2. Define your threshold (e.g., €50.00)
       const THRESHOLD = process.env.SHIPPING_THRESHOLD
         ? parseInt(process.env.SHIPPING_THRESHOLD)
-        : 3000 // Default to 3000 cents (€30) if not set
+        : 5000 // Default to 5000 cents (€50) if not set
       const SHIPPING_STANDARD = process.env.SHIPPING_STANDARD || ''
       const SHIPPING_FREE = process.env.SHIPPING_FREE || ''
 

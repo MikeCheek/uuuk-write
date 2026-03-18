@@ -21,10 +21,10 @@ const CartCheckout = () => {
     <div className="min-h-screen bg-[#070d1e] p-6 text-[#eef2ff] lg:p-10">
       <div className="mx-auto max-w-5xl">
         <button
-          onClick={() => setShowStripeCheckout(false)}
+          onClick={goBack}
           className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#101c3c] px-4 py-2 text-sm text-gray-300 transition-all hover:border-[#f97316]/50 hover:text-white"
         >
-          <ChevronLeft size={20} /> Torna al riepilogo
+          <ChevronLeft size={20} /> Torna al carrello
         </button>
 
         <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#0f1b3c] to-[#0a132d] p-8 shadow-[0_24px_80px_rgba(6,10,20,0.55)]">

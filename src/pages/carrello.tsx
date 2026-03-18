@@ -6,7 +6,7 @@ import { HeadProps } from 'gatsby'
 
 const CartPage = () => {
   return (
-    <Layout showCustomCursor={false} shoppingCart={true}>
+    <Layout showCustomCursor={false} shoppingCart={false}>
       <CartCheckout />
     </Layout>
   )
