@@ -235,6 +235,138 @@ ${new Date().toLocaleString('it-IT')}
   }
 }
 
+const sendTelegramCriticalAlert = async (payload: {
+  title: string
+  isTest: boolean
+  details: Array<{ label: string; value: string | null | undefined }>
+}): Promise<{ sent: boolean; reason: string | null }> => {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN
+  const chatId = process.env.TELEGRAM_CHAT_ID
+  const topicId = process.env.TELEGRAM_TOPIC_ID
+
+  if (!botToken || !chatId) {
+    return {
+      sent: false,
+      reason: 'Telegram configuration is missing'
+    }
+  }
+
+  const detailsText = payload.details
+    .map(detail => `• <b>${detail.label}:</b> ${detail.value || 'N/A'}`)
+    .join('\n')
+
+  const message = `
+🚨 <b>${payload.title}</b>
+${payload.isTest ? '⚠️ <b>[TEST MODE]</b>' : '🔴 <b>[LIVE]</b>'}
+
+${detailsText}
+
+---
+${new Date().toLocaleString('it-IT')}
+  `.trim()
+
+  try {
+    const messageBody: any = {
+      chat_id: chatId,
+      text: message,
+      parse_mode: 'HTML'
+    }
+
+    if (topicId) {
+      messageBody.message_thread_id = parseInt(topicId)
+    }
+
+    const response = await fetch(
+      `https://api.telegram.org/bot${botToken}/sendMessage`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(messageBody)
+      }
+    )
+
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(`Telegram API error: ${error}`)
+    }
+
+    return { sent: true, reason: null }
+  } catch (error: any) {
+    console.error('Telegram critical alert error:', error?.message || error)
+    return { sent: false, reason: error?.message || 'Unknown Telegram error' }
+  }
+}
+
+const findOrderRef = async (
+  collectionName: string,
+  lookup: { sessionId?: string; paymentIntentId?: string }
+): Promise<{ ref: any; data: any } | null> => {
+  if (lookup.sessionId) {
+    const bySessionId = await db
+      .collection(collectionName)
+      .where('sessionId', '==', lookup.sessionId)
+      .limit(1)
+      .get()
+
+    if (!bySessionId.empty) {
+      return {
+        ref: bySessionId.docs[0].ref,
+        data: bySessionId.docs[0].data()
+      }
+    }
+
+    // Backward-compatible fallback for previous records that used orderId.
+    const byOrderId = await db
+      .collection(collectionName)
+      .where('orderId', '==', lookup.sessionId)
+      .limit(1)
+      .get()
+
+    if (!byOrderId.empty) {
+      return {
+        ref: byOrderId.docs[0].ref,
+        data: byOrderId.docs[0].data()
+      }
+    }
+  }
+
+  if (lookup.paymentIntentId) {
+    const byPaymentIntentId = await db
+      .collection(collectionName)
+      .where('stripePaymentIntentId', '==', lookup.paymentIntentId)
+      .limit(1)
+      .get()
+
+    if (!byPaymentIntentId.empty) {
+      return {
+        ref: byPaymentIntentId.docs[0].ref,
+        data: byPaymentIntentId.docs[0].data()
+      }
+    }
+  }
+
+  return null
+}
+
+const formatAddressInline = (
+  address: Stripe.Address | null | undefined
+): string => {
+  if (!address) return 'N/A'
+
+  return [
+    address.line1,
+    address.line2,
+    address.postal_code,
+    address.city,
+    address.state,
+    address.country
+  ]
+    .filter(Boolean)
+    .join(', ')
+}
+
 const sendEmailJsOrderConfirmation = async (payload: {
   toEmail: string | null
   toName: string
@@ -327,11 +459,41 @@ const sendEmailJsOrderConfirmation = async (payload: {
 }
 
 const getRawBody = async (req: any): Promise<Buffer> => {
+  // Gatsby raw body parser may already provide the payload as Buffer/string.
+  if (Buffer.isBuffer(req.body)) {
+    return req.body
+  }
+
+  if (typeof req.body === 'string') {
+    return Buffer.from(req.body)
+  }
+
+  if (Buffer.isBuffer(req.rawBody)) {
+    return req.rawBody
+  }
+
+  if (typeof req.rawBody === 'string') {
+    return Buffer.from(req.rawBody)
+  }
+
   const chunks: Uint8Array[] = []
   for await (const chunk of req) {
     chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk)
   }
   return Buffer.concat(chunks)
+}
+
+const normalizeWebhookSecret = (secret: string | undefined): string => {
+  if (!secret) return ''
+  // Supports values accidentally wrapped in quotes in env files.
+  return secret.trim().replace(/^['"]|['"]$/g, '')
+}
+
+const getStripeSignatureHeader = (
+  value: string | string[] | undefined
+): string => {
+  if (!value) return ''
+  return Array.isArray(value) ? value[0] || '' : value
 }
 
 export default async function handler (
@@ -342,20 +504,35 @@ export default async function handler (
     return res.status(405).send('Method Not Allowed')
   }
 
-  const sig = req.headers['stripe-signature'] as string
+  const sig = getStripeSignatureHeader(
+    req.headers['stripe-signature'] as string | string[] | undefined
+  )
+  const webhookSecret = normalizeWebhookSecret(
+    process.env.STRIPE_WEBHOOK_SECRET
+  )
+
+  if (!sig) {
+    return res
+      .status(400)
+      .send('Webhook Error: missing stripe-signature header')
+  }
+
+  if (!webhookSecret) {
+    return res.status(500).send('Webhook Error: missing STRIPE_WEBHOOK_SECRET')
+  }
 
   let event: Stripe.Event
 
   try {
     const rawBody = await getRawBody(req)
 
-    event = stripe.webhooks.constructEvent(
-      rawBody,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    )
+    if (!rawBody.length) {
+      return res.status(400).send('Webhook Error: empty request body')
+    }
+
+    event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret)
   } catch (err: any) {
-    console.error('Signature Error:', err.message)
+    console.error('Signature Error:', err?.message || err)
     return res.status(400).send(`Webhook Error: ${err.message}`)
   }
 
@@ -447,6 +624,10 @@ export default async function handler (
       orderId: orderRef.id,
       sessionId: session.id,
       documentId: orderRef.id, // Store the auto-generated doc ID
+      stripePaymentIntentId:
+        typeof fullSession.payment_intent === 'string'
+          ? fullSession.payment_intent
+          : fullSession.payment_intent?.id || null,
       stripeCustomerId:
         typeof fullSession.customer === 'string'
           ? fullSession.customer
@@ -484,6 +665,289 @@ export default async function handler (
     }
 
     await orderRef.set(orderPayload, { merge: true })
+  } else if (event.type === 'checkout.session.async_payment_succeeded') {
+    const session = event.data.object as Stripe.Checkout.Session
+    const nowIso = new Date().toISOString()
+    const collectionName = session.livemode ? 'orders' : 'orders-test'
+
+    try {
+      const order = await findOrderRef(collectionName, {
+        sessionId: session.id
+      })
+
+      if (order) {
+        await order.ref.set(
+          {
+            status: 'paid',
+            checkoutStatus: session.status || null,
+            paymentStatus: session.payment_status || null,
+            asyncPaymentStatus: 'succeeded',
+            asyncPaymentEvent: {
+              id: event.id,
+              type: event.type,
+              receivedAt: nowIso
+            },
+            updatedAt: nowIso
+          },
+          { merge: true }
+        )
+      }
+    } catch (error: any) {
+      console.error(
+        'async_payment_succeeded handling error:',
+        error?.message || error
+      )
+    }
+
+    console.log(
+      `Checkout async payment succeeded for session ${session.id} (livemode=${session.livemode})`
+    )
+  } else if (event.type === 'checkout.session.async_payment_failed') {
+    const session = event.data.object as Stripe.Checkout.Session
+    const nowIso = new Date().toISOString()
+    const collectionName = session.livemode ? 'orders' : 'orders-test'
+    const customerName = session.customer_details?.name || 'N/A'
+    const customerEmail = session.customer_details?.email || 'N/A'
+    const customerPhone = session.customer_details?.phone || 'N/A'
+    const customerAddress = formatAddressInline(
+      session.customer_details?.address
+    )
+
+    try {
+      const order = await findOrderRef(collectionName, {
+        sessionId: session.id
+      })
+
+      const orderCustomerDetails = order?.data?.customer_details
+
+      if (order) {
+        await order.ref.set(
+          {
+            status: 'payment_failed',
+            payment_status: 'error',
+            paymentStatus: 'error',
+            checkoutStatus: session.status || null,
+            paymentGatewayStatus: session.payment_status || null,
+            paymentErrorUserData: {
+              name: customerName,
+              email: customerEmail,
+              phone: customerPhone,
+              address: session.customer_details?.address || null,
+              shippingAddress:
+                session.collected_information?.shipping_details?.address || null
+            },
+            customer_details:
+              orderCustomerDetails || session.customer_details || null,
+            asyncPaymentStatus: 'failed',
+            asyncPaymentEvent: {
+              id: event.id,
+              type: event.type,
+              receivedAt: nowIso
+            },
+            updatedAt: nowIso
+          },
+          { merge: true }
+        )
+      }
+
+      await sendTelegramCriticalAlert({
+        title: 'Pagamento asincrono FALLITO',
+        isTest: !session.livemode,
+        details: [
+          { label: 'Session ID', value: session.id },
+          { label: 'Order Document', value: order?.ref?.id || 'Not found' },
+          { label: 'Cliente', value: customerName },
+          { label: 'Email', value: customerEmail },
+          { label: 'Telefono', value: customerPhone },
+          { label: 'Indirizzo', value: customerAddress },
+          { label: 'Checkout Status', value: session.status || 'N/A' },
+          { label: 'Payment Status', value: session.payment_status || 'N/A' },
+          { label: 'Event ID', value: event.id }
+        ]
+      })
+    } catch (error: any) {
+      console.error(
+        'async_payment_failed handling error:',
+        error?.message || error
+      )
+    }
+
+    console.warn(
+      `Checkout async payment failed for session ${session.id} (livemode=${session.livemode})`
+    )
+  } else if (event.type === 'checkout.session.expired') {
+    const session = event.data.object as Stripe.Checkout.Session
+    const nowIso = new Date().toISOString()
+    const collectionName = session.livemode ? 'orders' : 'orders-test'
+
+    try {
+      const order = await findOrderRef(collectionName, {
+        sessionId: session.id
+      })
+
+      if (order) {
+        await order.ref.set(
+          {
+            status: 'expired',
+            checkoutStatus: session.status || null,
+            paymentStatus: session.payment_status || null,
+            checkoutExpirationEvent: {
+              id: event.id,
+              type: event.type,
+              receivedAt: nowIso
+            },
+            updatedAt: nowIso
+          },
+          { merge: true }
+        )
+      }
+    } catch (error: any) {
+      console.error(
+        'checkout.session.expired handling error:',
+        error?.message || error
+      )
+    }
+
+    console.log(
+      `Checkout session expired for session ${session.id} (livemode=${session.livemode})`
+    )
+  } else if (event.type === 'payment_intent.succeeded') {
+    const paymentIntent = event.data.object as Stripe.PaymentIntent
+    const nowIso = new Date().toISOString()
+    const collectionName = paymentIntent.livemode ? 'orders' : 'orders-test'
+
+    try {
+      const order = await findOrderRef(collectionName, {
+        paymentIntentId: paymentIntent.id
+      })
+
+      if (order) {
+        await order.ref.set(
+          {
+            paymentIntentStatus: 'succeeded',
+            paymentIntentLastEvent: {
+              id: event.id,
+              type: event.type,
+              receivedAt: nowIso
+            },
+            updatedAt: nowIso
+          },
+          { merge: true }
+        )
+      }
+    } catch (error: any) {
+      console.error(
+        'payment_intent.succeeded handling error:',
+        error?.message || error
+      )
+    }
+
+    console.log(`PaymentIntent succeeded: ${paymentIntent.id}`)
+  } else if (event.type === 'payment_intent.payment_failed') {
+    const paymentIntent = event.data.object as Stripe.PaymentIntent
+    const nowIso = new Date().toISOString()
+    const collectionName = paymentIntent.livemode ? 'orders' : 'orders-test'
+    const lastErrorMessage =
+      paymentIntent.last_payment_error?.message ||
+      paymentIntent.last_payment_error?.code ||
+      'Unknown reason'
+
+    try {
+      const order = await findOrderRef(collectionName, {
+        paymentIntentId: paymentIntent.id
+      })
+
+      const orderCustomerDetails = order?.data?.customer_details || null
+      const latestCharge =
+        paymentIntent.latest_charge &&
+        typeof paymentIntent.latest_charge !== 'string'
+          ? paymentIntent.latest_charge
+          : null
+      const customerName =
+        orderCustomerDetails?.name ||
+        paymentIntent.shipping?.name ||
+        latestCharge?.billing_details?.name ||
+        null
+      const customerEmail =
+        orderCustomerDetails?.email ||
+        paymentIntent.receipt_email ||
+        latestCharge?.billing_details?.email ||
+        null
+      const customerPhone =
+        orderCustomerDetails?.phone ||
+        latestCharge?.billing_details?.phone ||
+        null
+      const customerAddressText = formatAddressInline(
+        orderCustomerDetails?.address ||
+          paymentIntent.shipping?.address ||
+          latestCharge?.billing_details?.address ||
+          null
+      )
+
+      if (order) {
+        await order.ref.set(
+          {
+            status: 'payment_failed',
+            payment_status: 'error',
+            paymentStatus: 'error',
+            paymentIntentStatus: 'failed',
+            paymentErrorUserData: {
+              name: customerName || null,
+              email: customerEmail || null,
+              phone: customerPhone || null,
+              address:
+                orderCustomerDetails?.address ||
+                paymentIntent.shipping?.address ||
+                null
+            },
+            customer_details: orderCustomerDetails || null,
+            paymentIntentFailure: {
+              code: paymentIntent.last_payment_error?.code || null,
+              message: paymentIntent.last_payment_error?.message || null,
+              type: paymentIntent.last_payment_error?.type || null,
+              declinedCode:
+                paymentIntent.last_payment_error?.decline_code || null,
+              receivedAt: nowIso
+            },
+            paymentIntentLastEvent: {
+              id: event.id,
+              type: event.type,
+              receivedAt: nowIso
+            },
+            updatedAt: nowIso
+          },
+          { merge: true }
+        )
+      }
+
+      await sendTelegramCriticalAlert({
+        title: 'PaymentIntent FALLITO',
+        isTest: !paymentIntent.livemode,
+        details: [
+          { label: 'PaymentIntent ID', value: paymentIntent.id },
+          { label: 'Order Document', value: order?.ref?.id || 'Not found' },
+          { label: 'Cliente', value: customerName || 'N/A' },
+          { label: 'Email', value: customerEmail || 'N/A' },
+          { label: 'Telefono', value: customerPhone || 'N/A' },
+          { label: 'Indirizzo', value: customerAddressText },
+          {
+            label: 'Amount',
+            value: formatAmount(paymentIntent.amount, paymentIntent.currency)
+          },
+          { label: 'Failure', value: lastErrorMessage },
+          { label: 'Event ID', value: event.id }
+        ]
+      })
+    } catch (error: any) {
+      console.error(
+        'payment_intent.payment_failed handling error:',
+        error?.message || error
+      )
+    }
+
+    console.warn(`PaymentIntent failed: ${paymentIntent.id}`)
+  } else {
+    console.log(`Unhandled Stripe event type received: ${event.type}`)
   }
 
   res.json({ received: true })
