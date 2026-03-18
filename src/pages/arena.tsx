@@ -1,6 +1,7 @@
 import type { ExtendedTextPosition, Metadata, Module } from '../utilities/arenaSettings';
 import React, { useState, useMemo } from 'react';
-import { RotateCcw, Play } from 'lucide-react';
+import { RotateCcw, Play, ArrowBigLeftIcon } from 'lucide-react';
+import { navigate } from 'gatsby';
 import {
   AgendaFormat, ColorOption, colors, Collection, CoverImageTemplate, FontSize, TextPosition, MAX_MODULES, formats, fontSizes, textPositions, collections, steps,
   getPresetFromKey,
@@ -217,6 +218,9 @@ const Arena = () => {
 
   return (
     <Layout showCustomCursor={false} shoppingCart>
+      <button onClick={() => navigate(-1)} className="fixed left-4 top-4 rounded-full border border-white/15 bg-[#0f1a36]/80 p-4 text-gray-300 backdrop-blur-sm transition-all hover:border-[#f97316]/40 hover:text-white z-40">
+        <ArrowBigLeftIcon size={30} className="transition-colors" />
+      </button>
       {/* RESUME MODAL */}
       <Modal show={showResumeModal} onClose={() => setShowResumeModal(false)} showCursor>
         <div className="flex flex-col items-center text-center p-4">
@@ -233,16 +237,16 @@ const Arena = () => {
         </div>
       </Modal>
 
-      <div className="mt-16 flex min-h-screen flex-col items-center bg-[#070d1e] bg-[radial-gradient(circle_at_top,_#152f5d_0%,_#070d1e_60%)] p-4 font-sans text-white md:mt-0 md:p-8">
+      <div className="pt-24 flex min-h-screen flex-col items-center bg-[#070d1e] bg-[radial-gradient(circle_at_top,_#152f5d_0%,_#070d1e_60%)] p-4 font-sans text-white md:mt-0 md:p-8">
         <h1 className="mb-8 text-4xl font-black uppercase tracking-tight animate-fadeIn md:text-6xl">
-          <span className="text-[#f6f8ff]">Build Your </span>
+          <span className="text-[#f6f8ff]">Personalizza il tuo </span>
           <span className="bg-gradient-to-r from-[#f97316] via-[#ffb170] to-[#9ad0ff] bg-clip-text text-transparent">
             UUUK
           </span>
         </h1>
 
         {/* Progress Bar */}
-        <CompactProgressCircle steps={customSteps} currentStep={currentStep} />
+        {/* <CompactProgressCircle steps={customSteps} currentStep={currentStep} /> */}
 
         <div className="flex w-full max-w-6xl flex-col gap-8 animate-fadeIn lg:flex-row">
           {/* Customization Options Panel */}

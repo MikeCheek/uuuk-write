@@ -7,8 +7,11 @@ import {
   triadicTemplates,
   TextPosition,
   FontSize,
-  ExtendedTextPosition
+  ExtendedTextPosition,
+  presets,
+  Metadata
 } from './arenaSettings'
+import { StripeProduct } from './stripeHelper'
 
 export const slugify = (text: string) =>
   text
@@ -69,5 +72,34 @@ export const getFontSizeClass = (size: FontSize): string => {
       return 'text-[12px]'
     default:
       return 'text-[10px]'
+  }
+}
+
+// --- Enrich Stripe Product with Preset Data ---
+export const enrichProductWithPreset = (
+  stripeProduct: StripeProduct
+): {
+  stripeData: StripeProduct
+  presetName: string | null
+  preset: Metadata | null
+} => {
+  // Attempt to find a matching local preset
+  // We look for a preset where our searchName matches the stripe product name
+  const presetEntry = Object.entries(presets).find(([key, preset]) => {
+    const searchName = `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`
+    return (
+      searchName.trim().toLowerCase() ===
+      stripeProduct.name.trim().toLowerCase()
+    )
+  })
+
+  // If found, presetEntry is [key, presetObject]
+  const presetName = presetEntry ? presetEntry[0] : null
+  const presetData = presetEntry ? presetEntry[1] : null
+
+  return {
+    stripeData: stripeProduct,
+    presetName,
+    preset: presetData
   }
 }
