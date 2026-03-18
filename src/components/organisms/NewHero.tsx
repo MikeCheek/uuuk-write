@@ -179,14 +179,15 @@ const NewHero = () => {
         </div>
       )}
 
-      <Typography variant="h1" className="uuuk-reveal relative z-20 mt-0 w-full text-center font-roboto font-medium uppercase tracking-[0.06em] text-[#eef6ff] bg-gradient-to-r from-[#f5f9ff] via-[#9ad0ff] to-[#8ee4c4] bg-clip-text text-transparent drop-shadow-[0_14px_24px_rgba(0,0,0,0.35)] md:mb-0">
+
+
+      <Typography variant="h1" render='h2' className="uuuk-reveal relative z-20 mt-0 w-full text-center font-roboto font-medium max-w-[80vw] uppercase tracking-[0.06em] text-[#eef6ff] bg-gradient-to-r from-[#f5f9ff] via-[#9ad0ff] to-[#8ee4c4] bg-clip-text text-transparent drop-shadow-[0_14px_24px_rgba(0,0,0,0.35)] md:mb-0">
         Write your story
       </Typography>
 
-      <p className="relative z-20 -mt-24 mb-4 max-w-2xl px-6 text-center text-sm font-medium uppercase tracking-[0.18em] text-[#c7d8ff] md:-mt-20 md:text-base">
+      <h1 className="relative z-20 -mt-24 mb-4 max-w-2xl px-6 text-center text-sm font-medium uppercase tracking-[0.18em] text-[#c7d8ff] md:-mt-20 md:text-base">
         L'agenda stampata 3D personalizzabile
-      </p>
-
+      </h1>
 
       <div className='relative z-20'>
         <Button href="/galleria" />
