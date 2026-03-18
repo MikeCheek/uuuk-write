@@ -25,7 +25,7 @@
 }
 
 html {
-  @apply scrollbar-thin scrollbar-track-[#0b1122] scrollbar-thumb-[#f97516] bg-[#ececef] overflow-x-hidden;
+  @apply scrollbar-thin scrollbar-track-[#0b1122] scrollbar-thumb-[#f97516] bg-[#070d1e] overflow-x-hidden;
 }
 
 :root {

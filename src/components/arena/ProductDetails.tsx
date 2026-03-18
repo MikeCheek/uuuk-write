@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { StripeProduct } from '../../utilities/stripeHelper'
-import { Link } from 'gatsby'
-import { getCoverTemplateImagePath } from '../../utilities/arenaHelpers'
+import { Link, navigate } from 'gatsby'
+import { getCoverTemplateImagePath, enrichProductWithPreset, slugify } from '../../utilities/arenaHelpers'
 import { useCart } from '../../utilities/cartContext'
 import { useSnackbar } from '../../utilities/snackbarContext'
 import Preview3DWrapper from './Preview3DWrapper'
@@ -14,8 +14,48 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
   stripeData: StripeProduct
 }) => {
   const [mode, setMode] = useState<'flat' | '3D'>('flat')
+  const [products, setProducts] = useState<StripeProduct[]>([])
+  const [loading, setLoading] = useState(true)
+  const [similarProducts, setSimilarProducts] = useState<Array<{ stripeData: StripeProduct; presetName: string | null; preset: Metadata | null }>>([])
   const { addToCart } = useCart()
   const { showSnackbar } = useSnackbar()
+
+  // Fetch products on mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/products')
+        const data = await response.json()
+        setProducts(data)
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
+  // Filter similar products based on format and collection
+  useEffect(() => {
+    if (products.length === 0) return
+
+    const enrichedProducts = products
+      .map((product) => enrichProductWithPreset(product))
+      .filter((enriched) => {
+        // Match products with same format and collection but different templates
+        return (
+          enriched.preset &&
+          enriched.preset.format === preset.format &&
+          enriched.preset.frontCover.collection === preset.frontCover.collection &&
+          enriched.stripeData.id !== stripeData.id // Exclude the current product
+        )
+      })
+      .slice(0, 3) // Limit to 3 recommendations
+
+    setSimilarProducts(enrichedProducts)
+  }, [products, preset.format, preset.frontCover.collection, stripeData.id])
 
   const name = presetName ?? stripeData.name ?? `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`
   const originalImage = stripeData?.images?.[0] || getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template)
@@ -142,6 +182,48 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
           </div>
 
         </div>
+
+        {/* Similar Products Recommendations */}
+        {!loading && similarProducts.length > 0 && (
+          <div className="border-t border-white/10 bg-[#0a1128] p-8 lg:p-12">
+            <h2 className="mb-6 text-2xl font-black uppercase tracking-tight text-white">Prodotti Simili</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {similarProducts.map((enriched) => {
+                const product = enriched.stripeData
+                const productPrice = product.default_price?.unit_amount
+                  ? new Intl.NumberFormat('it-IT', {
+                    style: 'currency',
+                    currency: product.default_price.currency.toUpperCase(),
+                  }).format(product.default_price.unit_amount / 100)
+                  : 'Prezzo su richiesta'
+
+                const slug = slugify(enriched.preset?.slug || enriched.presetName || product.name)
+
+                return (
+                  <button
+                    key={product.id}
+                    onClick={() => {
+                      navigate(`/prodotto/${slug}`)
+                    }}
+                    className="group overflow-hidden rounded-xl border border-white/10 bg-[#0f1b3c] p-4 transition-all hover:border-[#f97316]/40 hover:bg-[#1a2952]"
+                  >
+                    <div className="mb-3 flex items-center justify-center overflow-hidden rounded-lg bg-[#0b1531] h-40">
+                      {product.images?.[0] && (
+                        <img
+                          src={product.images[0]}
+                          alt={product.name}
+                          className="h-full w-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      )}
+                    </div>
+                    <p className="mb-2 text-sm font-bold text-white line-clamp-2">{enriched.presetName || product.name}</p>
+                    <p className="text-base font-black text-[#f97316]">{productPrice}</p>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

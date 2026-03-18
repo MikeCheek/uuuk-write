@@ -5,7 +5,7 @@ import { presets } from './src/utilities/arenaSettings'
 import { getProducts } from './src/utilities/stripeHelper'
 
 import dotenv from 'dotenv'
-import { slugify } from './src/utilities/arenaHelpers'
+import { slugify, enrichProductWithPreset } from './src/utilities/arenaHelpers'
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
 
@@ -27,19 +27,12 @@ export const createPages = async ({ actions }: any) => {
 
   // 3. Create Product Pages based on Stripe Data
   allStripeProducts.forEach((stripeProduct: any) => {
-    // Attempt to find a matching local preset
-    // We look for a preset where our searchName matches the stripe product name
-    const presetEntry = Object.entries(presets).find(([key, preset]) => {
-      const searchName = `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`
-      return (
-        searchName.trim().toLowerCase() ===
-        stripeProduct.name.trim().toLowerCase()
-      )
-    })
-
-    // If found, presetEntry is [key, presetObject]
-    const presetName = presetEntry ? presetEntry[0] : null
-    const presetData = presetEntry ? presetEntry[1] : null
+    // Enrich product with preset data
+    const {
+      stripeData,
+      presetName,
+      preset: presetData
+    } = enrichProductWithPreset(stripeProduct)
 
     // Use the Stripe name as the slug basis if no preset name exists
     const finalSlug = slugify(
@@ -50,9 +43,9 @@ export const createPages = async ({ actions }: any) => {
       path: `/prodotto/${finalSlug}`,
       component: path.resolve('./src/templates/ProductPage.tsx'),
       context: {
-        stripeData: stripeProduct,
-        presetName: presetName, // "Occhio A5"
-        preset: presetData // The actual Metadata object
+        stripeData,
+        presetName,
+        preset: presetData
       }
     })
   })
