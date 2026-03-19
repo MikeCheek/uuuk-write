@@ -332,10 +332,15 @@ export default async function handler (
       const payload = JSON.parse(rawBody.toString('utf8')) as PushEventPayload
       const branch = normalizeBranchName(payload.ref)
 
+      // Temporarily ignore non-primary branches.
+      if (!isPrimaryBranch(branch)) {
+        return res
+          .status(200)
+          .json({ ok: true, ignored: 'Push on non-main/master branch' })
+      }
+
       const telegramResult = await sendTelegramMessage(
-        isPrimaryBranch(branch)
-          ? buildPushMessage(payload, branch)
-          : buildNonMainPushMessage(payload, branch)
+        buildPushMessage(payload, branch)
       )
       return res.status(200).json({ ok: true, telegram: telegramResult })
     }
@@ -352,10 +357,15 @@ export default async function handler (
         return res.status(200).json({ ok: true, ignored: 'PR not merged' })
       }
 
+      // Temporarily ignore non-primary branches.
+      if (!isPrimaryBranch(baseBranch)) {
+        return res
+          .status(200)
+          .json({ ok: true, ignored: 'PR merged on non-main/master branch' })
+      }
+
       const telegramResult = await sendTelegramMessage(
-        isPrimaryBranch(baseBranch)
-          ? buildMergedPrMessage(payload, baseBranch)
-          : buildNonMainMergedPrMessage(payload, baseBranch)
+        buildMergedPrMessage(payload, baseBranch)
       )
 
       return res.status(200).json({ ok: true, telegram: telegramResult })
