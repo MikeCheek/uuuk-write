@@ -4,6 +4,7 @@ import {
   GatsbyFunctionConfig
 } from 'gatsby'
 import { createHmac, timingSafeEqual } from 'crypto'
+import { pickRandomGreeting } from '../utilities/greetings'
 
 export const config: GatsbyFunctionConfig = {
   bodyParser: {
@@ -14,14 +15,6 @@ export const config: GatsbyFunctionConfig = {
 const TELEGRAM_TOPIC_ID = 41
 const PRIMARY_BRANCHES = ['main', 'master'] as const
 const PRIMARY_BRANCH_LABEL = 'main/master'
-
-const CATANIA_GREETINGS = [
-  'Ciao carusi!',
-  'Bongionno, carusi!',
-  'Oh mbare, tuttu a postu?',
-  'Salutamu da Catania!',
-  'Ehi carusi, vento in poppa!'
-]
 
 type GitHubUser = {
   login?: string
@@ -62,11 +55,6 @@ type PullRequestEventPayload = {
   action?: string
   repository?: GitHubRepository
   pull_request?: PullRequestInfo
-}
-
-const pickRandomGreeting = (): string => {
-  const randomIndex = Math.floor(Math.random() * CATANIA_GREETINGS.length)
-  return CATANIA_GREETINGS[randomIndex]
 }
 
 const escapeHtml = (value: string): string =>
@@ -217,13 +205,13 @@ ${pickRandomGreeting()}
 📦 <b>Repository:</b> ${repo}
 👤 <b>Pusher:</b> ${pusher}
 🧾 <b>Commits:</b> ${commitCount}
-🔖 <b>Head SHA:</b> ${escapeHtml(shortSha(headCommit?.id))}
 💬 <b>Latest commit:</b> ${headCommitMessage}
-🔗 <b>Compare:</b> ${compareUrl}
 
 🕒 ${formatDate()}
-  `.trim()
+`.trim()
 }
+// 🔖 <b>Head SHA:</b> ${escapeHtml(shortSha(headCommit?.id))}
+// 🔗 <b>Compare:</b> ${compareUrl}
 
 const buildMergedPrMessage = (
   payload: PullRequestEventPayload,

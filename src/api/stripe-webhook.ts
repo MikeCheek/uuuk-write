@@ -7,6 +7,7 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import emailjs from '@emailjs/nodejs'
 import Stripe from 'stripe'
+import { pickRandomGreeting } from '../utilities/greetings'
 
 export const config: GatsbyFunctionConfig = {
   bodyParser: {
@@ -182,7 +183,7 @@ const sendTelegramNotification = async (payload: {
     : 'N/A'
 
   const message = `
-🎉 <b>CARUSI! Nuovo Ordine!</b>
+${pickRandomGreeting() + ' '}🚀 <b>Nuovo ordine ricevuto!</b>
 ${payload.isTest ? '⚠️ <b>[TEST MODE]</b>' : '✅ <b>[LIVE]</b>'}
 
 👤 <b>Cliente:</b> ${payload.customerName}
