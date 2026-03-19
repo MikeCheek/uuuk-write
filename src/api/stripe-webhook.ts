@@ -149,7 +149,7 @@ const sendTelegramNotification = async (payload: {
 }): Promise<{ sent: boolean; reason: string | null }> => {
   const botToken = process.env.TELEGRAM_BOT_TOKEN
   const chatId = process.env.TELEGRAM_CHAT_ID
-  const topicId = process.env.TELEGRAM_TOPIC_ID
+  const topicId = process.env.TELEGRAM_TOPIC_ID ?? '9'
 
   if (!botToken || !chatId) {
     return {
@@ -242,7 +242,7 @@ const sendTelegramCriticalAlert = async (payload: {
 }): Promise<{ sent: boolean; reason: string | null }> => {
   const botToken = process.env.TELEGRAM_BOT_TOKEN
   const chatId = process.env.TELEGRAM_CHAT_ID
-  const topicId = process.env.TELEGRAM_TOPIC_ID
+  const topicId = process.env.TELEGRAM_TOPIC_ID ?? '9'
 
   if (!botToken || !chatId) {
     return {
