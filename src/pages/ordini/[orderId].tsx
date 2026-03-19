@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { HeadProps } from 'gatsby'
+import { HeadProps, PageProps } from 'gatsby'
 import Layout from '../../components/organisms/Layout'
 import Seo from '../../components/atoms/Seo'
 import Modal from '../../components/atoms/Modal'
@@ -49,7 +49,12 @@ type OrderData = {
   }>
 }
 
-const OrderPage = ({ orderId }: { orderId: string }) => {
+type OrderPageParams = {
+  orderId?: string
+}
+
+const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>) => {
+  const orderId = params?.orderId
   const [order, setOrder] = useState<OrderData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -58,10 +63,12 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
 
   useEffect(() => {
     if (!orderId) {
-      setError('ID dell\'ordine mancante')
-      setLoading(false)
+      // Keep the loading UI until Gatsby route params are available.
       return
     }
+
+    setLoading(true)
+    setError(null)
 
     // Fetch order details
     fetch(`/api/get-order?orderId=${encodeURIComponent(orderId)}&livemode=${process.env.GATSBY_STRIPE_PUBLISHABLE_KEY?.includes("pk_live") || false}`)
@@ -389,9 +396,7 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
                           <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.frontCover.collection}</span>
                           <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.frontCover.template ?? 'Custom'}</span>
                           <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Colore: {item.frontCover.color?.name}</span>
-                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Testo: {item.frontCover.text?.trim() ? item.frontCover.text : 'Nessuno'}</span>
-                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.frontCover.fontSize}</span>
-                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.frontCover.position}</span>
+                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Testo: {item.frontCover.text?.trim() ? item.frontCover.text + '( ' + item.frontCover.fontSize + ', ' + item.frontCover.position + ' )' : 'Nessuno'}</span>
                         </div>
                       </div>
 
@@ -410,9 +415,7 @@ const OrderPage = ({ orderId }: { orderId: string }) => {
                         <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Copertina posteriore</p>
                         <div className="flex flex-wrap gap-1.5">
                           <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Colore: {item.backCover.color?.name}</span>
-                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Testo: {item.backCover.text?.trim() ? item.backCover.text : 'Nessuno'}</span>
-                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.backCover.fontSize}</span>
-                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.backCover.position}</span>
+                          <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Testo: {item.backCover.text?.trim() ? item.backCover.text + '( ' + item.backCover.fontSize + ', ' + item.backCover.position + ' )' : 'Nessuno'}</span>
                         </div>
                       </div>
                     </div>
