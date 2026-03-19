@@ -12,6 +12,8 @@ export const config: GatsbyFunctionConfig = {
 }
 
 const TELEGRAM_TOPIC_ID = 41
+const PRIMARY_BRANCHES = ['main', 'master'] as const
+const PRIMARY_BRANCH_LABEL = 'main/master'
 
 const CATANIA_GREETINGS = [
   'Ciao carusi!',
@@ -91,6 +93,17 @@ const normalizeSecret = (secret: string | undefined): string => {
   if (!secret) return ''
   return secret.trim().replace(/^['"]|['"]$/g, '')
 }
+
+const normalizeBranchName = (refOrBranch: string | undefined): string => {
+  if (!refOrBranch) return ''
+  return refOrBranch
+    .replace(/^refs\/heads\//, '')
+    .trim()
+    .toLowerCase()
+}
+
+const isPrimaryBranch = (branch: string): boolean =>
+  PRIMARY_BRANCHES.includes(normalizeBranchName(branch) as 'main' | 'master')
 
 const getRawBody = async (req: any): Promise<Buffer> => {
   if (Buffer.isBuffer(req.body)) {
@@ -183,7 +196,10 @@ const sendTelegramMessage = async (
   }
 }
 
-const buildPushMessage = (payload: PushEventPayload): string => {
+const buildPushMessage = (
+  payload: PushEventPayload,
+  targetBranch: string
+): string => {
   const repo = escapeHtml(payload.repository?.full_name || 'Unknown repository')
   const pusher = escapeHtml(payload.pusher?.name || 'Unknown user')
   const commitCount = payload.commits?.length || 0
@@ -196,7 +212,7 @@ const buildPushMessage = (payload: PushEventPayload): string => {
   return `
 ${pickRandomGreeting()}
 
-🚀 <b>New push on main</b>
+🚀 <b>New push on ${escapeHtml(targetBranch)}</b>
 
 📦 <b>Repository:</b> ${repo}
 👤 <b>Pusher:</b> ${pusher}
@@ -209,7 +225,10 @@ ${pickRandomGreeting()}
   `.trim()
 }
 
-const buildMergedPrMessage = (payload: PullRequestEventPayload): string => {
+const buildMergedPrMessage = (
+  payload: PullRequestEventPayload,
+  targetBranch: string
+): string => {
   const pr = payload.pull_request
   const repo = escapeHtml(payload.repository?.full_name || 'Unknown repository')
   const prNumber = pr?.number ?? 'N/A'
@@ -223,7 +242,7 @@ const buildMergedPrMessage = (payload: PullRequestEventPayload): string => {
   return `
 ${pickRandomGreeting()}
 
-✅ <b>PR merged into main</b>
+✅ <b>PR merged into ${escapeHtml(targetBranch)}</b>
 
 📦 <b>Repository:</b> ${repo}
 🔢 <b>PR:</b> #${prNumber}
@@ -231,6 +250,49 @@ ${pickRandomGreeting()}
 👤 <b>Author:</b> ${author}
 🤝 <b>Merged by:</b> ${mergedBy}
 🔗 <b>Link:</b> ${prLink}
+
+🕒 ${formatDate()}
+  `.trim()
+}
+
+const buildNonMainPushMessage = (
+  payload: PushEventPayload,
+  branch: string
+): string => {
+  const repo = escapeHtml(payload.repository?.full_name || 'Unknown repository')
+  const pusher = escapeHtml(payload.pusher?.name || 'Unknown user')
+
+  return `
+${pickRandomGreeting()}
+
+ℹ️ <b>Push on non-main branch</b>
+📦 <b>Repository:</b> ${repo}
+🌿 <b>Branch:</b> ${escapeHtml(
+    branch || 'unknown'
+  )} (this is <b>NOT</b> ${PRIMARY_BRANCH_LABEL})
+👤 <b>Pusher:</b> ${pusher}
+
+🕒 ${formatDate()}
+  `.trim()
+}
+
+const buildNonMainMergedPrMessage = (
+  payload: PullRequestEventPayload,
+  branch: string
+): string => {
+  const pr = payload.pull_request
+  const repo = escapeHtml(payload.repository?.full_name || 'Unknown repository')
+  const prNumber = pr?.number ?? 'N/A'
+
+  return `
+${pickRandomGreeting()}
+
+ℹ️ <b>PR merged on non-main branch</b>
+📦 <b>Repository:</b> ${repo}
+🔢 <b>PR:</b> #${prNumber}
+🌿 <b>Base branch:</b> ${escapeHtml(
+    branch || 'unknown'
+  )} (this is <b>NOT</b> ${PRIMARY_BRANCH_LABEL})
 
 🕒 ${formatDate()}
   `.trim()
@@ -280,13 +342,12 @@ export default async function handler (
   try {
     if (eventType === 'push') {
       const payload = JSON.parse(rawBody.toString('utf8')) as PushEventPayload
-
-      if (payload.ref !== 'refs/heads/main') {
-        return res.status(200).json({ ok: true, ignored: 'Push outside main' })
-      }
+      const branch = normalizeBranchName(payload.ref)
 
       const telegramResult = await sendTelegramMessage(
-        buildPushMessage(payload)
+        isPrimaryBranch(branch)
+          ? buildPushMessage(payload, branch)
+          : buildNonMainPushMessage(payload, branch)
       )
       return res.status(200).json({ ok: true, telegram: telegramResult })
     }
@@ -297,19 +358,16 @@ export default async function handler (
       ) as PullRequestEventPayload
 
       const pr = payload.pull_request
+      const baseBranch = normalizeBranchName(pr?.base?.ref)
 
-      if (
-        payload.action !== 'closed' ||
-        !pr?.merged ||
-        pr.base?.ref !== 'main'
-      ) {
-        return res
-          .status(200)
-          .json({ ok: true, ignored: 'PR not merged into main' })
+      if (payload.action !== 'closed' || !pr?.merged) {
+        return res.status(200).json({ ok: true, ignored: 'PR not merged' })
       }
 
       const telegramResult = await sendTelegramMessage(
-        buildMergedPrMessage(payload)
+        isPrimaryBranch(baseBranch)
+          ? buildMergedPrMessage(payload, baseBranch)
+          : buildNonMainMergedPrMessage(payload, baseBranch)
       )
 
       return res.status(200).json({ ok: true, telegram: telegramResult })
