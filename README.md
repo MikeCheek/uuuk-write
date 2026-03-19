@@ -66,8 +66,43 @@ For checkout, webhook processing, and transactional emails, configure these vari
 - EMAILJS_TEMPLATE_ID
 - EMAILJS_PUBLIC_KEY
 - EMAILJS_PRIVATE_KEY
+- TELEGRAM_BOT_TOKEN
+- TELEGRAM_CHAT_ID (admin chat allowed to run /orders)
+- TELEGRAM_WEBHOOK_SECRET (optional but recommended)
+- TELEGRAM_SETUP_SECRET (optional, protects /api/telegram-set-commands)
 - GITHUB_WEBHOOK_SECRET
 - GITHUB_WEBHOOK_BRANCHES (optional, comma-separated, defaults to main,master)
 
 The webhook at src/api/stripe-webhook.ts sends a confirmation email after checkout.session.completed with order line items and invoice/receipt links (when available).
 The webhook at src/api/github-webhook.ts accepts GitHub push and pull_request events, then sends a Telegram message to topic 41 for pushes and merged PRs on tracked branches (defaults to main,master).
+The webhook at src/api/telegram-webhook.ts handles Telegram bot commands:
+
+- /start or /help: greeting + command reference
+- /orders [n]: compact list of recent orders (only in TELEGRAM_CHAT_ID)
+- /order <id>: compact status for a specific order ID/session ID/document ID
+- /order <id> <chatId>: forwards an order update to another chat (admin chat only)
+- /status and /ping: health checks
+
+To enable Telegram webhook delivery, point your bot webhook to:
+
+- https://<your-domain>/api/telegram-webhook
+
+Example webhook registration command:
+
+```bash
+curl -X POST "https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook" \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://<your-domain>/api/telegram-webhook","secret_token":"<TELEGRAM_WEBHOOK_SECRET>"}'
+```
+
+To register the bot command menu from your own backend, call:
+
+```bash
+curl -X POST "https://<your-domain>/api/telegram-set-commands" \
+  -H "x-telegram-setup-secret: <TELEGRAM_SETUP_SECRET>"
+```
+
+Endpoint behavior:
+
+- Sets default commands for all chats: /start, /help, /order, /status, /ping
+- Sets admin chat scoped commands (TELEGRAM_CHAT_ID): adds /orders and /recent
