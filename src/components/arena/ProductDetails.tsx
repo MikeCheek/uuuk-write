@@ -100,7 +100,7 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
 
         {/* Breadcrumb / Back Link */}
         <div className="border-b border-white/10 p-6">
-          <Link to="/galleria" className="flex items-center gap-1 text-sm text-[#9ad0ff] hover:text-[#ffb170]">
+          <Link to="/galleria" title="Torna alla galleria" className="flex items-center gap-1 text-sm text-[#9ad0ff] hover:text-[#ffb170]">
             ← Torna alla galleria
           </Link>
         </div>
