@@ -54,7 +54,7 @@ const CartCheckout = () => {
           {cart.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-white/20 bg-[#0f1a36]/70 p-20 text-center">
               <p className="text-lg text-gray-400">Il tuo carrello è attualmente vuoto.</p>
-              <Link to="/galleria" className="mt-6 inline-block font-semibold text-[#f97316] hover:underline">Continua lo shopping</Link>
+              <Link to="/galleria" title="Torna alla galleria" className="mt-6 inline-block font-semibold text-[#f97316] hover:underline">Continua lo shopping</Link>
             </div>
           ) : (
             <div className="space-y-6">
