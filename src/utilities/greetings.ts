@@ -7,12 +7,14 @@ export const GREETINGS = [
   'Lo sentite questo rumore?',
   'I buchi a terra!',
   'Ascolta mbare!',
-  'Ma come te lo devo dire?',
+  'Ma come te lo devo dire?'
 ]
 
 const EMOTICONS = ['👋', '🙌', '🚀', '🎉', '😎', '🔥', '💥', '🎊', '💣']
 
 export const pickRandomGreeting = (): string => {
   const randomIndex = Math.floor(Math.random() * GREETINGS.length)
-  return `${EMOTICONS[Math.floor(Math.random() * EMOTICONS.length)]} ${GREETINGS[randomIndex]}`
+  const randomEmojiIndex = Math.floor(Math.random() * EMOTICONS.length)
+
+  return `${EMOTICONS[randomEmojiIndex]} ${GREETINGS[randomIndex]}`
 }
