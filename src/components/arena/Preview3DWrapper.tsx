@@ -6,11 +6,11 @@ import Preview3D from './Preview3D'
 const Preview3DWrapper = (
   {
     product,
-    step,
+    step = steps[steps.length - 1],
     noExtra = false
   }: {
     product: Metadata
-    step: string
+    step?: string
     noExtra?: boolean
   }
 ) => {

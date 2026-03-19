@@ -142,7 +142,7 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
                   Formato {preset.format}
                 </span>
                 <span className="inline-block rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-semibold text-[#d5e2ff]">
-                  {preset.modules.length} Moduli
+                  {preset.modules.length} Sidebars
                 </span>
               </div>
             </div>
