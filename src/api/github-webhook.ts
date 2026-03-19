@@ -12,7 +12,7 @@ export const config: GatsbyFunctionConfig = {
   }
 }
 
-const TELEGRAM_TOPIC_ID = 41
+const TELEGRAM_TOPIC_ID = 2369
 const PRIMARY_BRANCHES = ['main', 'master'] as const
 const PRIMARY_BRANCH_LABEL = 'main/master'
 
