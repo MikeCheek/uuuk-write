@@ -66,5 +66,7 @@ For checkout, webhook processing, and transactional emails, configure these vari
 - EMAILJS_TEMPLATE_ID
 - EMAILJS_PUBLIC_KEY
 - EMAILJS_PRIVATE_KEY
+- GITHUB_WEBHOOK_SECRET
 
 The webhook at src/api/stripe-webhook.ts sends a confirmation email after checkout.session.completed with order line items and invoice/receipt links (when available).
+The webhook at src/api/github-webhook.ts accepts GitHub push and pull_request events, then sends a Telegram message to topic 41 for pushes to main and PRs merged into main.
