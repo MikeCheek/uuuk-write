@@ -545,10 +545,6 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
 
 export default OrderPage
 
-export const config = {
-  matchPath: '/ordini/:orderId'
-}
-
 export const Head = ({ params }: HeadProps<any>) => {
   const orderId = params?.orderId || 'Ordine'
   return <Seo title={`Dettagli Ordine ${orderId}`} pathname="/ordini/" noIndex />
