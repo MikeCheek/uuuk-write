@@ -22,7 +22,7 @@ const DEFAULT_COMMANDS: TelegramCommand[] = [
   { command: 'help', description: 'Show available commands' },
   {
     command: 'order',
-    description: 'Get order updates: /order <orderId|sessionId|documentId>'
+    description: 'Get order updates: /order <orderId>'
   },
   { command: 'status', description: 'Bot health status' },
   { command: 'ping', description: 'Ping test' }

@@ -270,7 +270,7 @@ const getRecentOrders = async (
 const buildHelpMessage = (isAdminChat: boolean): string => {
   const wave = pickOne(['👋', '🙌', '✨'])
   const lines = [
-    `${wave} Ciao! Sono il bot ordini UUUK.`,
+    `${wave} Ciao! Sono UUUKBot.`,
     '',
     '<b>Comandi disponibili</b>',
     '• /start o /help - messaggio di benvenuto e guida',
@@ -280,22 +280,17 @@ const buildHelpMessage = (isAdminChat: boolean): string => {
   ]
 
   if (isAdminChat) {
-    lines.push('• /orders [n] - riepilogo compatto ultimi ordini live')
-    lines.push('• /orders test [n] - riepilogo compatto ultimi ordini test')
+    lines.push('• /orders - riepilogo compatto ultimi ordini live')
+    lines.push('• /orders test - riepilogo compatto ultimi ordini test')
     lines.push(
       '• /order &lt;id&gt; &lt;chatId&gt; - invia update ordine a un altro chatId'
     )
   }
 
-  lines.push('', 'Esempi:', '• /order 9QfQjAt3Aq5naSgWnPL7')
+  lines.push('', 'Esempi:', '• /order xxxxxxxxxxxxxx')
 
   if (isAdminChat) {
-    lines.push(
-      '• /orders',
-      '• /orders 12',
-      '• /orders test',
-      '• /orders test 12'
-    )
+    lines.push('• /orders', '• /orders test')
   }
 
   return lines.join('\n')
