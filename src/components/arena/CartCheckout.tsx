@@ -3,6 +3,7 @@ import { ArrowBigLeftIcon, ChevronLeft, CreditCard, ShoppingBag, Trash2 } from '
 import { Link, navigate } from 'gatsby';
 import { useCart } from '../../utilities/cartContext';
 import Checkout from './Checkout';
+import ProductCustomizationDetails from './ProductCustomizationDetails';
 import { GatsbyImage } from 'gatsby-plugin-image';
 
 const CartCheckout = () => {
@@ -102,44 +103,14 @@ const CartCheckout = () => {
                             </div>
                           </div>
 
-                          <div className="mt-4 space-y-2 rounded-xl border border-white/10 bg-[#101d3f]/75 p-3 text-xs text-[#d8e5ff]">
-                            <div className="rounded-lg border border-white/10 bg-[#0b1531]/70 p-2">
-                              <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Copertina anteriore</p>
-                              <div className="flex flex-wrap gap-1.5">
-                                <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.frontCover.collection}</span>
-                                <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.frontCover.template ?? 'Custom'}</span>
-                                <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Colore: {item.frontCover.color.name}</span>
-                                <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Testo: {item.frontCover.text?.trim() ? item.frontCover.text : 'Nessuno'}</span>
-                                <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.frontCover.fontSize}</span>
-                                <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.frontCover.position}</span>
-                                <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Testo {item.frontCover.textColor.name}</span>
-                              </div>
-                            </div>
-
-                            <div className="rounded-lg border border-white/10 bg-[#0b1531]/70 p-2">
-                              <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Moduli ({item.modules.length})</p>
-                              <div className="flex flex-wrap gap-1.5">
-                                {item.modules.map((mod, modIndex) => (
-                                  <span
-                                    key={`${item.cartId}-mod-${mod.id}-${modIndex}`}
-                                    className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5"
-                                  >
-                                    {mod.sidebarText} · {mod.sidebarColor.name}{mod.isDouble ? ' · Doppio' : ''}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-
-                            <div className="rounded-lg border border-white/10 bg-[#0b1531]/70 p-2">
-                              <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Copertina posteriore</p>
-                              <div className="flex flex-wrap gap-1.5">
-                                <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Colore: {item.backCover.color.name}</span>
-                                <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Testo: {item.backCover.text?.trim() ? item.backCover.text : 'Nessuno'}</span>
-                                <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.backCover.fontSize}</span>
-                                <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">{item.backCover.position}</span>
-                                <span className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">Testo {item.backCover.textColor.name}</span>
-                              </div>
-                            </div>
+                          <div className="mt-4 rounded-xl border border-white/10 bg-[#101d3f]/75 p-3 text-xs text-[#d8e5ff]">
+                            <ProductCustomizationDetails
+                              frontCover={item.frontCover}
+                              backCover={item.backCover}
+                              modules={item.modules}
+                              cartId={item.cartId}
+                              size="md"
+                            />
                           </div>
                         </div>
 

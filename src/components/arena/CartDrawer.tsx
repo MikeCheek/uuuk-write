@@ -3,6 +3,7 @@ import { ShoppingCart, X, Trash2, ChevronRight } from 'lucide-react';
 import { useCart } from '../../utilities/cartContext';
 import { Link } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
+import ProductCustomizationDetails from './ProductCustomizationDetails';
 
 const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
   { isSidebarOpen: boolean, setIsSidebarOpen: (open: boolean) => void }
@@ -81,42 +82,14 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
                       <summary className="cursor-pointer select-none text-[9px] font-bold uppercase tracking-wide text-[#8ea2d0]">
                         Dettagli personalizzazione
                       </summary>
-                      <div className="mt-1.5 space-y-1.5">
-                        <div className="rounded border border-white/10 bg-[#101d3f]/70 p-1.5">
-                          <p className="mb-1 text-[9px] font-bold uppercase tracking-wide text-[#8ea2d0]">Anteriore</p>
-                          <div className="flex flex-wrap gap-1">
-                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">{item.frontCover.collection}</span>
-                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">{item.frontCover.template ?? 'Custom'}</span>
-                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">Colore: {item.frontCover.color.name}</span>
-                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">Testo: {item.frontCover.text?.trim() ? item.frontCover.text : 'Nessuno'}</span>
-                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">{item.frontCover.fontSize}</span>
-                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">{item.frontCover.position}</span>
-                          </div>
-                        </div>
-
-                        <div className="rounded border border-white/10 bg-[#101d3f]/70 p-1.5">
-                          <p className="mb-1 text-[9px] font-bold uppercase tracking-wide text-[#8ea2d0]">Moduli ({item.modules.length})</p>
-                          <div className="flex max-h-14 flex-wrap gap-1 overflow-y-auto pr-1">
-                            {item.modules.map((mod, modIndex) => (
-                              <span
-                                key={`${item.cartId}-drawer-mod-${mod.id}-${modIndex}`}
-                                className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5"
-                              >
-                                {mod.sidebarText} · {mod.sidebarColor.name}{mod.isDouble ? ' · Doppio' : ''}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="rounded border border-white/10 bg-[#101d3f]/70 p-1.5">
-                          <p className="mb-1 text-[9px] font-bold uppercase tracking-wide text-[#8ea2d0]">Posteriore</p>
-                          <div className="flex flex-wrap gap-1">
-                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">Colore: {item.backCover.color.name}</span>
-                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">Testo: {item.backCover.text?.trim() ? item.backCover.text : 'Nessuno'}</span>
-                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">{item.backCover.fontSize}</span>
-                            <span className="rounded border border-white/15 bg-[#0b1531] px-1.5 py-0.5">{item.backCover.position}</span>
-                          </div>
-                        </div>
+                      <div className="mt-1.5">
+                        <ProductCustomizationDetails
+                          frontCover={item.frontCover}
+                          backCover={item.backCover}
+                          modules={item.modules}
+                          cartId={item.cartId}
+                          size="sm"
+                        />
                       </div>
                     </details>
                   </div>
