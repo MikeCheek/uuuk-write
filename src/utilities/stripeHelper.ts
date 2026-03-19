@@ -9,7 +9,8 @@ const getProducts = async (limit?: number) => {
 
   const products = await stripe.products.list({
     limit: limit || 100, // adjust as needed
-    expand: ['data.default_price'] // include prices
+    expand: ['data.default_price'], // include prices
+    active: true
   })
 
   return { data: products.data as StripeProduct[], has_more: products.has_more }

@@ -1,8 +1,7 @@
 import { GatsbyNode } from 'gatsby'
 // gatsby-node.ts
 import path from 'path'
-import { presets } from './src/utilities/arenaSettings'
-import { getProducts } from './src/utilities/stripeHelper'
+import { getProducts, StripeProduct } from './src/utilities/stripeHelper'
 
 import dotenv from 'dotenv'
 import { slugify, enrichProductWithPreset } from './src/utilities/arenaHelpers'
@@ -26,7 +25,10 @@ export const createPages = async ({ actions }: any) => {
   })
 
   // 3. Create Product Pages based on Stripe Data
-  allStripeProducts.forEach((stripeProduct: any) => {
+  allStripeProducts.forEach((stripeProduct: StripeProduct) => {
+    if (!stripeProduct.active) {
+      return
+    }
     // Enrich product with preset data
     const {
       stripeData,
