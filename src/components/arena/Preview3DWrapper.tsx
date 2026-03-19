@@ -1,14 +1,16 @@
 import React, { CSSProperties } from 'react'
-import { AgendaFormat, Metadata, Module } from '../../utilities/arenaSettings'
+import { AgendaFormat, Metadata, Module, steps } from '../../utilities/arenaSettings'
 import { getCoverTemplateImagePath } from '../../utilities/arenaHelpers'
 import Preview3D from './Preview3D'
 
 const Preview3DWrapper = (
   {
     product,
+    step,
     noExtra = false
   }: {
     product: Metadata
+    step: string
     noExtra?: boolean
   }
 ) => {
@@ -55,6 +57,7 @@ const Preview3DWrapper = (
     step: string,
     format: AgendaFormat
   ): CSSProperties => {
+    console.log(step)
     let baseRotation = 'rotateX(10deg)'
     let stepRotation = 'rotateY(-25deg)'
 
@@ -87,7 +90,7 @@ const Preview3DWrapper = (
       noExtra={noExtra}
       modules={product.modules}
       format={product.format}
-      previewTransform={getPreviewTransform('Formato', product.format)}
+      previewTransform={getPreviewTransform(step, product.format)}
       previewSize={getPreviewSizeClasses({ modules: product.modules, format: product.format })}
       coverZOffset={coverZOffset}
       frontCoverColor={product.frontCover.color}

@@ -11,7 +11,7 @@ import {
   getTemplatesForCollection,
 
 } from '../utilities/arenaHelpers';
-import CompactProgressCircle from '../components/arena/CompactProgressCircle';
+// import CompactProgressCircle from '../components/arena/CompactProgressCircle';
 import BackCover from '../components/arena/BackCover';
 import Format from '../components/arena/Format';
 import FrontCover from '../components/arena/FrontCover';
@@ -313,7 +313,7 @@ const Arena = () => {
 
           {/* 3D Preview Panel (Updated for text size/position) */}
           <div className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-6 shadow-[0_16px_40px_rgba(6,10,20,0.45)] lg:w-1/2">
-            <Preview3DWrapper product={previewProduct} />
+            <Preview3DWrapper product={previewProduct} step={customSteps[currentStep]} />
           </div>
         </div>
       </div>

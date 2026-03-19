@@ -401,7 +401,7 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
                       </div>
 
                       <div className="rounded-lg border border-white/10 bg-[#0b1531]/70 p-2">
-                        <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Moduli ({item.modules?.length || 0})</p>
+                        <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#8ea2d0]">Sidebars ({item.modules?.length || 0})</p>
                         <div className="flex flex-wrap gap-1.5">
                           {(item.modules || []).map((mod: any, modIndex: number) => (
                             <span key={`order-mod-${idx}-${mod.id || modIndex}`} className="rounded border border-white/15 bg-[#101d3f] px-2 py-0.5">
