@@ -276,12 +276,15 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
                   €{totalAmount} {order.currency.toUpperCase()}
                 </p>
               </div>
-              <div>
-                <p className="text-xs uppercase text-[#8ea2d0]">Modalità</p>
-                <p className="font-semibold text-white">
-                  {order.isTest ? 'Test' : 'Live'}
-                </p>
-              </div>
+              {
+                order.isTest ? <></> :
+                  <div>
+                    <p className="text-xs uppercase text-[#8ea2d0]">Modalità</p>
+                    <p className="font-semibold text-white">
+                      Live
+                    </p>
+                  </div>
+              }
               <div>
                 <p className="text-xs uppercase text-[#8ea2d0]">Ultimo aggiornamento</p>
                 <p className="font-semibold text-white">
