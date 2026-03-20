@@ -127,3 +127,36 @@ Required GitHub Actions secrets:
 
 - ORDERS_OVERDUE_CHECK_URL (example: https://<your-domain>/api/orders-overdue-check)
 - ORDERS_OVERDUE_CRON_SECRET (must match deploy env ORDERS_OVERDUE_CRON_SECRET)
+
+## Workflow diagram
+
+```mermaid
+flowchart TD
+  User["Customer Browser"] --> CCS["/api/create-checkout-session"]
+  CCS --> StripeCheckout["Stripe Checkout Session"]
+  StripeCheckout -->|"checkout.session.completed<br/>async events<br/>payment_intent events"| StripeWH["/api/stripe-webhook"]
+
+  User --> CO["/api/create-order"]
+  User --> GO["/api/get-order"]
+  GO --> Firestore[("Firestore<br/>orders / orders-test")]
+  CO --> Firestore
+
+  StripeWH --> Firestore
+  StripeWH --> EmailJS["EmailJS order confirmation"]
+  StripeWH --> TelegramMain["Telegram Bot API<br/>new order / critical alerts"]
+
+  TelegramPlatform["Telegram platform updates"] --> TGWH["/api/telegram-webhook"]
+  TGWH --> Firestore
+  TGWH --> TelegramMain
+
+  AdminCall["Manual admin call"] --> TGSET["/api/telegram-set-commands"]
+  TGSET --> TelegramMain
+
+  GitHub["GitHub webhook events<br/>push / merged PR"] --> GHWH["/api/github-webhook"]
+  GHWH --> TelegramMain
+
+  GHA["GitHub Actions<br/>orders-overdue-check.yml<br/>cron 09:00 UTC"] --> ODC["/api/orders-overdue-check"]
+  ODC -->|"query live overdue orders<br/>status != Consegnato<br/>last alert > 3 days"| Firestore
+  ODC --> TelegramMain
+  ODC -->|"persist overdueUpdateNotification"| Firestore
+```
