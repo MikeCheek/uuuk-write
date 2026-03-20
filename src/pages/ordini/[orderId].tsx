@@ -132,7 +132,7 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
         <div className="min-h-screen flex items-center justify-center bg-[#070d1e] px-4 text-white">
           <div className="text-center max-w-md">
             <AlertCircle size={48} className="mx-auto mb-4 text-[#f97316]" />
-            <h1 className="mb-2 text-2xl font-bold">Ordine non trovato</h1>
+            <h1 className="mb-2 text-xl md:text-2xl font-bold">Ordine non trovato</h1>
             <p className="mb-6 text-[#a4b8e8]">{error}</p>
             <a href="/carrello" className="text-[#ffb170] hover:underline">
               Torna al carrello
@@ -247,7 +247,7 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
         <div className="mx-auto max-w-3xl">
           <div className="mb-6 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-5 shadow-[0_12px_36px_rgba(6,10,20,0.45)]">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8ea2d0]">Benvenuto</p>
-            <h2 className="mt-1 text-2xl font-black tracking-tight text-[#f6f8ff]">Ciao {customerName}!</h2>
+            <h2 className="mt-1 text-xl md:text-2xl font-black tracking-tight text-[#f6f8ff]">Ciao {customerName}!</h2>
             <p className="mt-2 text-sm text-[#b6c8f2]">Qui trovi stato, dettagli e documenti del tuo ordine.</p>
           </div>
 
@@ -256,7 +256,7 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
             <div className="flex items-center gap-4 mb-4">
               <div className={currentStatus.color}>{currentStatus.icon}</div>
               <div>
-                <h1 className="text-3xl font-black uppercase tracking-tight text-white">Ordine {order.orderId}</h1>
+                <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white">Ordine {order.orderId}</h1>
                 <p className={`text-lg font-semibold ${currentStatus.color}`}>
                   {currentStatus.label}
                 </p>
@@ -296,7 +296,7 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
 
           {/* Order Status Stepper */}
           <div className="mb-8 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
-            <h2 className="mb-8 text-2xl font-black uppercase tracking-tight text-white">Stato della spedizione</h2>
+            <h2 className="mb-8 text-xl md:text-2xl font-black uppercase tracking-tight text-white">Stato della spedizione</h2>
             <div className="relative">
               <div className="flex justify-between items-start">
                 {/* Step 1: In Preparazione */}
@@ -362,7 +362,7 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
             </div>
           </div>
           <div className="mb-8 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
-            <h2 className="mb-6 flex items-center gap-2 text-2xl font-black uppercase tracking-tight text-white">
+            <h2 className="mb-6 flex items-center gap-2 text-xl md:text-2xl font-black uppercase tracking-tight text-white">
               <Package size={24} />
               Articoli ordinati
             </h2>
@@ -431,7 +431,7 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
           {/* Shipping Details */}
           {order.shipping_details && (
             <div className="mb-8 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
-              <h2 className="mb-6 text-2xl font-black uppercase tracking-tight text-white">Indirizzo di spedizione</h2>
+              <h2 className="mb-6 text-xl md:text-2xl font-black uppercase tracking-tight text-white">Indirizzo di spedizione</h2>
               <div className="rounded-xl border border-white/20 bg-[#101d3f] p-6">
                 <p className="mb-2 text-lg font-semibold text-white">
                   {order.shipping_details.name}
@@ -449,7 +449,7 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
           {/* Email Notification Status */}
           {order.emailNotification && (
             <div className="mb-8 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
-              <h2 className="mb-6 flex items-center gap-2 text-2xl font-black uppercase tracking-tight text-white">
+              <h2 className="mb-6 flex items-center gap-2 text-xl md:text-2xl font-black uppercase tracking-tight text-white">
                 <Mail size={24} />
                 Conferma email
               </h2>
@@ -474,7 +474,7 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
           {/* Invoice & Receipt */}
           {order.invoice && (order.invoice.hostedInvoiceUrl || order.invoice.invoicePdf || order.invoice.receiptUrl) && (
             <div className="mb-8 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
-              <h2 className="mb-6 flex items-center gap-2 text-2xl font-black uppercase tracking-tight text-white">
+              <h2 className="mb-6 flex items-center gap-2 text-xl md:text-2xl font-black uppercase tracking-tight text-white">
                 <Download size={24} />
                 Documenti
               </h2>

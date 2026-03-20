@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/ordini/:path*",
+      "destination": "/ordini/index.html"
+    }
+  ]
+}
