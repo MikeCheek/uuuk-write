@@ -658,11 +658,19 @@ export default async function handler (
       }
     }
 
+    const telegramChatId = process.env.TELEGRAM_CHAT_ID || null
+    const telegramTopicId = Number.parseInt(
+      process.env.TELEGRAM_TOPIC_ID ?? '9',
+      10
+    )
+
     // Add Telegram notification result
     orderPayload.telegramNotification = {
       sent: telegramResult.sent,
       reason: telegramResult.reason,
-      attemptedAt: nowIso
+      attemptedAt: nowIso,
+      chatId: telegramChatId,
+      topicId: Number.isNaN(telegramTopicId) ? 9 : telegramTopicId
     }
 
     await orderRef.set(orderPayload, { merge: true })

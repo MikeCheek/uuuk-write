@@ -1,0 +1,27 @@
+name: Orders Overdue Check
+
+on:
+  schedule:
+    # 09:00 UTC daily. Adjust if you need strict Europe/Rome wall-clock time year-round.
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+jobs:
+  run-overdue-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger overdue orders check endpoint
+        env:
+          OVERDUE_CHECK_URL: ${{ secrets.ORDERS_OVERDUE_CHECK_URL }}
+          OVERDUE_CHECK_SECRET: ${{ secrets.ORDERS_OVERDUE_CRON_SECRET }}
+        run: |
+          if [ -z "$OVERDUE_CHECK_URL" ]; then
+            echo "Missing required secret: ORDERS_OVERDUE_CHECK_URL"
+            exit 1
+          fi
+
+          curl --fail --show-error --silent \
+            -X POST "$OVERDUE_CHECK_URL" \
+            -H "Content-Type: application/json" \
+            -H "x-orders-overdue-cron-secret: $OVERDUE_CHECK_SECRET" \
+            --data '{}'
