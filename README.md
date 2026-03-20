@@ -72,10 +72,18 @@ For checkout, webhook processing, and transactional emails, configure these vari
 - TELEGRAM_SETUP_SECRET (optional, protects /api/telegram-set-commands)
 - GITHUB_WEBHOOK_SECRET
 - GITHUB_WEBHOOK_BRANCHES (optional, comma-separated, defaults to main,master)
+- ORDERS_OVERDUE_CRON_SECRET (optional but recommended; protects /api/orders-overdue-check)
 
 The webhook at src/api/stripe-webhook.ts sends a confirmation email after checkout.session.completed with order line items and invoice/receipt links (when available).
 The webhook at src/api/github-webhook.ts accepts GitHub push and pull_request events, then sends a Telegram message to topic 41 for pushes and merged PRs on tracked branches (defaults to main,master).
 The webhook at src/api/telegram-webhook.ts handles Telegram bot commands:
+The endpoint at src/api/orders-overdue-check.ts checks live orders for stale updates (older than 3 days) and sends Telegram alerts only when:
+
+- the order status is not Consegnato
+- the order is not a test order
+- the last overdue Telegram alert was sent more than 3 days ago (tracked in order.overdueUpdateNotification)
+
+It sends alerts to the order Telegram chat/topic (with env fallback TELEGRAM_CHAT_ID + TELEGRAM_TOPIC_ID, default topic 9).
 
 - /start or /help: greeting + command reference
 - /orders [n]: compact list of recent orders (only in TELEGRAM_CHAT_ID)
@@ -106,3 +114,16 @@ Endpoint behavior:
 
 - Sets default commands for all chats: /start, /help, /order, /status, /ping
 - Sets admin chat scoped commands (TELEGRAM_CHAT_ID): adds /orders and /recent
+
+## GitHub cron for overdue orders
+
+Workflow file: .github/workflows/orders-overdue-check.yml
+
+- Runs daily at 09:00 UTC (plus manual trigger via workflow_dispatch)
+- Sends POST request to ORDERS_OVERDUE_CHECK_URL
+- Authenticates with header x-orders-overdue-cron-secret using ORDERS_OVERDUE_CRON_SECRET
+
+Required GitHub Actions secrets:
+
+- ORDERS_OVERDUE_CHECK_URL (example: https://<your-domain>/api/orders-overdue-check)
+- ORDERS_OVERDUE_CRON_SECRET (must match deploy env ORDERS_OVERDUE_CRON_SECRET)
