@@ -367,6 +367,54 @@ const getOrderStatusDisplay = (order: OrderResult): string => {
   return 'In preparazione'
 }
 
+const getShippingAddressDisplay = (order: OrderResult): string => {
+  const shippingDetails = order.data.shipping_details as
+    | Record<string, unknown>
+    | undefined
+  const nestedAddress = shippingDetails?.address as Record<string, unknown>
+
+  const directAddress = toStringSafe(
+    order.data.shippingAddress || order.data.shipping_address,
+    ''
+  ).trim()
+
+  if (directAddress) return directAddress
+
+  const line1 = toStringSafe(
+    nestedAddress?.line1 || nestedAddress?.address1 || shippingDetails?.line1,
+    ''
+  ).trim()
+  const line2 = toStringSafe(
+    nestedAddress?.line2 || nestedAddress?.address2 || shippingDetails?.line2,
+    ''
+  ).trim()
+  const city = toStringSafe(
+    nestedAddress?.city || shippingDetails?.city,
+    ''
+  ).trim()
+  const postalCode = toStringSafe(
+    nestedAddress?.postal_code ||
+      nestedAddress?.zip ||
+      shippingDetails?.postal_code ||
+      shippingDetails?.zip,
+    ''
+  ).trim()
+  const state = toStringSafe(
+    nestedAddress?.state || nestedAddress?.province || shippingDetails?.state,
+    ''
+  ).trim()
+  const country = toStringSafe(
+    nestedAddress?.country || shippingDetails?.country,
+    ''
+  ).trim()
+
+  const compact = [line1, line2, city, postalCode, state, country]
+    .filter(Boolean)
+    .join(', ')
+
+  return compact || 'N/A'
+}
+
 const buildBackofficeOrderLink = (order: OrderResult): string => {
   const suffix = order.collection === 'orders' ? 'orders' : 'orders-test'
   return `${ORDERS_PORTAL_BASE}/${suffix}/${order.id}`
@@ -382,9 +430,15 @@ const buildOrderMessage = (order: OrderResult): string => {
   const name = getCustomerName(order)
   const status = toStringSafe(order.data.status, 'unknown')
   const orderStatus = getOrderStatusDisplay(order)
+  const paymentStatus = toStringSafe(
+    order.data.paymentStatus || order.data.payment_status,
+    'N/A'
+  )
+  const shippingAddress = getShippingAddressDisplay(order)
   const createdAt = formatDateTime(order.data.createdAt)
   const amount = formatAmount(order.data.amount, order.data.currency)
   const statusEmoji = getStatusEmoji(status)
+  const paymentEmoji = getPaymentEmoji(paymentStatus)
   const trackingLink = buildTrackingOrderLink(order)
 
   const lineItems = Array.isArray(order.data.orderLineItems)
@@ -397,6 +451,8 @@ const buildOrderMessage = (order: OrderResult): string => {
     `${pickOne(['🧾', '📬', '📦'])} <b>Dettaglio ordine</b>`,
     `<b>Nome:</b> ${escapeHtml(name)}`,
     `<b>Order status:</b> ${statusEmoji} ${escapeHtml(orderStatus)}`,
+    `<b>Payment status:</b> ${paymentEmoji} ${escapeHtml(paymentStatus)}`,
+    `<b>Shipping address:</b> 📍 ${escapeHtml(shippingAddress)}`,
     `<b>Articoli:</b> 📚 ${lineItems}`,
     `<b>Totale:</b> 💰 ${escapeHtml(amount)}`,
     `<b>Creato:</b> 🕒 ${escapeHtml(createdAt)}`,
