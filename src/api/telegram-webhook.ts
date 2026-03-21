@@ -431,7 +431,10 @@ const buildOrderMessage = (order: OrderResult): string => {
   const status = toStringSafe(order.data.status, 'unknown')
   const orderStatus = getOrderStatusDisplay(order)
   const paymentStatus = toStringSafe(
-    order.data.paymentStatus || order.data.payment_status,
+    //@ts-ignore
+    order.data.shipping_details?.status ||
+      order.data.paymentStatus ||
+      order.data.payment_status,
     'N/A'
   )
   const shippingAddress = getShippingAddressDisplay(order)
