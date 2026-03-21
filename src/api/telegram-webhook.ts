@@ -330,6 +330,43 @@ const getPaymentEmoji = (paymentStatusRaw: string): string => {
   return '💳'
 }
 
+const getOrderStatusDisplay = (order: OrderResult): string => {
+  const raw = toStringSafe(
+    order.data.orderStatus || order.data.order_status || order.data.status,
+    ''
+  )
+
+  const normalized = raw.trim().toLowerCase()
+
+  if (
+    normalized === 'in preparazione' ||
+    normalized === 'preparazione' ||
+    normalized === 'processing' ||
+    normalized === 'in_preparazione'
+  ) {
+    return 'In preparazione'
+  }
+
+  if (
+    normalized === 'spedito' ||
+    normalized === 'shipped' ||
+    normalized === 'in_transit' ||
+    normalized === 'in transit'
+  ) {
+    return 'Spedito'
+  }
+
+  if (
+    normalized === 'consegnato' ||
+    normalized === 'delivered' ||
+    normalized === 'completed'
+  ) {
+    return 'Consegnato'
+  }
+
+  return 'In preparazione'
+}
+
 const buildBackofficeOrderLink = (order: OrderResult): string => {
   const suffix = order.collection === 'orders' ? 'orders' : 'orders-test'
   return `${ORDERS_PORTAL_BASE}/${suffix}/${order.id}`
@@ -344,15 +381,10 @@ const buildTrackingOrderLink = (order: OrderResult): string => {
 const buildOrderMessage = (order: OrderResult): string => {
   const name = getCustomerName(order)
   const status = toStringSafe(order.data.status, 'unknown')
-  const paymentStatus = toStringSafe(
-    order.data.paymentStatus || order.data.payment_status,
-    'N/A'
-  )
-  const checkoutStatus = toStringSafe(order.data.checkoutStatus, 'N/A')
+  const orderStatus = getOrderStatusDisplay(order)
   const createdAt = formatDateTime(order.data.createdAt)
   const amount = formatAmount(order.data.amount, order.data.currency)
   const statusEmoji = getStatusEmoji(status)
-  const paymentEmoji = getPaymentEmoji(paymentStatus)
   const trackingLink = buildTrackingOrderLink(order)
 
   const lineItems = Array.isArray(order.data.orderLineItems)
@@ -364,15 +396,11 @@ const buildOrderMessage = (order: OrderResult): string => {
   return [
     `${pickOne(['🧾', '📬', '📦'])} <b>Dettaglio ordine</b>`,
     `<b>Nome:</b> ${escapeHtml(name)}`,
-    `<b>Stato:</b> ${statusEmoji} ${escapeHtml(status)}`,
-    `<b>Pagamento:</b> ${paymentEmoji} ${escapeHtml(paymentStatus)}`,
-    `<b>Checkout:</b> 🛒 ${escapeHtml(checkoutStatus)}`,
+    `<b>Order status:</b> ${statusEmoji} ${escapeHtml(orderStatus)}`,
     `<b>Articoli:</b> 📚 ${lineItems}`,
     `<b>Totale:</b> 💰 ${escapeHtml(amount)}`,
     `<b>Creato:</b> 🕒 ${escapeHtml(createdAt)}`,
-    `<b>Tracking:</b> <a href="${escapeHtml(
-      trackingLink
-    )}">Apri portale ordine</a>`
+    `<b>Tracking:</b> <a href="${escapeHtml(trackingLink)}">Vedi ordine</a>`
   ].join('\n')
 }
 
@@ -396,7 +424,7 @@ const buildOrdersSummaryMessage = (orders: OrderResult[]): string => {
 
     return `• <a href="${escapeHtml(
       link
-    )}">Apri ordine</a> | ${statusEmoji} ${escapeHtml(status)} | ${escapeHtml(
+    )}">Vedi ordine</a> | ${statusEmoji} ${escapeHtml(status)} | ${escapeHtml(
       amount
     )} | ${escapeHtml(createdAt)}`
   })
