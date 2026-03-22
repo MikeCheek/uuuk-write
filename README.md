@@ -120,7 +120,7 @@ Endpoint behavior:
 Configured in vercel.json:
 
 - Path: /api/orders-overdue-check
-- Schedule: 0 9 * * * (daily at 09:00 UTC)
+- Schedule: 0 9 \* \* \* (daily at 09:00 UTC)
 
 Authentication:
 
