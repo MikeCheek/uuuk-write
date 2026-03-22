@@ -115,18 +115,17 @@ Endpoint behavior:
 - Sets default commands for all chats: /start, /help, /order, /status, /ping
 - Sets admin chat scoped commands (TELEGRAM_CHAT_ID): adds /orders and /recent
 
-## GitHub cron for overdue orders
+## Vercel cron for overdue orders
 
-Workflow file: .github/workflows/orders-overdue-check.yml
+Configured in vercel.json:
 
-- Runs daily at 09:00 UTC (plus manual trigger via workflow_dispatch)
-- Sends POST request to ORDERS_OVERDUE_CHECK_URL
-- Authenticates with header x-orders-overdue-cron-secret using ORDERS_OVERDUE_CRON_SECRET
+- Path: /api/orders-overdue-check
+- Schedule: 0 9 \* \* \* (daily at 09:00 UTC)
 
-Required GitHub Actions secrets:
+Authentication:
 
-- ORDERS_OVERDUE_CHECK_URL (example: https://<your-domain>/api/orders-overdue-check)
-- ORDERS_OVERDUE_CRON_SECRET (must match deploy env ORDERS_OVERDUE_CRON_SECRET)
+- Preferred: CRON_SECRET (Vercel automatically sends Authorization: Bearer <CRON_SECRET>)
+- Backward compatible: ORDERS_OVERDUE_CRON_SECRET
 
 ## Workflow diagram
 
@@ -155,7 +154,7 @@ flowchart TD
   GitHub["GitHub webhook events<br/>push / merged PR"] --> GHWH["/api/github-webhook"]
   GHWH --> TelegramMain
 
-  GHA["GitHub Actions<br/>orders-overdue-check.yml<br/>cron 09:00 UTC"] --> ODC["/api/orders-overdue-check"]
+  VercelCron["Vercel Cron<br/>/api/orders-overdue-check<br/>cron 09:00 UTC"] --> ODC["/api/orders-overdue-check"]
   ODC -->|"query live overdue orders<br/>status != Consegnato<br/>last alert > 3 days"| Firestore
   ODC --> TelegramMain
   ODC -->|"persist overdueUpdateNotification"| Firestore
