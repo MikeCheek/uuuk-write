@@ -148,11 +148,12 @@ export default async function handler (
   req: GatsbyFunctionRequest,
   res: GatsbyFunctionResponse
 ) {
-  if (req.method !== 'POST') {
+  if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ error: 'Method Not Allowed' })
   }
 
-  const cronSecret = process.env.ORDERS_OVERDUE_CRON_SECRET
+  const cronSecret =
+    process.env.ORDERS_OVERDUE_CRON_SECRET || process.env.CRON_SECRET
   if (cronSecret) {
     const providedSecret =
       normalizeHeaderValue(
