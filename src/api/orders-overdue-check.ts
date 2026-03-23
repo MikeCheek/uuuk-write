@@ -25,6 +25,7 @@ const db = getFirestore()
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000
 const DEFAULT_TOPIC_ID = 9
 const OVERDUE_STATUS_DONE = 'consegnato'
+const OVERDUE_STATUS_ELIGIBLE = 'paid'
 
 type OrderData = {
   orderId?: string
@@ -199,6 +200,7 @@ export default async function handler (
   let eligible = 0
   let sent = 0
   let skippedDelivered = 0
+  let skippedNotPaid = 0
   let skippedRecentNotification = 0
   let skippedInvalidDate = 0
   let failed = 0
@@ -214,6 +216,11 @@ export default async function handler (
     const normalizedStatus = (order.status || '').trim().toLowerCase()
     if (normalizedStatus === OVERDUE_STATUS_DONE) {
       skippedDelivered += 1
+      continue
+    }
+
+    if (normalizedStatus !== OVERDUE_STATUS_ELIGIBLE) {
+      skippedNotPaid += 1
       continue
     }
 
@@ -289,6 +296,7 @@ export default async function handler (
     failed,
     skipped: {
       delivered: skippedDelivered,
+      notPaid: skippedNotPaid,
       recentNotification: skippedRecentNotification,
       invalidDate: skippedInvalidDate
     }
