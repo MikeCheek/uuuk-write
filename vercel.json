@@ -8,7 +8,11 @@
   ],
   "rewrites": [
     {
-      "source": "/ordini/:path*",
+      "source": "/ordini/:orderId/",
+      "destination": "/ordini/[orderId]/index.html"
+    },
+    {
+      "source": "/ordini/:orderId",
       "destination": "/ordini/[orderId]/index.html"
     }
   ]
