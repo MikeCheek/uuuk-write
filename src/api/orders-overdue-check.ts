@@ -23,14 +23,14 @@ if (!getApps().length) {
 const db = getFirestore()
 
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000
 const DEFAULT_TOPIC_ID = 9
-const OVERDUE_STATUS_DONE = 'consegnato'
-const OVERDUE_STATUS_ELIGIBLE = 'paid'
 
 type OrderData = {
   orderId?: string
   sessionId?: string
   status?: string
+  trackingCode?: string
   updatedAt?: string
   createdAt?: string
   isTest?: boolean
@@ -51,6 +51,23 @@ type OrderData = {
     topicId?: number
   }
 }
+
+/** Returns 'consegnato' | 'spedito' | 'skip' | 'other' */
+const normalizeOrderStatus = (
+  raw: string
+): 'consegnato' | 'spedito' | 'skip' | 'other' => {
+  const s = raw.trim().toLowerCase()
+  if (s === 'consegnato' || s === 'delivered' || s === 'completed')
+    return 'consegnato'
+  if (s === 'spedito' || s === 'shipped' || s === 'in_transit' || s === 'in transit')
+    return 'spedito'
+  if (s === 'failed' || s === 'pending') return 'skip'
+  return 'other'
+}
+
+// Only called after 'consegnato' and 'skip' statuses have been filtered out.
+const getCooldownMs = (normalizedStatus: 'spedito' | 'other'): number =>
+  normalizedStatus === 'spedito' ? SEVEN_DAYS_MS : THREE_DAYS_MS
 
 const normalizeHeaderValue = (value: string | string[] | undefined): string => {
   if (!value) return ''
@@ -114,6 +131,7 @@ const formatOrderMessage = (params: {
   order: OrderData
   lastUpdate: Date
   now: Date
+  cooldownDays: number
 }): string => {
   const customerName = params.order.customer_details?.name || 'N/A'
   const customerEmail = params.order.customer_details?.email || 'N/A'
@@ -126,8 +144,8 @@ const formatOrderMessage = (params: {
     (params.now.getTime() - params.lastUpdate.getTime()) / (24 * 60 * 60 * 1000)
   )
 
-  return [
-    '⏰ <b>Ordine senza aggiornamenti da oltre 3 giorni</b>',
+  const lines = [
+    `⏰ <b>Ordine senza aggiornamenti da oltre ${escapeHtml(String(params.cooldownDays))} giorni</b>`,
     '',
     `<b>Order Doc:</b> ${escapeHtml(params.orderDocId)}`,
     `<b>Order ID:</b> <a href="${escapeHtml(orderBackofficeUrl)}">${escapeHtml(
@@ -139,10 +157,21 @@ const formatOrderMessage = (params: {
     )}`,
     `<b>Giorni senza update:</b> ${escapeHtml(String(ageDays))}`,
     `<b>Cliente:</b> ${escapeHtml(customerName)}`,
-    `<b>Email:</b> ${escapeHtml(customerEmail)}`,
-    '',
-    `<b>Check eseguito:</b> ${escapeHtml(params.now.toLocaleString('it-IT'))}`
-  ].join('\n')
+    `<b>Email:</b> ${escapeHtml(customerEmail)}`
+  ]
+
+  const normalizedStatus = normalizeOrderStatus(params.order.status || '')
+  if (normalizedStatus === 'spedito' && !params.order.trackingCode) {
+    lines.push('')
+    lines.push(
+      `⚠️ <b>Codice di tracciamento mancante!</b> Aggiungi il tracking code nell'ordine (vedi link sopra).`
+    )
+  }
+
+  lines.push('')
+  lines.push(`<b>Check eseguito:</b> ${escapeHtml(params.now.toLocaleString('it-IT'))}`)
+
+  return lines.join('\n')
 }
 
 export default async function handler (
@@ -189,6 +218,8 @@ export default async function handler (
 
   const now = new Date()
   const nowMs = now.getTime()
+  // Query with the minimum cooldown (3 days) so both 3-day and 7-day candidates
+  // are fetched. Per-status cooldown is enforced in the loop below.
   const cutoffIso = new Date(nowMs - THREE_DAYS_MS).toISOString()
 
   const overdueSnapshot = await db
@@ -200,7 +231,7 @@ export default async function handler (
   let eligible = 0
   let sent = 0
   let skippedDelivered = 0
-  let skippedNotPaid = 0
+  let skippedNotEligible = 0
   let skippedRecentNotification = 0
   let skippedInvalidDate = 0
   let failed = 0
@@ -213,14 +244,15 @@ export default async function handler (
       continue
     }
 
-    const normalizedStatus = (order.status || '').trim().toLowerCase()
-    if (normalizedStatus === OVERDUE_STATUS_DONE) {
+    const statusCategory = normalizeOrderStatus(order.status || '')
+
+    if (statusCategory === 'consegnato') {
       skippedDelivered += 1
       continue
     }
 
-    if (normalizedStatus !== OVERDUE_STATUS_ELIGIBLE) {
-      skippedNotPaid += 1
+    if (statusCategory === 'skip') {
+      skippedNotEligible += 1
       continue
     }
 
@@ -232,13 +264,25 @@ export default async function handler (
       continue
     }
 
+    const cooldownMs = getCooldownMs(statusCategory)
+    const cooldownDays = Math.round(cooldownMs / (24 * 60 * 60 * 1000))
+
     const lastSentDate = getDateFromIso(
       order.overdueUpdateNotification?.lastSentAt
     )
 
-    if (lastSentDate && nowMs - lastSentDate.getTime() < THREE_DAYS_MS) {
-      skippedRecentNotification += 1
-      continue
+    if (lastSentDate) {
+      // Repeat notification: respect per-status cooldown from last sent
+      if (nowMs - lastSentDate.getTime() < cooldownMs) {
+        skippedRecentNotification += 1
+        continue
+      }
+    } else {
+      // Initial notification: wait at least cooldownMs since last update
+      if (nowMs - lastUpdateDate.getTime() < cooldownMs) {
+        skippedRecentNotification += 1
+        continue
+      }
     }
 
     eligible += 1
@@ -257,7 +301,8 @@ export default async function handler (
       orderDocId: doc.id,
       order,
       lastUpdate: lastUpdateDate,
-      now
+      now,
+      cooldownDays
     })
 
     const telegramResult = await sendTelegramMessage({
@@ -296,7 +341,7 @@ export default async function handler (
     failed,
     skipped: {
       delivered: skippedDelivered,
-      notPaid: skippedNotPaid,
+      notEligible: skippedNotEligible,
       recentNotification: skippedRecentNotification,
       invalidDate: skippedInvalidDate
     }
