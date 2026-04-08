@@ -61,7 +61,7 @@ const normalizeOrderStatus = (
     return 'consegnato'
   if (s === 'spedito' || s === 'shipped' || s === 'in_transit' || s === 'in transit')
     return 'spedito'
-  if (s === 'failed' || s === 'pending') return 'skip'
+  if (s === 'failed' || s === 'pending' || s === 'expired') return 'skip'
   return 'other'
 }
 
@@ -127,7 +127,6 @@ const sendTelegramMessage = async (params: {
 }
 
 const formatOrderMessage = (params: {
-  orderDocId: string
   order: OrderData
   lastUpdate: Date
   now: Date
@@ -146,8 +145,8 @@ const formatOrderMessage = (params: {
 
   const lines = [
     `⏰ <b>Ordine senza aggiornamenti da oltre ${escapeHtml(String(params.cooldownDays))} giorni</b>`,
+    `🔴 <b>⚠️ GIORNI SENZA UPDATE: ${escapeHtml(String(ageDays))} ⚠️</b>`,
     '',
-    `<b>Order Doc:</b> ${escapeHtml(params.orderDocId)}`,
     `<b>Order ID:</b> <a href="${escapeHtml(orderBackofficeUrl)}">${escapeHtml(
       orderPublicId
     )}</a>`,
@@ -155,7 +154,6 @@ const formatOrderMessage = (params: {
     `<b>Ultimo update:</b> ${escapeHtml(
       params.lastUpdate.toLocaleString('it-IT')
     )}`,
-    `<b>Giorni senza update:</b> ${escapeHtml(String(ageDays))}`,
     `<b>Cliente:</b> ${escapeHtml(customerName)}`,
     `<b>Email:</b> ${escapeHtml(customerEmail)}`
   ]
@@ -298,7 +296,6 @@ export default async function handler (
       fallbackTopicId
 
     const message = formatOrderMessage({
-      orderDocId: doc.id,
       order,
       lastUpdate: lastUpdateDate,
       now,
