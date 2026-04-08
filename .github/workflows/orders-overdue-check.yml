@@ -13,6 +13,6 @@ jobs:
       - name: Trigger orders overdue check
         run: |
           curl --fail -X POST \
-            -H "Authorization: Bearer ${{ secrets.ORDERS_OVERDUE_CRON_SECRET }}" \
+            -H "x-orders-overdue-cron-secret: ${{ secrets.ORDERS_OVERDUE_CRON_SECRET }}" \
             -H "Content-Type: application/json" \
             https://uuuk.it/api/orders-overdue-check
