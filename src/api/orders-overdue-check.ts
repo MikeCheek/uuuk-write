@@ -59,7 +59,12 @@ const normalizeOrderStatus = (
   const s = raw.trim().toLowerCase()
   if (s === 'consegnato' || s === 'delivered' || s === 'completed')
     return 'consegnato'
-  if (s === 'spedito' || s === 'shipped' || s === 'in_transit' || s === 'in transit')
+  if (
+    s === 'spedito' ||
+    s === 'shipped' ||
+    s === 'in_transit' ||
+    s === 'in transit'
+  )
     return 'spedito'
   if (s === 'failed' || s === 'pending' || s === 'expired') return 'skip'
   return 'other'
@@ -68,11 +73,6 @@ const normalizeOrderStatus = (
 // Only called after 'consegnato' and 'skip' statuses have been filtered out.
 const getCooldownMs = (normalizedStatus: 'spedito' | 'other'): number =>
   normalizedStatus === 'spedito' ? SEVEN_DAYS_MS : THREE_DAYS_MS
-
-const normalizeHeaderValue = (value: string | string[] | undefined): string => {
-  if (!value) return ''
-  return Array.isArray(value) ? value[0] || '' : value
-}
 
 const getDateFromIso = (value: unknown): Date | null => {
   if (typeof value !== 'string' || !value.trim()) return null
@@ -144,7 +144,9 @@ const formatOrderMessage = (params: {
   )
 
   const lines = [
-    `⏰ <b>Ordine senza aggiornamenti da oltre ${escapeHtml(String(params.cooldownDays))} giorni</b>`,
+    `⏰ <b>Ordine senza aggiornamenti da oltre ${escapeHtml(
+      String(params.cooldownDays)
+    )} giorni</b>`,
     `🔴 <b>⚠️ GIORNI SENZA UPDATE: ${escapeHtml(String(ageDays))} ⚠️</b>`,
     '',
     `<b>Order ID:</b> <a href="${escapeHtml(orderBackofficeUrl)}">${escapeHtml(
@@ -167,7 +169,9 @@ const formatOrderMessage = (params: {
   }
 
   lines.push('')
-  lines.push(`<b>Check eseguito:</b> ${escapeHtml(params.now.toLocaleString('it-IT'))}`)
+  lines.push(
+    `<b>Check eseguito:</b> ${escapeHtml(params.now.toLocaleString('it-IT'))}`
+  )
 
   return lines.join('\n')
 }
@@ -178,25 +182,6 @@ export default async function handler (
 ) {
   if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ error: 'Method Not Allowed' })
-  }
-
-  const cronSecret =
-    process.env.ORDERS_OVERDUE_CRON_SECRET || process.env.CRON_SECRET
-  if (cronSecret) {
-    const providedSecret =
-      normalizeHeaderValue(
-        req.headers['x-orders-overdue-cron-secret'] as
-          | string
-          | string[]
-          | undefined
-      ) ||
-      normalizeHeaderValue(
-        req.headers.authorization as string | string[] | undefined
-      ).replace(/^Bearer\s+/i, '')
-
-    if (!providedSecret || providedSecret !== cronSecret) {
-      return res.status(401).json({ error: 'Unauthorized' })
-    }
   }
 
   const botToken = process.env.TELEGRAM_BOT_TOKEN

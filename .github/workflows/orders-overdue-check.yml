@@ -2,7 +2,7 @@ name: Orders Overdue Check
 
 on:
   schedule:
-    - cron: '0 9 * * *'
+    - cron: "0 9 * * *"
   workflow_dispatch:
 
 jobs:
@@ -13,7 +13,5 @@ jobs:
       - name: Trigger orders overdue check
         run: |
           curl --fail -X POST \
-            -H "x-orders-overdue-cron-secret: ${{ secrets.ORDERS_OVERDUE_CRON_SECRET }}" \
-            -H "Authorization: Bearer ${{ secrets.ORDERS_OVERDUE_CRON_SECRET }}" \
             -H "Content-Type: application/json" \
-            https://uuuk.it/api/orders-overdue-check
+            https://uuuk.it/api/orders-overdue-check/
