@@ -32,11 +32,11 @@ const ADMIN_CHAT_COMMANDS: TelegramCommand[] = [
   ...DEFAULT_COMMANDS,
   {
     command: 'orders',
-    description: 'Recent orders summary: /orders [n]'
+    description: 'Recent orders summary: /orders [test] [all]'
   },
   {
     command: 'recent',
-    description: 'Alias for /orders [n]'
+    description: 'Alias for /orders [test] [all]'
   }
 ]
 

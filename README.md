@@ -72,7 +72,7 @@ For checkout, webhook processing, and transactional emails, configure these vari
 - TELEGRAM_SETUP_SECRET (optional, protects /api/telegram-set-commands)
 - GITHUB_WEBHOOK_SECRET
 - GITHUB_WEBHOOK_BRANCHES (optional, comma-separated, defaults to main,master)
-- ORDERS_OVERDUE_CRON_SECRET (optional but recommended; protects /api/orders-overdue-check)
+- ORDERS_OVERDUE_CRON_SECRET (legacy; no longer required by /api/orders-overdue-check)
 
 The webhook at src/api/stripe-webhook.ts sends a confirmation email after checkout.session.completed with order line items and invoice/receipt links (when available).
 The webhook at src/api/github-webhook.ts accepts GitHub push and pull_request events, then sends a Telegram message to topic 41 for pushes and merged PRs on tracked branches (defaults to main,master).
@@ -86,7 +86,7 @@ The endpoint at src/api/orders-overdue-check.ts checks live orders for stale upd
 It sends alerts to the order Telegram chat/topic (with env fallback TELEGRAM_CHAT_ID + TELEGRAM_TOPIC_ID, default topic 9).
 
 - /start or /help: greeting + command reference
-- /orders [n]: compact list of recent orders (only in TELEGRAM_CHAT_ID)
+- /orders [all]: paginated list of recent orders, defaulting to paid ones (only in TELEGRAM_CHAT_ID)
 - /order <id>: compact status for a specific order ID/session ID/document ID
 - /order <id> <chatId>: forwards an order update to another chat (admin chat only)
 - /status and /ping: health checks
@@ -113,7 +113,7 @@ curl -X POST "https://<your-domain>/api/telegram-set-commands" \
 Endpoint behavior:
 
 - Sets default commands for all chats: /start, /help, /order, /status, /ping
-- Sets admin chat scoped commands (TELEGRAM_CHAT_ID): adds /orders and /recent
+- Sets admin chat scoped commands (TELEGRAM_CHAT_ID): adds /orders and /recent with pagination
 
 ## Vercel cron for overdue orders
 
@@ -124,8 +124,7 @@ Configured in vercel.json:
 
 Authentication:
 
-- Preferred: CRON_SECRET (Vercel automatically sends Authorization: Bearer <CRON_SECRET>)
-- Backward compatible: ORDERS_OVERDUE_CRON_SECRET
+- None required; the endpoint is intended to be pinged directly by GitHub Actions or Vercel Cron
 
 ## Workflow diagram
 

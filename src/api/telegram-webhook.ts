@@ -49,12 +49,38 @@ type TelegramMessage = {
   }
 }
 
+type TelegramInlineKeyboardButton = {
+  text: string
+  callback_data: string
+}
+
+type TelegramInlineKeyboardMarkup = {
+  inline_keyboard: TelegramInlineKeyboardButton[][]
+}
+
+type TelegramCallbackQuery = {
+  id: string
+  from: {
+    id: number
+    is_bot?: boolean
+    first_name?: string
+    last_name?: string
+    username?: string
+    language_code?: string
+  }
+  message?: TelegramMessage
+  inline_message_id?: string
+  chat_instance: string
+  data?: string
+}
+
 type TelegramUpdate = {
   update_id?: number
   message?: TelegramMessage
   edited_message?: TelegramMessage
   channel_post?: TelegramMessage
   edited_channel_post?: TelegramMessage
+  callback_query?: TelegramCallbackQuery
 }
 
 type OrderResult = {
@@ -62,6 +88,17 @@ type OrderResult = {
   id: string
   data: Record<string, unknown>
 }
+
+type OrdersFilter = 'paid' | 'all'
+
+type OrdersListState = {
+  collection: typeof ORDER_COLLECTIONS[number]
+  filter: OrdersFilter
+  page: number
+}
+
+const ORDER_LIST_PAGE_SIZE = 5
+const ORDER_LIST_CALLBACK_PREFIX = 'orders:list'
 
 const escapeHtml = (value: string): string =>
   value
@@ -123,6 +160,7 @@ const sendTelegramMessage = async (params: {
   text: string
   parseMode?: 'HTML'
   messageThreadId?: number
+  replyMarkup?: TelegramInlineKeyboardMarkup
 }) => {
   const response = await fetch(
     `https://api.telegram.org/bot${params.botToken}/sendMessage`,
@@ -136,9 +174,65 @@ const sendTelegramMessage = async (params: {
         text: params.text,
         parse_mode: params.parseMode,
         disable_web_page_preview: true,
+        ...(params.replyMarkup ? { reply_markup: params.replyMarkup } : {}),
         ...(typeof params.messageThreadId === 'number'
           ? { message_thread_id: params.messageThreadId }
           : {})
+      })
+    }
+  )
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Telegram API error: ${errorText}`)
+  }
+}
+
+const editTelegramMessage = async (params: {
+  botToken: string
+  chatId: string | number
+  messageId: number
+  text: string
+  parseMode?: 'HTML'
+  replyMarkup?: TelegramInlineKeyboardMarkup
+}) => {
+  const response = await fetch(
+    `https://api.telegram.org/bot${params.botToken}/editMessageText`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chat_id: params.chatId,
+        message_id: params.messageId,
+        text: params.text,
+        parse_mode: params.parseMode,
+        disable_web_page_preview: true,
+        ...(params.replyMarkup ? { reply_markup: params.replyMarkup } : {})
+      })
+    }
+  )
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Telegram API error: ${errorText}`)
+  }
+}
+
+const answerTelegramCallback = async (
+  botToken: string,
+  callbackQueryId: string
+) => {
+  const response = await fetch(
+    `https://api.telegram.org/bot${botToken}/answerCallbackQuery`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        callback_query_id: callbackQueryId
       })
     }
   )
@@ -168,6 +262,62 @@ const isAllowedOrdersChat = (
   if (!allowedChatId) return false
   return String(chatId) === String(allowedChatId)
 }
+
+const parseOrdersListState = (
+  args: string[]
+): { collection: OrdersListState['collection']; filter: OrdersFilter } => {
+  const normalizedArgs = args.map(arg => arg.trim().toLowerCase())
+
+  return {
+    collection: normalizedArgs.includes('test') ? 'orders-test' : 'orders',
+    filter: normalizedArgs.includes('all') ? 'all' : 'paid'
+  }
+}
+
+const parseOrdersCallbackData = (
+  data: string | undefined
+): OrdersListState | null => {
+  if (!data || !data.startsWith(`${ORDER_LIST_CALLBACK_PREFIX}:`)) return null
+
+  const [, , collectionRaw, filterRaw, pageRaw] = data.split(':')
+  const collection = collectionRaw === 'orders-test' ? 'orders-test' : 'orders'
+  const filter: OrdersFilter = filterRaw === 'all' ? 'all' : 'paid'
+  const page = Number.parseInt(pageRaw || '1', 10)
+
+  return {
+    collection,
+    filter,
+    page: Number.isFinite(page) && page > 0 ? page : 1
+  }
+}
+
+const getOrderStatusValue = (order: OrderResult): string => {
+  return toStringSafe(
+    order.data.status ||
+      order.data.paymentStatus ||
+      order.data.payment_status ||
+      order.data.asyncPaymentStatus ||
+      order.data.orderStatus ||
+      order.data.order_status,
+    ''
+  )
+    .trim()
+    .toLowerCase()
+}
+
+const isPaidOrder = (order: OrderResult): boolean => {
+  const status = getOrderStatusValue(order)
+  return new Set(['paid', 'succeeded', 'succeed', 'success', 'completed']).has(
+    status
+  )
+}
+
+const getOrdersScopeLabel = (
+  collection: OrdersListState['collection']
+): string => (collection === 'orders-test' ? 'test' : 'live')
+
+const getOrdersFilterLabel = (filter: OrdersFilter): string =>
+  filter === 'all' ? 'tutti' : 'pagati'
 
 const parseCommand = (
   raw: string
@@ -233,7 +383,6 @@ const findOrderByLookup = async (
 }
 
 const getRecentOrders = async (
-  limitCount: number,
   collectionFilter?: typeof ORDER_COLLECTIONS[number]
 ): Promise<OrderResult[]> => {
   const result: OrderResult[] = []
@@ -244,7 +393,6 @@ const getRecentOrders = async (
     const snap = await db
       .collection(collection)
       .orderBy('createdAt', 'desc')
-      .limit(limitCount)
       .get()
 
     for (const doc of snap.docs) {
@@ -264,7 +412,7 @@ const getRecentOrders = async (
     return bDate - aDate
   })
 
-  return result.slice(0, limitCount)
+  return result
 }
 
 const buildHelpMessage = (isAdminChat: boolean): string => {
@@ -280,8 +428,10 @@ const buildHelpMessage = (isAdminChat: boolean): string => {
   ]
 
   if (isAdminChat) {
-    lines.push('• /orders - riepilogo compatto ultimi ordini live')
-    lines.push('• /orders test - riepilogo compatto ultimi ordini test')
+    lines.push('• /orders - ultimi ordini pagati live, paginati a 5')
+    lines.push('• /orders all - tutti gli ordini live, paginati a 5')
+    lines.push('• /orders test - ultimi ordini pagati test, paginati a 5')
+    lines.push('• /orders test all - tutti gli ordini test, paginati a 5')
     lines.push(
       '• /order &lt;id&gt; &lt;chatId&gt; - invia update ordine a un altro chatId'
     )
@@ -290,7 +440,12 @@ const buildHelpMessage = (isAdminChat: boolean): string => {
   lines.push('', 'Esempi:', '• /order xxxxxxxxxxxxxx')
 
   if (isAdminChat) {
-    lines.push('• /orders', '• /orders test')
+    lines.push(
+      '• /orders',
+      '• /orders all',
+      '• /orders test',
+      '• /orders test all'
+    )
   }
 
   return lines.join('\n')
@@ -463,14 +618,41 @@ const buildOrderMessage = (order: OrderResult): string => {
   ].join('\n')
 }
 
-const buildOrdersSummaryMessage = (orders: OrderResult[]): string => {
-  if (!orders.length) {
-    return 'Nessun ordine trovato.'
+const buildOrdersSummaryMessage = (params: {
+  orders: OrderResult[]
+  state: OrdersListState
+}): { text: string; replyMarkup?: TelegramInlineKeyboardMarkup } => {
+  const totalOrders = params.orders.length
+
+  if (!totalOrders) {
+    return {
+      text:
+        params.state.filter === 'paid'
+          ? 'Nessun ordine pagato trovato.'
+          : 'Nessun ordine trovato.'
+    }
   }
 
-  const statusCount = new Map<string, number>()
+  const totalPages = Math.max(1, Math.ceil(totalOrders / ORDER_LIST_PAGE_SIZE))
+  const currentPage = Math.min(Math.max(params.state.page, 1), totalPages)
+  const startIndex = (currentPage - 1) * ORDER_LIST_PAGE_SIZE
+  const pageOrders = params.orders.slice(
+    startIndex,
+    startIndex + ORDER_LIST_PAGE_SIZE
+  )
 
-  const lines = orders.map(order => {
+  const visiblePageStart = Math.max(
+    1,
+    Math.min(currentPage - 2, totalPages - 4)
+  )
+  const visiblePageEnd = Math.min(totalPages, visiblePageStart + 4)
+  const visiblePages = Array.from(
+    { length: visiblePageEnd - visiblePageStart + 1 },
+    (_, index) => visiblePageStart + index
+  )
+
+  const rows = pageOrders.map((order, index) => {
+    const absoluteIndex = startIndex + index + 1
     const status = toStringSafe(order.data.status, 'unknown')
     const createdAt = formatDateTime(
       order.data.createdAt || order.data.updatedAt
@@ -478,28 +660,153 @@ const buildOrdersSummaryMessage = (orders: OrderResult[]): string => {
     const amount = formatAmount(order.data.amount, order.data.currency)
     const link = buildBackofficeOrderLink(order)
     const statusEmoji = getStatusEmoji(status)
+    const paymentStatus = toStringSafe(
+      //@ts-ignore
+      order.data.shipping_details?.status ||
+        order.data.paymentStatus ||
+        order.data.payment_status,
+      'N/A'
+    )
+    const paymentEmoji = getPaymentEmoji(paymentStatus)
 
-    statusCount.set(status, (statusCount.get(status) || 0) + 1)
-
-    return `• <a href="${escapeHtml(
+    return `${absoluteIndex}. <a href="${escapeHtml(
       link
-    )}">Vedi ordine</a> | ${statusEmoji} ${escapeHtml(status)} | ${escapeHtml(
+    )}">Ordine</a> | ${statusEmoji} ${escapeHtml(
+      status
+    )} | ${paymentEmoji} ${escapeHtml(paymentStatus)} | ${escapeHtml(
       amount
     )} | ${escapeHtml(createdAt)}`
   })
 
-  const compactStatus = Array.from(statusCount.entries())
-    .map(([status, count]) => `${status}:${count}`)
-    .join('  ')
+  const keyboardRows: TelegramInlineKeyboardButton[][] = []
+  if (totalPages > 1) {
+    const navigationRow: TelegramInlineKeyboardButton[] = []
+    if (currentPage > 1) {
+      navigationRow.push({
+        text: '◀️ Prev',
+        callback_data: `${ORDER_LIST_CALLBACK_PREFIX}:${
+          params.state.collection
+        }:${params.state.filter}:${currentPage - 1}`
+      })
+    }
 
-  return [
-    `${pickOne(['🚀', '📊', '📦'])} <b>Ultimi ordini (${orders.length})</b>`,
-    compactStatus ? `<b>Status:</b> ${escapeHtml(compactStatus)}` : '',
-    '',
-    ...lines
-  ]
-    .filter(Boolean)
-    .join('\n')
+    navigationRow.push({
+      text: `${currentPage}/${totalPages}`,
+      callback_data: `${ORDER_LIST_CALLBACK_PREFIX}:${params.state.collection}:${params.state.filter}:${currentPage}`
+    })
+
+    if (currentPage < totalPages) {
+      navigationRow.push({
+        text: 'Next ▶️',
+        callback_data: `${ORDER_LIST_CALLBACK_PREFIX}:${
+          params.state.collection
+        }:${params.state.filter}:${currentPage + 1}`
+      })
+    }
+
+    keyboardRows.push(navigationRow)
+
+    if (visiblePages.length > 1) {
+      keyboardRows.push(
+        visiblePages.map(page => ({
+          text: page === currentPage ? `• ${page} •` : String(page),
+          callback_data: `${ORDER_LIST_CALLBACK_PREFIX}:${params.state.collection}:${params.state.filter}:${page}`
+        }))
+      )
+    }
+  }
+
+  return {
+    text: [
+      `${pickOne(['🚀', '📊', '📦'])} <b>Ordini ${getOrdersScopeLabel(
+        params.state.collection
+      )}</b>`,
+      `<b>Filtro:</b> ${escapeHtml(getOrdersFilterLabel(params.state.filter))}`,
+      `<b>Totale:</b> ${totalOrders} | <b>Pagina:</b> ${currentPage}/${totalPages}`,
+      '',
+      ...rows
+    ].join('\n'),
+    ...(keyboardRows.length
+      ? {
+          replyMarkup: {
+            inline_keyboard: keyboardRows
+          }
+        }
+      : {})
+  }
+}
+
+const sendOrdersSummary = async (params: {
+  botToken: string
+  chatId: string | number
+  messageThreadId?: number
+  state: OrdersListState
+  editMessageId?: number
+}) => {
+  const orders = await getRecentOrders(params.state.collection)
+  const filteredOrders =
+    params.state.filter === 'paid' ? orders.filter(isPaidOrder) : orders
+  const summary = buildOrdersSummaryMessage({
+    orders: filteredOrders,
+    state: params.state
+  })
+
+  if (typeof params.editMessageId === 'number') {
+    await editTelegramMessage({
+      botToken: params.botToken,
+      chatId: params.chatId,
+      messageId: params.editMessageId,
+      text: summary.text,
+      parseMode: 'HTML',
+      replyMarkup: summary.replyMarkup
+    })
+
+    return { count: filteredOrders.length, summary }
+  }
+
+  await sendTelegramMessage({
+    botToken: params.botToken,
+    chatId: params.chatId,
+    text: summary.text,
+    parseMode: 'HTML',
+    messageThreadId: params.messageThreadId,
+    replyMarkup: summary.replyMarkup
+  })
+
+  return { count: filteredOrders.length, summary }
+}
+
+const handleOrdersListCommand = async (params: {
+  botToken: string
+  chatId: string | number
+  messageThreadId?: number
+  isAdminChat: boolean
+  args: string[]
+}) => {
+  if (!params.isAdminChat) {
+    await sendTelegramMessage({
+      botToken: params.botToken,
+      chatId: params.chatId,
+      text: 'Comando non autorizzato in questa chat.',
+      messageThreadId: params.messageThreadId
+    })
+
+    return { ok: true, blocked: true }
+  }
+
+  const state = {
+    ...parseOrdersListState(params.args),
+    page: 1
+  }
+
+  const result = await sendOrdersSummary({
+    botToken: params.botToken,
+    chatId: params.chatId,
+    messageThreadId: params.messageThreadId,
+    state
+  })
+
+  return { ok: true, count: result.count }
 }
 
 export default async function handler(
@@ -531,6 +838,37 @@ export default async function handler(
 
   try {
     const update = (req.body || {}) as TelegramUpdate
+
+    if (update.callback_query) {
+      const callbackQuery = update.callback_query
+      const callbackState = parseOrdersCallbackData(callbackQuery.data)
+
+      if (callbackState && callbackQuery.message) {
+        const allowedChatId = process.env.TELEGRAM_CHAT_ID
+        const isAdminChat = isAllowedOrdersChat(
+          callbackQuery.message.chat.id,
+          allowedChatId
+        )
+
+        if (isAdminChat) {
+          await answerTelegramCallback(botToken, callbackQuery.id)
+
+          await sendOrdersSummary({
+            botToken,
+            chatId: callbackQuery.message.chat.id,
+            messageThreadId: callbackQuery.message.message_thread_id,
+            state: callbackState,
+            editMessageId: callbackQuery.message.message_id
+          })
+
+          return res.status(200).json({ ok: true, updated: true })
+        }
+
+        await answerTelegramCallback(botToken, callbackQuery.id)
+        return res.status(200).json({ ok: true, ignored: 'unauthorized_chat' })
+      }
+    }
+
     const message = pickIncomingMessage(update)
 
     // Telegram expects a fast 200 for updates that don't carry text messages.
@@ -597,38 +935,17 @@ export default async function handler(
         return res.status(200).json({ ok: true })
       }
 
-      if (!isAdminChat) {
-        await sendTelegramMessage({
-          botToken,
-          chatId: message.chat.id,
-          text: 'Comando non autorizzato in questa chat.',
-          messageThreadId: threadId
-        })
-        return res.status(200).json({ ok: true })
-      }
-
-      const isTest = parsed.args[0]?.toLowerCase() === 'test'
-      const limitArg = isTest ? parsed.args[1] : parsed.args[0]
-      const requested = Number.parseInt(limitArg || '10', 10)
-      const limit = Number.isFinite(requested)
-        ? Math.min(Math.max(requested, 1), 30)
-        : 10
-      const targetCollection = isTest ? 'orders-test' : 'orders'
-
-      const orders = await getRecentOrders(limit, targetCollection)
-      const summary = buildOrdersSummaryMessage(orders)
-
-      await sendTelegramMessage({
+      const result = await handleOrdersListCommand({
         botToken,
         chatId: message.chat.id,
-        text: summary,
-        parseMode: 'HTML',
-        messageThreadId: threadId
+        messageThreadId: threadId,
+        isAdminChat,
+        args: parsed.args
       })
 
       return res
         .status(200)
-        .json({ ok: true, command: '/orders', count: orders.length })
+        .json({ ok: true, command: '/orders', count: result.count ?? 0 })
     }
 
     if (parsed.command === '/order') {
