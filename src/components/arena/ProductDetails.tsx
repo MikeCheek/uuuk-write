@@ -150,7 +150,7 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
             <div className="leading-relaxed text-[#b6c8f2]">
               <p>
                 Agenda stampata 3D in formato {preset.format} della collezione {preset.frontCover.collection}.
-                Include template personalizzati e {preset.modules.length} sezioni interne.
+                Include template personalizzati e 2/3 blocchi interni.
                 Perfetta per l'organizzazione quotidiana e per un regalo davvero unico.
               </p>
             </div>
