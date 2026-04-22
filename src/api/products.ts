@@ -1,9 +1,11 @@
 import { GatsbyFunctionRequest, GatsbyFunctionResponse } from 'gatsby'
-import { getProducts } from '../utilities/stripeHelper'
+import { getProducts, StripeProduct } from '../utilities/stripeHelper'
 
 export default async function handler (
   req: GatsbyFunctionRequest,
-  res: GatsbyFunctionResponse<{ clientSecret: string } | { message: string }>
+  res: GatsbyFunctionResponse<
+    { clientSecret: string } | { message: string } | StripeProduct[]
+  >
 ) {
   if (req.method === `GET`) {
     try {
