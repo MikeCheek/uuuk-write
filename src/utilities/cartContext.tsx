@@ -60,9 +60,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           item.id === product.id ? { ...item, quantity: (item.quantity || 0) + 1 } : item
         );
       }
-      showSnackbar(`${product.name ?? 'Prodotto'} aggiunto al carrello!`, 'success');
       return [...prev, { ...product, id: safeItemId, quantity: 1, cartId }];
     });
+
+    // Call snackbar after scheduling the cart update to avoid render-phase updates
+    showSnackbar(`${product.name ?? 'Prodotto'} aggiunto al carrello!`, 'success');
   };
 
   // Helper: Remove Item

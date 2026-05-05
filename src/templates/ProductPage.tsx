@@ -155,43 +155,21 @@ const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) =>
                 <div>
                   <button
                     onClick={() => addToCart({
-                      id: Date.now(),
-                      name: sparePart?.nome || stripeData?.name || 'Ricambio UUUK',
-                      price: stripeData?.default_price?.unit_amount ? Number(stripeData.default_price.unit_amount) / 100 : 0,
-                      priceId: stripeData?.default_price?.id,
+                      ...sparePart,
                       productId: stripeData?.id,
+                      priceId: stripeData?.default_price?.id,
+                      price: stripeData?.default_price?.unit_amount ? Number(stripeData.default_price.unit_amount) / 100 : 0,
                       image: stripeData?.images?.[0],
+                      name: sparePart?.nome || stripeData?.name,
+                      id: sparePart?.id || stripeData?.id,
                       productType: 'spare',
-                      sparePart: sparePart ? {
-                        id: sparePart.id,
-                        nome: sparePart.nome,
-                        description: sparePart.description,
-                        ...(hasPersonalization && {
-                          personalization: {
-                            color: selectedColor,
-                            text: customText || sparePart.personalization?.text || 'Testo'
-                          }
-                        })
-                      } : undefined,
-                      currentStep: 0,
-                      format: 'A5',
-                      modules: [],
-                      frontCover: {
-                        color: { name: 'Nero', color: '#000000' },
-                        collection: 'Custom',
-                        template: undefined,
-                        text: '',
-                        fontSize: 'Medio',
-                        position: 'Sopra',
-                        textColor: { name: 'Bianco', color: '#ffffff' }
-                      },
-                      backCover: {
-                        color: { name: 'Nero', color: '#000000' },
-                        text: '',
-                        fontSize: 'Medio',
-                        position: 'Sopra',
-                        textColor: { name: 'Bianco', color: '#ffffff' }
-                      }
+                      ...(hasPersonalization && {
+                        personalization: {
+                          color: selectedColor,
+                          text: customText || sparePart.personalization?.text || 'Testo'
+                        }
+                      }),
+                      sparePart
                     } as any)}
                     className="uuuk-btn-primary inline-flex items-center justify-center px-5 py-3 text-sm"
                   >
