@@ -45,10 +45,25 @@ module.exports = {
             opacity: '0',
           },
         },
+        sparkFly: {
+          '0%': { transform: 'translate(0,0) scale(1)', opacity: '0.9' },
+          '60%': { opacity: '0.7' },
+          '100%': { transform: 'translate(var(--tx), var(--ty)) scale(0.1)', opacity: '0' },
+        },
+        flameFly: {
+          '0%': { transform: 'translate(0,0) scale(1) rotate(var(--rot))', opacity: '0.85' },
+          '40%': { opacity: '0.9' },
+          '100%': {
+            transform: 'translate(var(--tx), var(--ty)) scale(0) rotate(calc(var(--rot) + 20deg))',
+            opacity: '0',
+          },
+        },
       },
       animation: {
         fadeIn: 'fadeIn 1s ease-out forwards',
         expandCircle: 'expandCircle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        sparkFly: 'sparkFly var(--dur) ease-out var(--delay) infinite',
+        flameFly: 'flameFly var(--dur) ease-out var(--delay) infinite',
       },
     },
   },

@@ -90,6 +90,12 @@ export interface Metadata extends RawMetadata {
   productId?: string
   price?: number
   image?: IGatsbyImageData | string
+  productType?: 'agenda' | 'spare'
+  sparePart?: {
+    id: string
+    nome: string
+    description: string
+  }
 }
 
 export interface CartItem extends Metadata {
@@ -137,7 +143,7 @@ export const imageAssets: Record<
   }
 }
 
-export const HOT_PICKS = ['Flusso A5', '(◣ _ ◢) A6']
+export const HOTPICKS = ['Flusso A5', '(◣ _ ◢) A6']
 
 export const collections: Collection[] = imageAssets
   ? (Object.keys(imageAssets).reverse() as Collection[])
@@ -162,7 +168,7 @@ export const steps = [
 
 ////// TEMPLATES //////
 
-const getColor = (name: string): ColorOption =>
+export const getColor = (name: string): ColorOption =>
   colors.find(c => c.name === name)!
 
 const common = {

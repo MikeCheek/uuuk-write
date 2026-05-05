@@ -5,6 +5,7 @@ import { useCart } from '../../utilities/cartContext';
 import Checkout from './Checkout';
 import ProductCustomizationDetails from './ProductCustomizationDetails';
 import { GatsbyImage } from 'gatsby-plugin-image';
+import NoImagePlaceholder from '../atoms/NoImagePlaceholder';
 
 const CartCheckout = () => {
   const { cart, removeFromCart, subtotalPrice } = useCart();
@@ -71,12 +72,14 @@ const CartCheckout = () => {
                           alt={item.name ?? 'Agenda Personalizzata'}
                           className="w-full h-full object-contain"
                         />
-                      ) : (
+                      ) : item.image ? (
                         <img
-                          src={item.image || '/placeholder-agenda.png'}
+                          src={item.image}
                           alt={item.name ?? 'Agenda Personalizzata'}
                           className="w-full h-full object-contain"
                         />
+                      ) : (
+                        <NoImagePlaceholder size="md" />
                       )}
                     </div>
 
@@ -85,13 +88,13 @@ const CartCheckout = () => {
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="text-lg font-bold uppercase tracking-tight text-[#f6f8ff]">
-                            {item.name || `${item.format} - ${item.frontCover.collection} - ${item.frontCover.template ?? 'Custom'}`}
+                            {item.name || (item.productType === 'spare' ? 'Ricambio UUUK' : `${item.format} - ${item.frontCover.collection} - ${item.frontCover.template ?? 'Custom'}`)}
                           </h3>
 
                           <div className="mt-3 grid grid-cols-3 gap-6 text-sm">
                             <div>
                               <p className="text-[10px] font-bold uppercase text-[#8ea2d0]">Formato</p>
-                              <p className="text-gray-100">{item.format}</p>
+                              <p className="text-gray-100">{item.productType === 'spare' ? 'Ricambio' : item.format}</p>
                             </div>
                             <div>
                               <p className="text-[10px] font-bold uppercase text-[#8ea2d0]">Prezzo</p>
@@ -108,6 +111,8 @@ const CartCheckout = () => {
                               frontCover={item.frontCover}
                               backCover={item.backCover}
                               modules={item.modules}
+                              productType={item.productType}
+                              sparePart={item.sparePart}
                               cartId={item.cartId}
                               size="md"
                             />

@@ -4,6 +4,7 @@ import { useCart } from '../../utilities/cartContext';
 import { Link } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import ProductCustomizationDetails from './ProductCustomizationDetails';
+import NoImagePlaceholder from '../atoms/NoImagePlaceholder';
 
 const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
   { isSidebarOpen: boolean, setIsSidebarOpen: (open: boolean) => void }
@@ -48,12 +49,14 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
                         alt={item.name || 'Agenda Personalizzata'}
                         className="w-full h-full object-cover"
                       />
-                    ) : (
+                    ) : item.image ? (
                       <img
-                        src={item.image || '/placeholder-agenda.png'}
+                        src={item.image}
                         alt={item.name || 'Agenda Personalizzata'}
                         className="w-full h-full object-cover"
                       />
+                    ) : (
+                      <NoImagePlaceholder size="sm" />
                     )}
                   </div>
 
@@ -66,7 +69,15 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
                     </div>
 
                     <p className="mt-1 text-[10px] font-bold uppercase text-gray-500">
-                      Formato: <span className="font-normal text-gray-300">{item.format}</span>
+                      {item.productType === 'spare' ? (
+                        <>
+                          Tipo: <span className="font-normal text-gray-300">Ricambio</span>
+                        </>
+                      ) : (
+                        <>
+                          Formato: <span className="font-normal text-gray-300">{item.format}</span>
+                        </>
+                      )}
                     </p>
 
                     <div className="flex justify-between items-end mt-2 gap-12">
@@ -80,13 +91,15 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
 
                     <details className="mt-2 rounded-md border border-white/10 bg-[#0b1531]/70 p-1.5 text-[10px] text-[#cddcff]">
                       <summary className="cursor-pointer select-none text-[9px] font-bold uppercase tracking-wide text-[#8ea2d0]">
-                        Dettagli personalizzazione
+                        {item.productType === 'spare' ? 'Dettagli ricambio' : 'Dettagli personalizzazione'}
                       </summary>
                       <div className="mt-1.5">
                         <ProductCustomizationDetails
                           frontCover={item.frontCover}
                           backCover={item.backCover}
                           modules={item.modules}
+                          productType={item.productType}
+                          sparePart={item.sparePart}
                           cartId={item.cartId}
                           size="sm"
                         />
