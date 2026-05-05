@@ -20,13 +20,13 @@ export const createPages = async ({ actions }: any) => {
   const spareMap = new Map<string, typeof spareParts[number]>()
   spareParts.forEach(p => spareMap.set(slugify(p.nome ?? p.id), p))
   // Identify universal spare parts (names without separators like " - ")
-  const universalSpareParts = spareParts.filter(p => !(p.nome || '').includes(' - '))
+  const universalSpareParts = spareParts.filter(
+    p => !(p.nome || '').includes(' - ')
+  )
 
   // 3. Process Stripe products, merge spare-part info when names match, and create pages
   const usedSlugs = new Set<string>()
   const galleryProducts: any[] = []
-
-  console.log('Stripe products fetched:', allStripeProducts)
 
   allStripeProducts.forEach((stripeProduct: StripeProduct) => {
     if (!stripeProduct.active) {
@@ -57,7 +57,10 @@ export const createPages = async ({ actions }: any) => {
     universalSpareParts.forEach(up => {
       const upName = (up.nome || '').toLowerCase()
       const upSlug = slugify(up.nome ?? up.id).toLowerCase()
-      if (lowerProductName.includes(upName) || finalSlug.toLowerCase().includes(upSlug)) {
+      if (
+        lowerProductName.includes(upName) ||
+        finalSlug.toLowerCase().includes(upSlug)
+      ) {
         if (!matchedSpareParts.includes(up)) matchedSpareParts.push(up)
       }
     })
