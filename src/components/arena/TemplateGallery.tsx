@@ -105,8 +105,8 @@ const TemplateItem = ({
 }
 
 interface TemplateGalleryProps {
-  // Products passed from Gatsby Page Context
-  serverProducts?: StripeProduct[]
+  // Products passed from Gatsby Page Context (can be merged entries)
+  serverProducts?: any[]
 }
 
 const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
@@ -120,7 +120,22 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
   const getProductData = (preset: Metadata) => {
     if (!serverProducts || !serverProducts.length) return null;
     const searchName = `${preset.format} - ${preset.frontCover.collection} - ${preset.frontCover.template}`;
-    return serverProducts.find(p => p.name.trim().toLowerCase() === searchName.trim().toLowerCase()) || null;
+
+    const foundEntry = serverProducts.find((entry: any) => {
+      const candidate =
+        (entry && typeof entry.name === 'string' && entry.name) ||
+        (entry && entry.stripeProduct && typeof entry.stripeProduct.name === 'string' && entry.stripeProduct.name) ||
+        (entry && entry.stripeData && typeof entry.stripeData.name === 'string' && entry.stripeData.name) ||
+        null
+
+      if (!candidate) return false
+      return candidate.trim().toLowerCase() === searchName.trim().toLowerCase()
+    }) || null
+
+    if (!foundEntry) return null
+
+    // if the gallery entry wraps the Stripe product, return the inner stripeProduct, otherwise return the entry itself
+    return (foundEntry.stripeProduct ?? foundEntry) as StripeProduct | null
   };
 
   const rawData = useStaticQuery(graphql`

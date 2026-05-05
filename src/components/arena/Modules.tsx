@@ -1,7 +1,8 @@
 import React from 'react'
-import { ColorOption, MAX_MODULES, Module } from '../../utilities/arenaSettings'
+import { AgendaFormat, ColorOption, MAX_MODULES, Module } from '../../utilities/arenaSettings'
 import ColorButton from './ColorButton';
 import InputText from './InputText';
+import TextButton from './TextButton';
 
 const Modules = (
   {
@@ -11,7 +12,8 @@ const Modules = (
     addModule,
     removeModule,
     updateModule,
-    colors
+    colors,
+    format
   }: {
     modules: Module[];
     setActiveModuleIndex: (index: number) => void;
@@ -20,14 +22,16 @@ const Modules = (
     removeModule: (index: number) => void;
     updateModule: (index: number, updatedFields: Partial<Module>) => void;
     colors: ColorOption[];
+    format: AgendaFormat;
   }
 ) => {
   const activeModule = modules[activeModuleIndex];
 
   const checkModuleLimit = () => {
-    if (modules.length >= MAX_MODULES
+    const maxModules = format.toUpperCase() === 'A7' ? 2 : MAX_MODULES;
+    if (modules.length >= maxModules
       ||
-      (modules.filter(m => m.isDouble).length > 0 && modules.length >= MAX_MODULES - 1)) {
+      (modules.filter(m => m.isDouble).length > 0 && modules.length >= maxModules - 1)) {
       return true;
     }
     return false;
@@ -35,23 +39,22 @@ const Modules = (
 
   const checkDoublePresence = () => modules.filter(m => m.isDouble).length > 0
 
-  const checkDoubleAvailability = () =>
-    !checkDoublePresence() && modules.length < MAX_MODULES
-
-
+  const checkDoubleAvailability = () => {
+    const isA7 = format.toUpperCase() === 'A7';
+    return !isA7 && !checkDoublePresence() && modules.length < MAX_MODULES;
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 flex-wrap border-b pb-4 mb-4">
         <span className="text-gray-300 font-medium">Sidebars:</span>
         {modules.map((mod, index) => (
-          <button
+          <TextButton
             key={mod.id}
+            text={`${mod.sidebarText} ${mod.isDouble ? '(2x)' : ''}`}
             onClick={() => setActiveModuleIndex(index)}
-            className={`px-3 py-1 rounded-md text-sm border ${activeModuleIndex === index ? 'bg-blue text-white border-blue font-semibold' : 'bg-gray-100 text-black border-gray-300 hover:bg-gray-200'}`}
-          >
-            {mod.sidebarText} {mod.isDouble && '(2x)'}
-          </button>
+            active={activeModuleIndex === index}
+          />
         ))}
         <button
           onClick={addModule}
@@ -62,22 +65,24 @@ const Modules = (
         </button>
       </div>
 
-      <h3 className="text-lg font-semibold text-white">Personalizza Sidebar {activeModuleIndex + 1}</h3>
+      <h3 className="text-lg font-semibold text-white">{activeModule.sidebarText} {activeModule.isDouble ? '(2x)' : ''}</h3>
 
       <div className="grid gap-6">
         <div className="space-y-4">
-          <div>
-            <label className="flex items-center gap-2 text-gray-300 mb-3">
-              <input
-                type="checkbox"
-                checked={activeModule.isDouble || false}
-                onChange={(e) => updateModule(activeModuleIndex, { isDouble: e.target.checked })}
-                disabled={!checkDoubleAvailability() && !activeModule.isDouble}
-                className="w-4 h-4"
-              />
-              <span className="text-sm">Doppia (occupa 2 slot)</span>
-            </label>
-          </div>
+          {format.toUpperCase() !== 'A7' && (
+            <div>
+              <label className="flex items-center gap-2 text-gray-300 mb-3">
+                <input
+                  type="checkbox"
+                  checked={activeModule.isDouble || false}
+                  onChange={(e) => updateModule(activeModuleIndex, { isDouble: e.target.checked })}
+                  disabled={!checkDoubleAvailability() && !activeModule.isDouble}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm">Doppia (occupa 2 slot)</span>
+              </label>
+            </div>
+          )}
           <div>
             <p className="text-gray-300 mb-2 text-sm">Colore:</p>
             <div className="flex flex-wrap gap-2">
