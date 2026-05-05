@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { PageProps, Link, HeadProps } from 'gatsby'
-import { Metadata } from '../utilities/arenaSettings'
+import { Metadata, ColorOption, colors } from '../utilities/arenaSettings'
 import { getCoverTemplateImagePath } from '../utilities/arenaHelpers'
 import { StripeProduct } from '../utilities/stripeHelper'
 import Seo from '../components/atoms/Seo'
@@ -16,21 +16,36 @@ interface PageContextType {
   slug: string
 }
 
+interface SparePartItem {
+  id: string
+  nome: string
+  description: string
+  personalization?: {
+    color: ColorOption
+    text: string
+  }
+}
+
 interface PageContext {
   presetName: string | null
   preset: Metadata | null
   stripeData: StripeProduct
-  spareParts?: Array<{ id: string; nome: string; description: string }>
+  spareParts?: SparePartItem[]
 }
 
 const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) => {
   const { preset, stripeData, spareParts } = pageContext
   const { addToCart } = useCart()
   const isSpare = !preset
+  const sparePart = spareParts?.[0]
+  const hasPersonalization = sparePart?.personalization
+
+  // State for personalization
+  const [selectedColor, setSelectedColor] = useState<ColorOption>(sparePart?.personalization?.color || colors[1]) // Default to white
+  const [customText, setCustomText] = useState(sparePart?.personalization?.text || '')
 
   if (isSpare) {
     // Render simplified view for spare parts
-    const sparePart = spareParts?.[0]
     return (
       <Layout showCustomCursor={false} shoppingCart>
         <div className="min-h-screen bg-[#070d1e] bg-[radial-gradient(circle_at_top,_#132a52_0%,_#070d1e_60%)] p-4 md:p-12">
@@ -67,6 +82,76 @@ const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) =>
                     }).format((stripeData?.default_price?.unit_amount || 0) / 100)}
                   </span>
                 </div>
+
+                {/* Personalization Section */}
+                {hasPersonalization && (
+                  <div className="space-y-4 rounded-xl border border-white/10 bg-[#0b1531]/50 p-4">
+                    <h3 className="text-sm font-bold uppercase tracking-tight text-[#8ea2d0]">Personalizzazione Sidebar</h3>
+
+                    {/* Color Selection */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold uppercase tracking-wide text-[#9ad0ff]">Colore Sidebar</label>
+                      <div className="flex flex-wrap gap-2">
+                        {colors.map((color) => (
+                          <button
+                            key={color.name}
+                            onClick={() => setSelectedColor(color)}
+                            className={`relative h-16 w-16 rounded-lg border-2 transition-all flex items-center justify-center text-xs font-bold text-white ${selectedColor.name === color.name
+                              ? 'border-[#f97316] shadow-lg shadow-[#f97316]/50'
+                              : 'border-white/20 hover:border-white/40'
+                              }`}
+                            style={{ backgroundColor: color.color }}
+                            title={color.name}
+                          >
+                            {selectedColor.name === color.name && (
+                              <div className="absolute inset-0 flex items-center justify-center rounded-lg">
+                                <div className="text-white font-bold">✓</div>
+                              </div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Text Input */}
+                    <div className="space-y-2">
+                      <label htmlFor="spare-text" className="text-xs font-bold uppercase tracking-wide text-[#9ad0ff]">
+                        Testo Sidebar
+                      </label>
+                      <input
+                        id="spare-text"
+                        type="text"
+                        value={customText}
+                        onChange={(e) => setCustomText(e.target.value.slice(0, 15))} // Max 15 chars
+                        placeholder={sparePart?.personalization?.text || 'Inserisci testo'}
+                        className="uuuk-input w-full rounded-lg bg-[#0a1022] px-3 py-2 text-sm placeholder-gray-500"
+                      />
+                      <p className="text-[10px] text-gray-400">{customText.length}/15</p>
+                    </div>
+
+                    {/* Sidebar Preview */}
+                    <div className="mt-3 p-3 rounded-lg border border-white/10">
+                      <p className="text-[10px] font-bold uppercase text-gray-400 mb-2">Anteprima Sidebar</p>
+                      <div className="relative">
+                        <div className="absolute top-0 left-0 w-20 md:w-24 h-full rounded-l-lg bg-black">
+                          <div className="absolute h-6 top-1/2 -translate-y-1/2 rounded-sm" style={{ backgroundColor: selectedColor.color, width: '8px', left: '6px' }} />
+                        </div>
+
+                        <div
+                          className={`rounded-lg px-3 py-2 text-center text-sm font-bold tracking-wide ${selectedColor.color.substring(1, 3) === 'ff' ? 'text-black' : 'text-white'}`}
+                          style={{ backgroundColor: selectedColor.color }}
+                        >
+                          {customText || sparePart?.personalization?.text || 'Testo'}
+                        </div>
+
+                        <div className="absolute bottom-0 right-0 w-20 md:w-24 h-full rounded-r-lg bg-black">
+                          <div className="absolute h-6 top-1/2 -translate-y-1/2 rounded-sm" style={{ backgroundColor: selectedColor.color, width: '8px', right: '6px' }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div>
                   <button
                     onClick={() => addToCart({
@@ -77,7 +162,17 @@ const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) =>
                       productId: stripeData?.id,
                       image: stripeData?.images?.[0],
                       productType: 'spare',
-                      sparePart,
+                      sparePart: sparePart ? {
+                        id: sparePart.id,
+                        nome: sparePart.nome,
+                        description: sparePart.description,
+                        ...(hasPersonalization && {
+                          personalization: {
+                            color: selectedColor,
+                            text: customText || sparePart.personalization?.text || 'Testo'
+                          }
+                        })
+                      } : undefined,
                       currentStep: 0,
                       format: 'A5',
                       modules: [],
@@ -124,7 +219,7 @@ type HeadPageContext = {
   presetName: string
   preset: Metadata | null
   stripeData: StripeProduct | null
-  spareParts?: Array<{ id: string; nome: string; description: string }>
+  spareParts?: SparePartItem[]
 }
 
 export const Head = ({ location, pageContext }: HeadProps<null, HeadPageContext>) => {

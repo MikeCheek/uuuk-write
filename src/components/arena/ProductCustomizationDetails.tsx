@@ -29,6 +29,10 @@ interface ProductCustomizationDetailsProps {
     id: string;
     nome: string;
     description: string;
+    personalization?: {
+      color: ColorOption;
+      text: string;
+    };
   };
   cartId: string | number;
   size?: 'sm' | 'md';
@@ -66,8 +70,21 @@ const ProductCustomizationDetails = ({
           <p className={`mb-1 ${titleClasses}`}>Ricambio</p>
           <div className={`flex flex-wrap ${chipContainerClasses}`}>
             <Chip label={sparePart?.nome || 'Ricambio UUUK'} size={size} />
-            {/* <Chip label="Compatibile con tutto" size={size} /> */}
             <Chip label={sparePart?.description || 'Ricambio universale'} size={size} />
+            {sparePart?.personalization && (
+              <>
+                <Chip
+                  label={`Colore: ${sparePart.personalization.color.name}`}
+                  size={size}
+                />
+                {sparePart.personalization.text && (
+                  <Chip
+                    label={`Testo: ${sparePart.personalization.text}`}
+                    size={size}
+                  />
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>
