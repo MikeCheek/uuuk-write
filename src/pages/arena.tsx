@@ -154,7 +154,8 @@ const Arena = () => {
 
   // Module Handlers
   const addModule = () => {
-    if (modules.length < MAX_MODULES && !(modules.filter(m => m.isDouble).length > 0 && modules.length >= MAX_MODULES - 1)) {
+    const maxModules = format.toUpperCase() === 'A7' ? 2 : MAX_MODULES;
+    if (modules.length < maxModules && !(modules.filter(m => m.isDouble).length > 0 && modules.length >= maxModules - 1)) {
       const newModule: Module = {
         id: Date.now().toString(),
         sidebarColor: colors[Math.floor(Math.random() * (colors.length - 1))],
@@ -289,6 +290,7 @@ const Arena = () => {
                   removeModule={removeModule}
                   updateModule={updateModule}
                   colors={colors}
+                  format={format}
                 />
               ) : customSteps[currentStep] === 'Copertina Posteriore' ? (
                 <BackCover

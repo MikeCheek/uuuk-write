@@ -15,7 +15,7 @@ const TextButton = (
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1 rounded-lg border-2 transition-all text-sm ${active ? 'border-blue bg-blue text-indigo-100 font-semibold' : 'border-gray-300 bg-gray-100 text-blue hover:border-indigo-300'}`}
+      className={`px-3 py-1 rounded-md text-sm border transition-all shadow-sm shadow-gray-600 ${active ? 'bg-gray-200 text-blue border-none font-semibold' : 'text-white border-none bg-transparent hover:bg-gray-200/10'}`}
     >
       {text}
     </button>

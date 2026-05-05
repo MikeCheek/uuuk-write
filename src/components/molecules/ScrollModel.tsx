@@ -77,7 +77,7 @@ const ScrollModel = ({ children }: { children: React.ReactNode }) => {
           mesh.current!.rotation,
           {
             duration,
-            ...(isMobile && step.mobile.rotation ? step.mobile.rotation : step.rotation),
+            ...(isMobile && (step as any).mobile && (step as any).mobile.rotation ? (step as any).mobile.rotation : step.rotation),
           },
           startTime
         )

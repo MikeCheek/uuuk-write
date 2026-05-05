@@ -130,12 +130,14 @@ export const imageAssets: Record<
       Punto: '/images/collezioni/TRIADIC/Punto.png'
     },
     A7: {
-      Flusso: '/images/collezioni/TRIADIC/Flusso.png',
-      Occhio: '/images/collezioni/TRIADIC/Occhio.png',
-      Punto: '/images/collezioni/TRIADIC/Punto.png'
+      Flusso: '/images/collezioni/TRIADIC/Flusso A7.png',
+      Occhio: '/images/collezioni/TRIADIC/Occhio A7.jpg',
+      Punto: '/images/collezioni/TRIADIC/Punto A7.png'
     }
   }
 }
+
+export const HOT_PICKS = ['Flusso A5', '(◣ _ ◢) A6']
 
 export const collections: Collection[] = imageAssets
   ? (Object.keys(imageAssets).reverse() as Collection[])
@@ -182,6 +184,19 @@ const modules: Module[] = [
   }
 ]
 
+const modulesA7: Module[] = [
+  {
+    id: 'mod1',
+    sidebarColor: getColor('Bianco'),
+    sidebarText: 'Idee'
+  },
+  {
+    id: 'mod2',
+    sidebarColor: getColor('Bianco'),
+    sidebarText: 'Progetti'
+  }
+]
+
 const noText = {
   text: '' as const,
   fontSize: 'Medio' as FontSize,
@@ -200,7 +215,7 @@ const triadic = (
     template: template,
     ...noText
   },
-  modules: modules,
+  modules: format.toUpperCase() === 'A7' ? modulesA7 : modules,
   backCover: {
     color: getColor('Bianco'),
     ...noText
@@ -225,7 +240,7 @@ const mood = (
     ...noText,
     textColor: frontTextColor
   },
-  modules: modules,
+  modules: format.toUpperCase() === 'A7' ? modulesA7 : modules,
   backCover: {
     color: backColor ?? frontColor,
     ...noText,
