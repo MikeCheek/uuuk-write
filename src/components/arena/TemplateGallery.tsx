@@ -422,12 +422,12 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
           )
         })}
 
-        {((productType !== 'spare' && filteredPresets.length === 0) || productType === 'spare') && 
-         ((productType !== 'agenda' && spareOnlyProducts.length === 0) || productType === 'agenda') && (
-          <div className="col-span-full py-12 text-center text-[#8ea2d0]">
-            Nessun risultato trovato per i filtri selezionati.
-          </div>
-        )}
+        {((productType !== 'spare' && filteredPresets.length === 0) || productType === 'spare') &&
+          ((productType !== 'agenda' && spareOnlyProducts.length === 0) || productType === 'agenda') && (
+            <div className="col-span-full py-12 text-center text-[#8ea2d0]">
+              Nessun risultato trovato per i filtri selezionati.
+            </div>
+          )}
       </div>
     </div>
   )

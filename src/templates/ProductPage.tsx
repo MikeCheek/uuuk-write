@@ -102,14 +102,14 @@ export const Head = ({ location, pageContext }: HeadProps<null, HeadPageContext>
   const description = !isSpare && preset
     ? `Scopri l'agenda stampata 3D ${presetName} della collezione ${preset.frontCover.collection}. Formato ${preset.format}, personalizzabile e pronta all'acquisto online.`
     : sparePart
-    ? `${sparePart.description || 'Accessorio UUUK'}`
-    : `Scopri la nostra agenda stampata 3D personalizzata UUUK. Design unico e qualità premium.`;
+      ? `${sparePart.description || 'Accessorio UUUK'}`
+      : `Scopri la nostra agenda stampata 3D personalizzata UUUK. Design unico e qualità premium.`;
 
   const seoImages = stripeData?.images?.length
     ? stripeData.images
     : !isSpare && preset
-    ? [getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template)]
-    : [];
+      ? [getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template)]
+      : [];
 
 
 
