@@ -19,6 +19,8 @@ export const createPages = async ({ actions }: any) => {
   // Build a map of spare parts by slug for quick lookup
   const spareMap = new Map<string, typeof spareParts[number]>()
   spareParts.forEach(p => spareMap.set(slugify(p.nome ?? p.id), p))
+  // Identify universal spare parts (names without separators like " - ")
+  const universalSpareParts = spareParts.filter(p => !(p.nome || '').includes(' - '))
 
   // 3. Process Stripe products, merge spare-part info when names match, and create pages
   const usedSlugs = new Set<string>()
@@ -44,16 +46,31 @@ export const createPages = async ({ actions }: any) => {
     usedSlugs.add(finalSlug)
 
     // Check if this stripe product corresponds to a local spare part
-    const sparePart = spareMap.get(finalSlug)
+    const matchedSpareParts: typeof spareParts[number][] = []
 
-    // Build the page context, including sparePart info when available
+    // Exact slug match
+    const exact = spareMap.get(finalSlug)
+    if (exact) matchedSpareParts.push(exact)
+
+    // Match universal spare parts by substring in the Stripe product name or slug
+    const lowerProductName = (stripeProduct.name || '').toLowerCase()
+    universalSpareParts.forEach(up => {
+      const upName = (up.nome || '').toLowerCase()
+      const upSlug = slugify(up.nome ?? up.id).toLowerCase()
+      if (lowerProductName.includes(upName) || finalSlug.toLowerCase().includes(upSlug)) {
+        if (!matchedSpareParts.includes(up)) matchedSpareParts.push(up)
+      }
+    })
+
+    // Build the page context, including spareParts info when available
     const pageContext: any = {
       stripeData,
       presetName,
       preset: presetData
     }
-    if (sparePart) {
-      pageContext.sparePart = sparePart
+    if (matchedSpareParts.length > 0) {
+      pageContext.spareParts = matchedSpareParts
+      pageContext.sparePart = matchedSpareParts[0]
     }
 
     createPage({
@@ -69,7 +86,7 @@ export const createPages = async ({ actions }: any) => {
       presetName,
       preset: presetData,
       slug: finalSlug,
-      sparePart: sparePart ?? null
+      spareParts: matchedSpareParts
     }
     galleryProducts.push(galleryEntry)
   })
