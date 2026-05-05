@@ -9,6 +9,7 @@ import { StripeProduct } from '../../utilities/stripeHelper'
 import { getCoverTemplateImagePath, slugify } from '../../utilities/arenaHelpers'
 import { useCart } from '../../utilities/cartContext'
 import { PlusIcon, ShoppingCartIcon } from 'lucide-react'
+import NoImagePlaceholder from '../atoms/NoImagePlaceholder'
 
 
 const TemplateItem = ({
@@ -373,12 +374,7 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
                   className="w-44 h-auto object-cover rounded-md"
                 />
               ) : (
-                <div className="w-44 h-56 flex flex-col items-center justify-center rounded-md bg-gradient-to-br from-[#0f1b3c] to-[#0b1531] border border-white/10">
-                  <svg className="w-12 h-12 text-white/30 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.172l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                  <span className="text-xs font-semibold text-white/40 text-center px-2">Nessuna immagine</span>
-                </div>
+                <NoImagePlaceholder size="lg" />
               )}
 
               {/* Price Display */}
@@ -410,7 +406,9 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
                     price: entry.stripeData?.default_price?.unit_amount ? Number(entry.stripeData.default_price.unit_amount) / 100 : 0,
                     image: entry.stripeData?.images?.[0],
                     name: sparePart?.nome || entry.stripeData?.name,
-                    id: sparePart?.id || entry.stripeData?.id
+                    id: sparePart?.id || entry.stripeData?.id,
+                    productType: 'spare',
+                    sparePart
                   })}
                   className="uuuk-btn-secondary relative flex items-center gap-1 !px-3 !py-2 !text-xs"
                 >

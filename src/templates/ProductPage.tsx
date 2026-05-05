@@ -6,6 +6,8 @@ import { StripeProduct } from '../utilities/stripeHelper'
 import Seo from '../components/atoms/Seo'
 import Layout from '../components/organisms/Layout'
 import ProductDetails from '../components/arena/ProductDetails'
+import { useCart } from '../utilities/cartContext'
+import NoImagePlaceholder from '../components/atoms/NoImagePlaceholder'
 
 // The data passed from gatsby-node via "context"
 interface PageContextType {
@@ -23,6 +25,7 @@ interface PageContext {
 
 const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) => {
   const { preset, stripeData, spareParts } = pageContext
+  const { addToCart } = useCart()
   const isSpare = !preset
 
   if (isSpare) {
@@ -46,12 +49,7 @@ const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) =>
                     className="object-contain w-auto h-auto max-h-[60vh]"
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center">
-                    <svg className="w-20 h-20 text-white/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.172l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    <span className="text-lg font-semibold text-white/40">Nessuna immagine</span>
-                  </div>
+                  <NoImagePlaceholder size="lg" />
                 )}
               </div>
               <div className="flex flex-col justify-center gap-6">
@@ -68,6 +66,42 @@ const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) =>
                       currency: stripeData?.default_price?.currency?.toUpperCase() || 'EUR',
                     }).format((stripeData?.default_price?.unit_amount || 0) / 100)}
                   </span>
+                </div>
+                <div>
+                  <button
+                    onClick={() => addToCart({
+                      id: Date.now(),
+                      name: sparePart?.nome || stripeData?.name || 'Ricambio UUUK',
+                      price: stripeData?.default_price?.unit_amount ? Number(stripeData.default_price.unit_amount) / 100 : 0,
+                      priceId: stripeData?.default_price?.id,
+                      productId: stripeData?.id,
+                      image: stripeData?.images?.[0],
+                      productType: 'spare',
+                      sparePart,
+                      currentStep: 0,
+                      format: 'A5',
+                      modules: [],
+                      frontCover: {
+                        color: { name: 'Nero', color: '#000000' },
+                        collection: 'Custom',
+                        template: undefined,
+                        text: '',
+                        fontSize: 'Medio',
+                        position: 'Sopra',
+                        textColor: { name: 'Bianco', color: '#ffffff' }
+                      },
+                      backCover: {
+                        color: { name: 'Nero', color: '#000000' },
+                        text: '',
+                        fontSize: 'Medio',
+                        position: 'Sopra',
+                        textColor: { name: 'Bianco', color: '#ffffff' }
+                      }
+                    } as any)}
+                    className="uuuk-btn-primary inline-flex items-center justify-center px-5 py-3 text-sm"
+                  >
+                    Aggiungi al carrello
+                  </button>
                 </div>
               </div>
             </div>

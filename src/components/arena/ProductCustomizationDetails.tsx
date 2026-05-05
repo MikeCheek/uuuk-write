@@ -21,9 +21,15 @@ interface BackCover {
 }
 
 interface ProductCustomizationDetailsProps {
-  frontCover: FrontCover;
-  backCover: BackCover;
-  modules: Module[];
+  frontCover?: FrontCover;
+  backCover?: BackCover;
+  modules?: Module[];
+  productType?: 'agenda' | 'spare';
+  sparePart?: {
+    id: string;
+    nome: string;
+    description: string;
+  };
   cartId: string | number;
   size?: 'sm' | 'md';
 }
@@ -36,6 +42,8 @@ const ProductCustomizationDetails = ({
   frontCover,
   backCover,
   modules,
+  productType,
+  sparePart,
   cartId,
   size = 'sm',
 }: ProductCustomizationDetailsProps) => {
@@ -51,18 +59,33 @@ const ProductCustomizationDetails = ({
 
   const chipContainerClasses = size === 'sm' ? 'gap-1' : 'gap-1.5';
 
+  if (productType === 'spare' || (!frontCover && !backCover && !modules?.length)) {
+    return (
+      <div className="space-y-1.5">
+        <div className={containerClasses}>
+          <p className={`mb-1 ${titleClasses}`}>Ricambio</p>
+          <div className={`flex flex-wrap ${chipContainerClasses}`}>
+            <Chip label={sparePart?.nome || 'Ricambio UUUK'} size={size} />
+            {/* <Chip label="Compatibile con tutto" size={size} /> */}
+            <Chip label={sparePart?.description || 'Ricambio universale'} size={size} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-1.5">
       {/* Front Cover */}
       <div className={containerClasses}>
         <p className={`mb-1 ${titleClasses}`}>Anteriore</p>
         <div className={`flex flex-wrap ${chipContainerClasses}`}>
-          <Chip label={frontCover.collection} size={size} />
-          <Chip label={frontCover.template ?? 'Custom'} size={size} />
-          <Chip label={`Colore: ${frontCover.color.name}`} size={size} />
+          <Chip label={frontCover?.collection || 'Custom'} size={size} />
+          <Chip label={frontCover?.template ?? 'Custom'} size={size} />
+          <Chip label={`Colore: ${frontCover?.color.name || 'N/D'}`} size={size} />
           <Chip
             label={
-              frontCover.text?.trim()
+              frontCover?.text?.trim()
                 ? `Testo: ${frontCover.text} (${frontCover.fontSize}, ${frontCover.position}, ${frontCover.textColor.name})`
                 : 'Testo: Nessuno'
             }
@@ -73,9 +96,9 @@ const ProductCustomizationDetails = ({
 
       {/* Sidebars */}
       <div className={containerClasses}>
-        <p className={`mb-1 ${titleClasses}`}>Sidebars ({modules.length})</p>
+        <p className={`mb-1 ${titleClasses}`}>Sidebars ({modules?.length || 0})</p>
         <div className={`flex flex-wrap ${size === 'sm' ? 'max-h-14 overflow-y-auto pr-1' : ''} ${chipContainerClasses}`}>
-          {modules.map((mod, modIndex) => (
+          {modules?.map((mod, modIndex) => (
             <Chip
               key={`${cartId}-mod-${mod.id}-${modIndex}`}
               label={`${mod.sidebarText} · ${mod.sidebarColor.name}${mod.isDouble ? ' · Doppio' : ''}`}
@@ -89,10 +112,10 @@ const ProductCustomizationDetails = ({
       <div className={containerClasses}>
         <p className={`mb-1 ${titleClasses}`}>Posteriore</p>
         <div className={`flex flex-wrap ${chipContainerClasses}`}>
-          <Chip label={`Colore: ${backCover.color.name}`} size={size} />
+          <Chip label={`Colore: ${backCover?.color.name || 'N/D'}`} size={size} />
           <Chip
             label={
-              backCover.text?.trim()
+              backCover?.text?.trim()
                 ? `Testo: ${backCover.text} (${backCover.fontSize}, ${backCover.position}, ${backCover.textColor.name})`
                 : 'Testo: Nessuno'
             }

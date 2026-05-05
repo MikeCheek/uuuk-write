@@ -90,6 +90,12 @@ export interface Metadata extends RawMetadata {
   productId?: string
   price?: number
   image?: IGatsbyImageData | string
+  productType?: 'agenda' | 'spare'
+  sparePart?: {
+    id: string
+    nome: string
+    description: string
+  }
 }
 
 export interface CartItem extends Metadata {
@@ -162,7 +168,7 @@ export const steps = [
 
 ////// TEMPLATES //////
 
-const getColor = (name: string): ColorOption =>
+export const getColor = (name: string): ColorOption =>
   colors.find(c => c.name === name)!
 
 const common = {
