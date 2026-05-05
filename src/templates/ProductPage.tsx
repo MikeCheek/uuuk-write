@@ -163,12 +163,12 @@ const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) =>
                       name: sparePart?.nome || stripeData?.name,
                       id: sparePart?.id || stripeData?.id,
                       productType: 'spare',
-                      ...(hasPersonalization && {
-                        personalization: {
-                          color: selectedColor,
-                          text: customText || sparePart.personalization?.text || 'Testo'
-                        }
-                      }),
+                      // ...(hasPersonalization && {
+                      //   personalization: {
+                      //     color: selectedColor,
+                      //     text: customText || sparePart.personalization?.text || 'Testo'
+                      //   }
+                      // }),
                       sparePart
                     } as any)}
                     className="uuuk-btn-primary inline-flex items-center justify-center px-5 py-3 text-sm"

@@ -143,7 +143,7 @@ export const imageAssets: Record<
   }
 }
 
-export const HOT_PICKS = ['Flusso A5', '(◣ _ ◢) A6']
+export const HOTPICKS = ['Flusso A5', '(◣ _ ◢) A6']
 
 export const collections: Collection[] = imageAssets
   ? (Object.keys(imageAssets).reverse() as Collection[])

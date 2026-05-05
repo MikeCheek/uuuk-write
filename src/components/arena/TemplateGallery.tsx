@@ -10,6 +10,32 @@ import { getCoverTemplateImagePath, slugify } from '../../utilities/arenaHelpers
 import { useCart } from '../../utilities/cartContext'
 import { PlusIcon, ShoppingCartIcon } from 'lucide-react'
 import NoImagePlaceholder from '../atoms/NoImagePlaceholder'
+import { HOTPICKS } from '../../utilities/arenaSettings'
+
+const HOTPICK_PARTICLES = [
+  // [x%, y%, tx, ty, type]  — x/y are % of card size, tx/ty are drift in px
+  { x: 15, y: 100, tx: -18, ty: -55, type: 'spark' },
+  { x: 42, y: 102, tx: 6, ty: -70, type: 'flame' },
+  { x: 68, y: 100, tx: 14, ty: -60, type: 'spark' },
+  { x: 88, y: 98, tx: 22, ty: -50, type: 'spark' },
+  { x: -2, y: 75, tx: -50, ty: -30, type: 'flame' },
+  { x: -3, y: 50, tx: -45, ty: -45, type: 'spark' },
+  { x: -1, y: 25, tx: -35, ty: -55, type: 'spark' },
+  { x: 102, y: 72, tx: 50, ty: -28, type: 'flame' },
+  { x: 103, y: 44, tx: 42, ty: -50, type: 'spark' },
+  { x: 101, y: 18, tx: 30, ty: -60, type: 'spark' },
+  { x: 25, y: -2, tx: -20, ty: -55, type: 'flame' },
+  { x: 56, y: -3, tx: 4, ty: -60, type: 'spark' },
+  { x: 80, y: -1, tx: 18, ty: -50, type: 'spark' },
+  { x: 8, y: 8, tx: -28, ty: -45, type: 'flame' },
+] as const
+
+const SPARK_COLORS = ['#ffd54f', '#ffab40', '#ff8a00', '#fff176', '#ffe082']
+const FLAME_STOPS = [
+  ['#ff3d00', '#ff6d00'],
+  ['#ff6a00', '#ffab40'],
+  ['#e64a19', '#ffd54f'],
+]
 
 
 const TemplateItem = ({
@@ -27,6 +53,7 @@ const TemplateItem = ({
 }) => {
   const [mode, setMode] = useState<'flat' | '3D'>('flat')
   const { addToCart } = useCart();
+  const isHotpick = HOTPICKS.includes(name)
 
   // Helper to format currency
   const formattedPrice = useMemo(() => {
@@ -41,65 +68,130 @@ const TemplateItem = ({
   const linkProductPay = linkProduct + '&paynow=true'
 
   return (
-    <div
-      className="uuuk-surface relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
-      style={{ animationDelay: `${index * 0.1}s` }}
-    >
-      <div className="absolute left-0 top-0 z-10 rounded-br-xl border-b border-r border-[#f97316]/40 bg-gradient-to-br from-[#f97316] to-[#ff9d57] px-4 py-2 text-[#1f2937] shadow-lg">
-        <div className="text-sm font-bold tracking-wide">{name}</div>
-        <div className="text-xs opacity-90 capitalize">{preset.frontCover.collection}</div>
-      </div>
+    <div className="relative">
+      {isHotpick && (
+        <div className="pointer-events-none absolute inset-0 z-50 animate-fadeIn opacity-50"
+          style={{ animationDelay: `${index * 0.1}s` }}>
+          {HOTPICK_PARTICLES.map((p, i) => {
+            const dur = `${1.4 + (i % 5) * 0.22}s`
+            const delay = `${(i * 0.17) % 2.2}s`
+            const left = `${p.x}%`
+            const top = `${p.y}%`
 
-      {image ? <div className='absolute top-2 right-2 z-10'>
-        <Switch isOn={mode === '3D'} toggleSwitch={() => setMode(mode === 'flat' ? '3D' : 'flat')} />
-      </div> : <></>}
+            if (p.type === 'spark') {
+              const color = SPARK_COLORS[i % SPARK_COLORS.length]
+              const size = 4 + (i % 3)
+              return (
+                <span
+                  key={i}
+                  className="absolute rounded-full animate-sparkFly"
+                  style={{
+                    left, top, width: size, height: size,
+                    background: color,
+                    boxShadow: `0 0 6px 2px ${color}88`,
+                    '--dur': dur, '--delay': delay,
+                    '--tx': `${p.tx}px`, '--ty': `${p.ty}px`,
+                  } as React.CSSProperties}
+                />
+              )
+            }
 
-      {
-        mode === '3D' || !image ? (
-          <Preview3DWrapper product={preset} noExtra />
-        ) : (
-          <GatsbyImage
-            image={image}
-            alt={`${preset.frontCover.collection} ${preset.format} template`}
-            className="w-44 h-auto object-cover rounded-md"
-          />
-        )
-      }
-
-      {/* Price Display */}
-      <div className="w-full flex justify-center -mb-4 z-10">
-        {formattedPrice ? (
-          <span className="rounded border border-[#37b87d]/40 bg-[#37b87d]/15 px-2.5 py-0.5 text-xs font-bold text-[#8fe7be]">
-            {formattedPrice}
-          </span>
-        ) : (
-          // Placeholder for loading price
-          <span className="h-5 w-16 animate-pulse rounded bg-white/10"></span>
-        )}
-      </div>
-
-      <div className='flex flex-row gap-2 items-end justify-center w-full mt-auto pt-6'>
-        <Link
-          to={`/prodotto/${slugify(preset?.slug ?? name)}`}
-          className="uuuk-btn-primary !px-4 !py-2 !text-xs"
-        >
-          Vedi prodotto
-        </Link>
-        <button
-          onClick={() => addToCart({
-            ...preset,
-            productId: productData?.id,
-            priceId: productData?.default_price.id,
-            price: Number(productData?.default_price.unit_amount_decimal) / 100,
-            image: image ? image : preset.frontCover.template ? getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template) : undefined,
-            name
+            const [c1, c2] = FLAME_STOPS[i % FLAME_STOPS.length]
+            const scale = 0.6 + (i % 3) * 0.15
+            const fw = Math.round(18 * scale), fh = Math.round(34 * scale)
+            return (
+              <span
+                key={i}
+                className="absolute animate-flameFly"
+                style={{
+                  left, top, width: fw, height: fh,
+                  '--dur': dur, '--delay': delay,
+                  '--tx': `${p.tx}px`, '--ty': `${p.ty}px`,
+                  '--rot': `${(i % 2 === 0 ? 1 : -1) * 12}deg`,
+                } as React.CSSProperties}
+              >
+                <svg viewBox="0 0 40 80" width={fw} height={fh}>
+                  <defs>
+                    <linearGradient id={`hpfg${i}`} x1="0.5" y1="1" x2="0.5" y2="0">
+                      <stop offset="0%" stopColor={c1} />
+                      <stop offset="60%" stopColor={c2} />
+                      <stop offset="100%" stopColor="#fff9c4" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M20 80 C8 60 2 48 10 28 C14 16 12 6 20 0 C22 12 30 14 28 30 C26 42 34 52 32 60 C30 70 26 77 20 80Z"
+                    fill={`url(#hpfg${i})`}
+                  />
+                </svg>
+              </span>
+            )
           })}
-          className="uuuk-btn-secondary relative flex items-center gap-1 !px-3 !py-2 !text-xs"
-        >
-          <ShoppingCartIcon className="inline-block mr-1" size={16} />
-          <PlusIcon className="inline-block absolute top-px right-px" size={16} />
-          {/* Aggiungi al carrello */}
-        </button>
+        </div>
+      )}
+
+      <div
+        className="uuuk-surface relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
+        style={{
+          animationDelay: `${index * 0.1}s`,
+          boxShadow: isHotpick ? '0 0 18px rgba(255, 122, 0, 0.35), 0 0 42px rgba(255, 61, 0, 0.18)' : undefined
+        }}
+      >
+        <div className="absolute left-0 top-0 z-10 rounded-br-xl border-b border-r border-[#f97316]/40 bg-gradient-to-br from-[#f97316] to-[#ff9d57] px-4 py-2 text-[#1f2937] shadow-lg">
+          <div className="text-sm font-bold tracking-wide">{name}</div>
+          <div className="text-xs opacity-90 capitalize">{preset.frontCover.collection}</div>
+        </div>
+
+        {image ? <div className='absolute top-2 right-2 z-10'>
+          <Switch isOn={mode === '3D'} toggleSwitch={() => setMode(mode === 'flat' ? '3D' : 'flat')} />
+        </div> : <></>}
+
+        {
+          mode === '3D' || !image ? (
+            <Preview3DWrapper product={preset} noExtra />
+          ) : (
+            <GatsbyImage
+              image={image}
+              alt={`${preset.frontCover.collection} ${preset.format} template`}
+              className="w-44 h-auto object-cover rounded-md"
+            />
+          )
+        }
+
+        {/* Price Display */}
+        <div className="w-full flex justify-center -mb-4 z-10">
+          {formattedPrice ? (
+            <span className="rounded border border-[#37b87d]/40 bg-[#37b87d]/15 px-2.5 py-0.5 text-xs font-bold text-[#8fe7be]">
+              {formattedPrice}
+            </span>
+          ) : (
+            // Placeholder for loading price
+            <span className="h-5 w-16 animate-pulse rounded bg-white/10"></span>
+          )}
+        </div>
+
+        <div className='flex flex-row gap-2 items-end justify-center w-full mt-auto pt-6'>
+          <Link
+            to={`/prodotto/${slugify(preset?.slug ?? name)}`}
+            className="uuuk-btn-primary !px-4 !py-2 !text-xs"
+          >
+            Vedi prodotto
+          </Link>
+          <button
+            onClick={() => addToCart({
+              ...preset,
+              productId: productData?.id,
+              priceId: productData?.default_price.id,
+              price: Number(productData?.default_price.unit_amount_decimal) / 100,
+              image: image ? image : preset.frontCover.template ? getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template) : undefined,
+              name
+            })}
+            className="uuuk-btn-secondary relative flex items-center gap-1 !px-3 !py-2 !text-xs"
+          >
+            <ShoppingCartIcon className="inline-block mr-1" size={16} />
+            <PlusIcon className="inline-block absolute top-px right-px" size={16} />
+            {/* Aggiungi al carrello */}
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -117,6 +209,7 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
   const [selectedFormat, setSelectedFormat] = useState('')
   const [selectedTemplate, setSelectedTemplate] = useState('')
   const [productType, setProductType] = useState<'all' | 'agenda' | 'spare'>('all')
+  const [gallerySeed] = useState(() => Math.random())
   const { addToCart } = useCart()
 
 
@@ -218,25 +311,57 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
 
   // --- 3. Filter Logic ---
   const filteredPresets = useMemo(() => {
-    return Object.entries(presets).filter(([key, preset]) => {
-      const searchLower = searchTerm.toLowerCase()
+    return Object.entries(presets)
+      .filter(([key, preset]) => {
+        const searchLower = searchTerm.toLowerCase()
 
-      // Text Search matches Name or Collection
-      const matchesSearch =
-        key.toLowerCase().includes(searchLower) ||
-        preset.frontCover.collection.toLowerCase().includes(searchLower) ||
-        preset.frontCover.template?.toLowerCase().includes(searchLower) ||
-        preset.format.toLowerCase().includes(searchLower) ||
-        // check also in collection without special characters, only letters and the numbers
-        preset.frontCover.collection.replace(/[^a-zA-Z0-9]/g, '').toLowerCase().includes(searchLower)
+        // Text Search matches Name or Collection
+        const matchesSearch =
+          key.toLowerCase().includes(searchLower) ||
+          preset.frontCover.collection.toLowerCase().includes(searchLower) ||
+          preset.frontCover.template?.toLowerCase().includes(searchLower) ||
+          preset.format.toLowerCase().includes(searchLower) ||
+          // check also in collection without special characters, only letters and the numbers
+          preset.frontCover.collection.replace(/[^a-zA-Z0-9]/g, '').toLowerCase().includes(searchLower)
 
-      const matchesCollection = selectedCollection ? preset.frontCover.collection === selectedCollection : true
-      const matchesFormat = selectedFormat ? preset.format === selectedFormat : true
-      const matchesTemplate = selectedTemplate ? preset.frontCover.template === selectedTemplate : true
+        const matchesCollection = selectedCollection ? preset.frontCover.collection === selectedCollection : true
+        const matchesFormat = selectedFormat ? preset.format === selectedFormat : true
+        const matchesTemplate = selectedTemplate ? preset.frontCover.template === selectedTemplate : true
 
-      return matchesSearch && matchesCollection && matchesFormat && matchesTemplate
-    })
+        return matchesSearch && matchesCollection && matchesFormat && matchesTemplate
+      })
+      .sort(([leftKey], [rightKey]) => {
+        const leftIsHotpick = HOTPICKS.includes(leftKey)
+        const rightIsHotpick = HOTPICKS.includes(rightKey)
+
+        if (leftIsHotpick !== rightIsHotpick) {
+          return leftIsHotpick ? -1 : 1
+        }
+
+        return leftKey.localeCompare(rightKey)
+      })
   }, [searchTerm, selectedCollection, selectedFormat, selectedTemplate])
+
+  const noFiltersApplied = !searchTerm && !selectedCollection && !selectedFormat && !selectedTemplate && productType === 'all'
+
+  const orderedPresets = useMemo(() => {
+    if (!noFiltersApplied) return filteredPresets
+
+    const score = (key: string) => {
+      let hash = Math.floor(gallerySeed * 1_000_000)
+      for (let index = 0; index < key.length; index += 1) {
+        hash = (hash * 31 + key.charCodeAt(index)) % 2147483647
+      }
+      return hash
+    }
+
+    const hotpickItems = filteredPresets.filter(([key]) => HOTPICKS.includes(key))
+    const regularItems = filteredPresets
+      .filter(([key]) => !HOTPICKS.includes(key))
+      .sort(([leftKey], [rightKey]) => score(leftKey) - score(rightKey))
+
+    return [...hotpickItems, ...regularItems]
+  }, [filteredPresets, gallerySeed, noFiltersApplied])
 
   const getImageFromData = (format: string, collection: string, template: string) => {
     const found = processedData.find(
@@ -256,6 +381,22 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
       return (!entry.preset || entry.preset === null) && entry.spareParts && entry.spareParts.length > 0
     })
   }, [serverProducts])
+
+  const orderedSpareOnlyProducts = useMemo(() => {
+    if (!noFiltersApplied) return spareOnlyProducts
+
+    const score = (entry: any) => {
+      const seedValue = Math.floor(gallerySeed * 1_000_000)
+      const key = `${entry.slug || ''}-${entry.stripeData?.id || ''}-${entry.spareParts?.[0]?.id || ''}`
+      let hash = seedValue
+      for (let index = 0; index < key.length; index += 1) {
+        hash = (hash * 31 + key.charCodeAt(index)) % 2147483647
+      }
+      return hash
+    }
+
+    return [...spareOnlyProducts].sort((leftEntry, rightEntry) => score(leftEntry) - score(rightEntry))
+  }, [gallerySeed, noFiltersApplied, spareOnlyProducts])
 
   // --- 4. Render ---
   return (
@@ -335,11 +476,11 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
       </div>
 
       <div className="flex justify-between px-1 text-sm text-[#8ea2d0] animate-fadeIn">
-        <span>Mostrando {(productType !== 'spare' ? filteredPresets.length : 0) + (productType !== 'agenda' ? spareOnlyProducts.length : 0)} risultati</span>
+        <span>Mostrando {(productType !== 'spare' ? orderedPresets.length : 0) + (productType !== 'agenda' ? orderedSpareOnlyProducts.length : 0)} risultati</span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {productType !== 'spare' && filteredPresets.map(([key, preset], index) => (
+        {productType !== 'spare' && orderedPresets.map(([key, preset], index) => (
           <TemplateItem
             index={index}
             key={key}
@@ -354,13 +495,13 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
         ))}
 
         {/* Render spare-only products */}
-        {productType !== 'agenda' && spareOnlyProducts.map((entry: any, index: number) => {
+        {productType !== 'agenda' && orderedSpareOnlyProducts.map((entry: any, index: number) => {
           const sparePart = entry.spareParts?.[0]
           return (
             <div
               key={`spare-${sparePart?.id || index}`}
               className="uuuk-surface relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
-              style={{ animationDelay: `${(filteredPresets.length + index) * 0.1}s` }}
+              style={{ animationDelay: `${(orderedPresets.length + index) * 0.1}s` }}
             >
               <div className="absolute left-0 top-0 z-10 rounded-br-xl border-b border-r border-[#f97316]/40 bg-gradient-to-br from-[#f97316] to-[#ff9d57] px-4 py-2 text-[#1f2937] shadow-lg">
                 <div className="text-sm font-bold tracking-wide">{sparePart?.nome || entry.stripeData?.name}</div>
