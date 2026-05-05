@@ -118,13 +118,24 @@ const ProductDetails = ({ preset, presetName, stripeData }: {
                 preset && mode === '3D' ? (
                   <Preview3DWrapper product={preset} noExtra />
                 ) : (
-                  <img
-                    src={stripeData.images[0] || getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template)}
-                    alt={name}
-                    width={200}
-                    height={360}
-                    className="object-contain !w-auto !h-auto"
-                  />
+                  <>
+                    {stripeData.images?.[0] || (preset && getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template)) ? (
+                      <img
+                        src={stripeData.images[0] || getCoverTemplateImagePath(preset.format, preset.frontCover.collection, preset.frontCover.template)}
+                        alt={name}
+                        width={200}
+                        height={360}
+                        className="object-contain !w-auto !h-auto"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center">
+                        <svg className="w-20 h-20 text-white/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.172l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span className="text-lg font-semibold text-white/40">Nessuna immagine</span>
+                      </div>
+                    )}
+                  </>
                 )
               }
             </div>

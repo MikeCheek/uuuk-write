@@ -46,7 +46,7 @@ const Index = ({
       metadata.description ||
       "UUUK crea agende stampate in 3D personalizzabili: scegli formato, copertina e moduli per realizzare la tua agenda unica.",
     url: `${siteUrl}${pathname?.replace(/^\//, '') || ''}`, // Prevents double slashes like https://uuuk.it//prodotto
-    image: featuredImage?.childImageSharp?.gatsbyImageData,
+    image: featuredImage ? (featuredImage.childImageSharp ? featuredImage.childImageSharp.gatsbyImageData : null) : null,
     keywords: keywords || metadata.keywords?.join(', '),
   };
 

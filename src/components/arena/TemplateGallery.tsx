@@ -115,6 +115,8 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
   const [selectedCollection, setSelectedCollection] = useState('')
   const [selectedFormat, setSelectedFormat] = useState('')
   const [selectedTemplate, setSelectedTemplate] = useState('')
+  const [productType, setProductType] = useState<'all' | 'agenda' | 'spare'>('all')
+  const { addToCart } = useCart()
 
 
   const getProductData = (preset: Metadata) => {
@@ -245,6 +247,15 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
     return found ? found.node.childImageSharp.gatsbyImageData : null
   }
 
+  // Extract spare-only products (no preset)
+  const spareOnlyProducts = useMemo(() => {
+    if (!serverProducts || !Array.isArray(serverProducts)) return []
+    return serverProducts.filter((entry: any) => {
+      // Include entries where preset is null/undefined but spareParts exists
+      return (!entry.preset || entry.preset === null) && entry.spareParts && entry.spareParts.length > 0
+    })
+  }, [serverProducts])
+
   // --- 4. Render ---
   return (
     <div className="flex w-full flex-col gap-6 rounded-3xl p-6">
@@ -292,14 +303,25 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
             {filterOptions.templates.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
 
+          <select
+            className="uuuk-select col-span-1 cursor-pointer rounded-lg py-2.5 md:py-2"
+            value={productType}
+            onChange={(e) => setProductType(e.target.value as 'all' | 'agenda' | 'spare')}
+          >
+            <option value="all">Tutti i prodotti</option>
+            <option value="agenda">Solo Agende</option>
+            <option value="spare">Solo Ricambi</option>
+          </select>
+
           {/* Reset Button: Styled as a clear action */}
-          {(searchTerm || selectedCollection || selectedFormat || selectedTemplate) && (
+          {(searchTerm || selectedCollection || selectedFormat || selectedTemplate || productType !== 'all') && (
             <button
               onClick={() => {
                 setSearchTerm('')
                 setSelectedCollection('')
                 setSelectedFormat('')
                 setSelectedTemplate('')
+                setProductType('all')
               }}
               className="col-span-1 flex items-center justify-center px-4 py-2 text-[#ffb170] transition-colors hover:text-[#f97316] sm:ml-2 md:px-2"
               aria-label="Reset filters"
@@ -312,11 +334,11 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
       </div>
 
       <div className="flex justify-between px-1 text-sm text-[#8ea2d0] animate-fadeIn">
-        <span>Mostrando {filteredPresets.length} risultati</span>
+        <span>Mostrando {(productType !== 'spare' ? filteredPresets.length : 0) + (productType !== 'agenda' ? spareOnlyProducts.length : 0)} risultati</span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredPresets.map(([key, preset], index) => (
+        {productType !== 'spare' && filteredPresets.map(([key, preset], index) => (
           <TemplateItem
             index={index}
             key={key}
@@ -329,11 +351,83 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
                 getImageFromData(preset.format, preset.frontCover.collection, preset.frontCover.template) : undefined}
           />
         ))}
-        {filteredPresets.length === 0 && (
-          <div className="col-span-full py-12 text-center text-[#8ea2d0]">
-            Nessun risultato trovato per i filtri selezionati.
-          </div>
-        )}
+
+        {/* Render spare-only products */}
+        {productType !== 'agenda' && spareOnlyProducts.map((entry: any, index: number) => {
+          const sparePart = entry.spareParts?.[0]
+          return (
+            <div
+              key={`spare-${sparePart?.id || index}`}
+              className="uuuk-surface relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
+              style={{ animationDelay: `${(filteredPresets.length + index) * 0.1}s` }}
+            >
+              <div className="absolute left-0 top-0 z-10 rounded-br-xl border-b border-r border-[#f97316]/40 bg-gradient-to-br from-[#f97316] to-[#ff9d57] px-4 py-2 text-[#1f2937] shadow-lg">
+                <div className="text-sm font-bold tracking-wide">{sparePart?.nome || entry.stripeData?.name}</div>
+                <div className="text-xs opacity-90">Ricambio</div>
+              </div>
+
+              {entry.stripeData?.images?.[0] ? (
+                <img
+                  src={entry.stripeData.images[0]}
+                  alt={sparePart?.nome || 'Ricambio'}
+                  className="w-44 h-auto object-cover rounded-md"
+                />
+              ) : (
+                <div className="w-44 h-56 flex flex-col items-center justify-center rounded-md bg-gradient-to-br from-[#0f1b3c] to-[#0b1531] border border-white/10">
+                  <svg className="w-12 h-12 text-white/30 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.172l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  <span className="text-xs font-semibold text-white/40 text-center px-2">Nessuna immagine</span>
+                </div>
+              )}
+
+              {/* Price Display */}
+              <div className="w-full flex justify-center -mb-4 z-10">
+                {entry.stripeData?.default_price?.unit_amount ? (
+                  <span className="rounded border border-[#37b87d]/40 bg-[#37b87d]/15 px-2.5 py-0.5 text-xs font-bold text-[#8fe7be]">
+                    {new Intl.NumberFormat('it-IT', {
+                      style: 'currency',
+                      currency: entry.stripeData.default_price.currency.toUpperCase(),
+                    }).format(entry.stripeData.default_price.unit_amount / 100)}
+                  </span>
+                ) : (
+                  <span className="h-5 w-16 animate-pulse rounded bg-white/10"></span>
+                )}
+              </div>
+
+              <div className='flex flex-row gap-2 items-end justify-center w-full mt-auto pt-6'>
+                <Link
+                  to={`/prodotto/${entry.slug}`}
+                  className="uuuk-btn-primary !px-4 !py-2 !text-xs"
+                >
+                  Vedi prodotto
+                </Link>
+                <button
+                  onClick={() => addToCart({
+                    ...sparePart,
+                    productId: entry.stripeData?.id,
+                    priceId: entry.stripeData?.default_price?.id,
+                    price: entry.stripeData?.default_price?.unit_amount ? Number(entry.stripeData.default_price.unit_amount) / 100 : 0,
+                    image: entry.stripeData?.images?.[0],
+                    name: sparePart?.nome || entry.stripeData?.name,
+                    id: sparePart?.id || entry.stripeData?.id
+                  })}
+                  className="uuuk-btn-secondary relative flex items-center gap-1 !px-3 !py-2 !text-xs"
+                >
+                  <ShoppingCartIcon className="inline-block mr-1" size={16} />
+                  <PlusIcon className="inline-block absolute top-px right-px" size={16} />
+                </button>
+              </div>
+            </div>
+          )
+        })}
+
+        {((productType !== 'spare' && filteredPresets.length === 0) || productType === 'spare') &&
+          ((productType !== 'agenda' && spareOnlyProducts.length === 0) || productType === 'agenda') && (
+            <div className="col-span-full py-12 text-center text-[#8ea2d0]">
+              Nessun risultato trovato per i filtri selezionati.
+            </div>
+          )}
       </div>
     </div>
   )
