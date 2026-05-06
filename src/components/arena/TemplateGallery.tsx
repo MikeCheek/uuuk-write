@@ -130,7 +130,7 @@ const TemplateItem = ({
       )}
 
       <div
-        className="uuuk-surface relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
+        className="uuuk-surface h-full relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
         style={{
           animationDelay: `${index * 0.1}s`,
           boxShadow: isHotpick ? '0 0 18px rgba(255, 122, 0, 0.35), 0 0 42px rgba(255, 61, 0, 0.18)' : undefined
@@ -152,7 +152,11 @@ const TemplateItem = ({
             <GatsbyImage
               image={image}
               alt={`${preset.frontCover.collection} ${preset.format} template`}
-              className="w-44 h-auto object-cover rounded-md"
+              className={`h-auto object-cover rounded-md ${preset.format === 'A5' ? 'w-44' :
+                preset.format === 'A6' ? 'w-40' :
+                  preset.format === 'A7' ? 'w-32' :
+                    'w-44'
+                }`}
             />
           )
         }
@@ -410,7 +414,7 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
   return (
     <div className="flex w-full flex-col gap-6 rounded-3xl p-6">
       {/* Filter Controls */}
-      <div className="uuuk-surface flex flex-col items-center justify-between gap-4 rounded-xl p-4 animate-fadeIn md:flex-row">
+      <div className="uuuk-surface h-full flex flex-col items-center justify-between gap-4 rounded-xl p-4 animate-fadeIn md:flex-row">
         {/* Search Bar: Full width on mobile, auto on desktop */}
         <div className="w-full md:flex-1 md:min-w-[200px]">
           <div className="relative">
@@ -540,7 +544,7 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
                 return (
                   <div
                     key={`spare-${sparePart?.id || globalIndex}`}
-                    className="uuuk-surface relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
+                    className="uuuk-surface h-full relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
                     style={{ animationDelay: `${globalIndex * 0.1}s` }}
                   >
                     <div className="absolute left-0 top-0 z-10 rounded-br-xl border-b border-r border-[#f97316]/40 bg-gradient-to-br from-[#f97316] to-[#ff9d57] px-4 py-2 text-[#1f2937] shadow-lg">
@@ -624,7 +628,7 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
               return (
                 <div
                   key={`spare-${sparePart?.id || index}`}
-                  className="uuuk-surface relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
+                  className="uuuk-surface h-full relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
                   style={{ animationDelay: `${(orderedPresets.length + index) * 0.1}s` }}
                 >
                   <div className="absolute left-0 top-0 z-10 rounded-br-xl border-b border-r border-[#f97316]/40 bg-gradient-to-br from-[#f97316] to-[#ff9d57] px-4 py-2 text-[#1f2937] shadow-lg">
