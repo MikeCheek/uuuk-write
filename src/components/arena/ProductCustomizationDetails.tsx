@@ -63,32 +63,36 @@ const ProductCustomizationDetails = ({
 
   const chipContainerClasses = size === 'sm' ? 'gap-1' : 'gap-1.5';
 
-  if (productType === 'spare' || (!frontCover && !backCover && !modules?.length)) {
-    return (
-      <div className="space-y-1.5">
-        <div className={containerClasses}>
-          <p className={`mb-1 ${titleClasses}`}>Ricambio</p>
-          <div className={`flex flex-wrap ${chipContainerClasses}`}>
-            <Chip label={sparePart?.nome || 'Ricambio UUUK'} size={size} />
-            <Chip label={sparePart?.description || 'Ricambio universale'} size={size} />
-            {sparePart?.personalization && (
-              <>
+  // Only render personalization section if spare part HAS personalization (e.g., sidebars)
+  // If no personalization exists (e.g., binders), render nothing
+  if (productType === 'spare') {
+    if (sparePart?.personalization) {
+      return (
+        <div className="space-y-1.5">
+          <div className={containerClasses}>
+            <p className={`mb-1 ${titleClasses}`}>Personalizzazione</p>
+            <div className={`flex flex-wrap ${chipContainerClasses}`}>
+              <Chip
+                label={`Colore: ${sparePart.personalization.color.name}`}
+                size={size}
+              />
+              {sparePart.personalization.text && (
                 <Chip
-                  label={`Colore: ${sparePart.personalization.color.name}`}
+                  label={`Testo: ${sparePart.personalization.text}`}
                   size={size}
                 />
-                {sparePart.personalization.text && (
-                  <Chip
-                    label={`Testo: ${sparePart.personalization.text}`}
-                    size={size}
-                  />
-                )}
-              </>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    )
+      )
+    }
+    // If spare part has no personalization, render nothing
+    return null
+  }
+
+  if (!frontCover && !backCover && !modules?.length) {
+    return null
   }
 
   return (

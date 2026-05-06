@@ -347,21 +347,40 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
   const orderedPresets = useMemo(() => {
     if (!noFiltersApplied) return filteredPresets
 
-    const score = (key: string) => {
-      let hash = Math.floor(gallerySeed * 1_000_000)
-      for (let index = 0; index < key.length; index += 1) {
-        hash = (hash * 31 + key.charCodeAt(index)) % 2147483647
+    const hotpickItems = filteredPresets.filter(([key]) => HOTPICKS.includes(key))
+    const regularItems = filteredPresets.filter(([key]) => !HOTPICKS.includes(key))
+
+    // Categorize regular items by collection type
+    const triadicItems: typeof filteredPresets = []
+    const moodItems: typeof filteredPresets = []
+    const otherItems: typeof filteredPresets = []
+
+    regularItems.forEach(([key, preset]) => {
+      if (preset.frontCover.collection === 'Triadic') {
+        triadicItems.push([key, preset])
+      } else if (preset.frontCover.collection === 'M(O_O)D') {
+        moodItems.push([key, preset])
+      } else {
+        otherItems.push([key, preset])
       }
-      return hash
+    })
+
+    // Build cyclic order: 1 triadic, 1 mood, repeat until one is exhausted
+    const cyclicItems: typeof filteredPresets = []
+    const maxCycles = Math.max(triadicItems.length, moodItems.length)
+
+    for (let i = 0; i < maxCycles; i++) {
+      if (i < triadicItems.length) {
+        cyclicItems.push(triadicItems[i])
+      }
+      if (i < moodItems.length) {
+        cyclicItems.push(moodItems[i])
+      }
     }
 
-    const hotpickItems = filteredPresets.filter(([key]) => HOTPICKS.includes(key))
-    const regularItems = filteredPresets
-      .filter(([key]) => !HOTPICKS.includes(key))
-      .sort(([leftKey], [rightKey]) => score(leftKey) - score(rightKey))
-
-    return [...hotpickItems, ...regularItems]
-  }, [filteredPresets, gallerySeed, noFiltersApplied])
+    // Combine: hotpicks + cyclic items + remaining items
+    return [...hotpickItems, ...cyclicItems, ...otherItems]
+  }, [filteredPresets, noFiltersApplied])
 
   const getImageFromData = (format: string, collection: string, template: string) => {
     const found = processedData.find(
@@ -384,19 +403,8 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
 
   const orderedSpareOnlyProducts = useMemo(() => {
     if (!noFiltersApplied) return spareOnlyProducts
-
-    const score = (entry: any) => {
-      const seedValue = Math.floor(gallerySeed * 1_000_000)
-      const key = `${entry.slug || ''}-${entry.stripeData?.id || ''}-${entry.spareParts?.[0]?.id || ''}`
-      let hash = seedValue
-      for (let index = 0; index < key.length; index += 1) {
-        hash = (hash * 31 + key.charCodeAt(index)) % 2147483647
-      }
-      return hash
-    }
-
-    return [...spareOnlyProducts].sort((leftEntry, rightEntry) => score(leftEntry) - score(rightEntry))
-  }, [gallerySeed, noFiltersApplied, spareOnlyProducts])
+    return spareOnlyProducts
+  }, [noFiltersApplied, spareOnlyProducts])
 
   // --- 4. Render ---
   return (
@@ -480,94 +488,212 @@ const TemplateGallery = ({ serverProducts }: TemplateGalleryProps) => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {productType !== 'spare' && orderedPresets.map(([key, preset], index) => (
-          <TemplateItem
-            index={index}
-            key={key}
-            name={key}
-            preset={preset}
-            // Pass the API data to the item
-            productData={getProductData(preset)}
-            image={
-              preset.frontCover.template ?
-                getImageFromData(preset.format, preset.frontCover.collection, preset.frontCover.template) : undefined}
-          />
-        ))}
+        {noFiltersApplied && productType === 'all' ? (
+          // Cyclic rendering when no filters applied and showing all products
+          (() => {
+            const hotpickItems = orderedPresets.filter(([key]) => HOTPICKS.includes(key))
+            const regularItems = orderedPresets.filter(([key]) => !HOTPICKS.includes(key))
 
-        {/* Render spare-only products */}
-        {productType !== 'agenda' && orderedSpareOnlyProducts.map((entry: any, index: number) => {
-          const sparePart = entry.spareParts?.[0]
-          return (
-            <div
-              key={`spare-${sparePart?.id || index}`}
-              className="uuuk-surface relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
-              style={{ animationDelay: `${(orderedPresets.length + index) * 0.1}s` }}
-            >
-              <div className="absolute left-0 top-0 z-10 rounded-br-xl border-b border-r border-[#f97316]/40 bg-gradient-to-br from-[#f97316] to-[#ff9d57] px-4 py-2 text-[#1f2937] shadow-lg">
-                <div className="text-sm font-bold tracking-wide">{sparePart?.nome || entry.stripeData?.name}</div>
-                <div className="text-xs opacity-90">Ricambio</div>
-              </div>
+            const triadicItems = regularItems.filter(([, preset]) => preset.frontCover.collection === 'Triadic')
+            const moodItems = regularItems.filter(([, preset]) => preset.frontCover.collection === 'M(O_O)D')
+            const otherItems = regularItems.filter(([, preset]) => preset.frontCover.collection !== 'Triadic' && preset.frontCover.collection !== 'M(O_O)D')
 
-              {entry.stripeData?.images?.[0] ? (
-                <img
-                  src={entry.stripeData.images[0]}
-                  alt={sparePart?.nome || 'Ricambio'}
-                  className="w-44 h-auto object-cover rounded-md"
-                />
-              ) : (
-                <NoImagePlaceholder size="lg" />
-              )}
+            const cyclicItems: Array<{ type: 'agenda' | 'spare'; key?: string; preset?: any; entry?: any; index?: number }> = []
+            const maxCycles = Math.max(triadicItems.length, moodItems.length, spareOnlyProducts.length)
 
-              {/* Price Display */}
-              <div className="w-full flex justify-center -mb-4 z-10">
-                {entry.stripeData?.default_price?.unit_amount ? (
-                  <span className="rounded border border-[#37b87d]/40 bg-[#37b87d]/15 px-2.5 py-0.5 text-xs font-bold text-[#8fe7be]">
-                    {new Intl.NumberFormat('it-IT', {
-                      style: 'currency',
-                      currency: entry.stripeData.default_price.currency.toUpperCase(),
-                    }).format(entry.stripeData.default_price.unit_amount / 100)}
-                  </span>
-                ) : (
-                  <span className="h-5 w-16 animate-pulse rounded bg-white/10"></span>
-                )}
-              </div>
+            for (let i = 0; i < maxCycles; i++) {
+              if (i < triadicItems.length) {
+                cyclicItems.push({ type: 'agenda', key: triadicItems[i][0], preset: triadicItems[i][1] })
+              }
+              if (i < moodItems.length) {
+                cyclicItems.push({ type: 'agenda', key: moodItems[i][0], preset: moodItems[i][1] })
+              }
+              if (i < spareOnlyProducts.length) {
+                cyclicItems.push({ type: 'spare', entry: spareOnlyProducts[i], index: i })
+              }
+            }
 
-              <div className='flex flex-row gap-2 items-end justify-center w-full mt-auto pt-6'>
-                <Link
-                  to={`/prodotto/${entry.slug}`}
-                  className="uuuk-btn-primary !px-4 !py-2 !text-xs"
+            const allItems = [
+              ...hotpickItems.map(([key, preset]) => ({ type: 'agenda' as const, key, preset })),
+              ...cyclicItems,
+              ...otherItems.map(([key, preset]) => ({ type: 'agenda' as const, key, preset })),
+              ...spareOnlyProducts.slice(Math.max(triadicItems.length, moodItems.length)).map((entry, idx) => ({ type: 'spare' as const, entry, index: Math.max(triadicItems.length, moodItems.length) + idx }))
+            ]
+
+            return allItems.map((item, globalIndex) => {
+              if (item.type === 'agenda') {
+                return (
+                  <TemplateItem
+                    index={globalIndex}
+                    key={item.key}
+                    name={item.key!}
+                    preset={item.preset!}
+                    productData={getProductData(item.preset!)}
+                    image={
+                      item.preset!.frontCover.template ?
+                        getImageFromData(item.preset!.format, item.preset!.frontCover.collection, item.preset!.frontCover.template) : undefined
+                    }
+                  />
+                )
+              } else {
+                const sparePart = item.entry?.spareParts?.[0]
+                return (
+                  <div
+                    key={`spare-${sparePart?.id || globalIndex}`}
+                    className="uuuk-surface relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
+                    style={{ animationDelay: `${globalIndex * 0.1}s` }}
+                  >
+                    <div className="absolute left-0 top-0 z-10 rounded-br-xl border-b border-r border-[#f97316]/40 bg-gradient-to-br from-[#f97316] to-[#ff9d57] px-4 py-2 text-[#1f2937] shadow-lg">
+                      <div className="text-sm font-bold tracking-wide">{sparePart?.nome || item.entry?.stripeData?.name}</div>
+                      <div className="text-xs opacity-90">Ricambio</div>
+                    </div>
+
+                    {item.entry?.stripeData?.images?.[0] ? (
+                      <img
+                        src={item.entry.stripeData.images[0]}
+                        alt={sparePart?.nome || 'Ricambio'}
+                        className="w-44 h-auto object-cover rounded-md"
+                      />
+                    ) : (
+                      <NoImagePlaceholder size="lg" />
+                    )}
+
+                    <div className="w-full flex justify-center -mb-4 z-10">
+                      {item.entry?.stripeData?.default_price?.unit_amount ? (
+                        <span className="rounded border border-[#37b87d]/40 bg-[#37b87d]/15 px-2.5 py-0.5 text-xs font-bold text-[#8fe7be]">
+                          {new Intl.NumberFormat('it-IT', {
+                            style: 'currency',
+                            currency: item.entry.stripeData.default_price.currency.toUpperCase(),
+                          }).format(item.entry.stripeData.default_price.unit_amount / 100)}
+                        </span>
+                      ) : (
+                        <span className="h-5 w-16 animate-pulse rounded bg-white/10"></span>
+                      )}
+                    </div>
+
+                    <div className='flex flex-row gap-2 items-end justify-center w-full mt-auto pt-6'>
+                      <Link
+                        to={`/prodotto/${item.entry?.slug}`}
+                        className="uuuk-btn-primary !px-4 !py-2 !text-xs"
+                      >
+                        Vedi prodotto
+                      </Link>
+                      <button
+                        onClick={() => addToCart({
+                          ...sparePart,
+                          productId: item.entry?.stripeData?.id,
+                          priceId: item.entry?.stripeData?.default_price?.id,
+                          price: item.entry?.stripeData?.default_price?.unit_amount ? Number(item.entry.stripeData.default_price.unit_amount) / 100 : 0,
+                          image: item.entry?.stripeData?.images?.[0],
+                          name: sparePart?.nome || item.entry?.stripeData?.name,
+                          id: sparePart?.id || item.entry?.stripeData?.id,
+                          productType: 'spare',
+                          sparePart,
+                        })}
+                        className="uuuk-btn-secondary relative flex items-center gap-1 !px-3 !py-2 !text-xs"
+                      >
+                        <ShoppingCartIcon className="inline-block mr-1" size={16} />
+                        <PlusIcon className="inline-block absolute top-px right-px" size={16} />
+                      </button>
+                    </div>
+                  </div>
+                )
+              }
+            })
+          })()
+        ) : (
+          // Separate rendering when filters are applied
+          <>
+            {productType !== 'spare' && orderedPresets.map(([key, preset], index) => (
+              <TemplateItem
+                index={index}
+                key={key}
+                name={key}
+                preset={preset}
+                productData={getProductData(preset)}
+                image={
+                  preset.frontCover.template ?
+                    getImageFromData(preset.format, preset.frontCover.collection, preset.frontCover.template) : undefined
+                }
+              />
+            ))}
+
+            {/* Render spare-only products */}
+            {productType !== 'agenda' && orderedSpareOnlyProducts.map((entry: any, index: number) => {
+              const sparePart = entry.spareParts?.[0]
+              return (
+                <div
+                  key={`spare-${sparePart?.id || index}`}
+                  className="uuuk-surface relative flex flex-col items-center gap-8 overflow-hidden rounded-2xl p-4 pt-16 opacity-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#f97316]/40 hover:shadow-[0_18px_40px_rgba(6,10,20,0.5)] animate-fadeIn"
+                  style={{ animationDelay: `${(orderedPresets.length + index) * 0.1}s` }}
                 >
-                  Vedi prodotto
-                </Link>
-                <button
-                  onClick={() => addToCart({
-                    ...sparePart,
-                    productId: entry.stripeData?.id,
-                    priceId: entry.stripeData?.default_price?.id,
-                    price: entry.stripeData?.default_price?.unit_amount ? Number(entry.stripeData.default_price.unit_amount) / 100 : 0,
-                    image: entry.stripeData?.images?.[0],
-                    name: sparePart?.nome || entry.stripeData?.name,
-                    id: sparePart?.id || entry.stripeData?.id,
-                    productType: 'spare',
-                    sparePart
-                  })}
-                  className="uuuk-btn-secondary relative flex items-center gap-1 !px-3 !py-2 !text-xs"
-                >
-                  <ShoppingCartIcon className="inline-block mr-1" size={16} />
-                  <PlusIcon className="inline-block absolute top-px right-px" size={16} />
-                </button>
-              </div>
-            </div>
-          )
-        })}
+                  <div className="absolute left-0 top-0 z-10 rounded-br-xl border-b border-r border-[#f97316]/40 bg-gradient-to-br from-[#f97316] to-[#ff9d57] px-4 py-2 text-[#1f2937] shadow-lg">
+                    <div className="text-sm font-bold tracking-wide">{sparePart?.nome || entry.stripeData?.name}</div>
+                    <div className="text-xs opacity-90">Ricambio</div>
+                  </div>
 
-        {((productType !== 'spare' && filteredPresets.length === 0) || productType === 'spare') &&
-          ((productType !== 'agenda' && spareOnlyProducts.length === 0) || productType === 'agenda') && (
-            <div className="col-span-full py-12 text-center text-[#8ea2d0]">
-              Nessun risultato trovato per i filtri selezionati.
-            </div>
-          )}
+                  {entry.stripeData?.images?.[0] ? (
+                    <img
+                      src={entry.stripeData.images[0]}
+                      alt={sparePart?.nome || 'Ricambio'}
+                      className="w-44 h-auto object-cover rounded-md"
+                    />
+                  ) : (
+                    <NoImagePlaceholder size="lg" />
+                  )}
+
+                  {/* Price Display */}
+                  <div className="w-full flex justify-center -mb-4 z-10">
+                    {entry.stripeData?.default_price?.unit_amount ? (
+                      <span className="rounded border border-[#37b87d]/40 bg-[#37b87d]/15 px-2.5 py-0.5 text-xs font-bold text-[#8fe7be]">
+                        {new Intl.NumberFormat('it-IT', {
+                          style: 'currency',
+                          currency: entry.stripeData.default_price.currency.toUpperCase(),
+                        }).format(entry.stripeData.default_price.unit_amount / 100)}
+                      </span>
+                    ) : (
+                      <span className="h-5 w-16 animate-pulse rounded bg-white/10"></span>
+                    )}
+                  </div>
+
+                  <div className='flex flex-row gap-2 items-end justify-center w-full mt-auto pt-6'>
+                    <Link
+                      to={`/prodotto/${entry.slug}`}
+                      className="uuuk-btn-primary !px-4 !py-2 !text-xs"
+                    >
+                      Vedi prodotto
+                    </Link>
+                    <button
+                      onClick={() => addToCart({
+                        ...sparePart,
+                        productId: entry.stripeData?.id,
+                        priceId: entry.stripeData?.default_price?.id,
+                        price: entry.stripeData?.default_price?.unit_amount ? Number(entry.stripeData.default_price.unit_amount) / 100 : 0,
+                        image: entry.stripeData?.images?.[0],
+                        name: sparePart?.nome || entry.stripeData?.name,
+                        id: sparePart?.id || entry.stripeData?.id,
+                        productType: 'spare',
+                        sparePart,
+                      })}
+                      className="uuuk-btn-secondary relative flex items-center gap-1 !px-3 !py-2 !text-xs"
+                    >
+                      <ShoppingCartIcon className="inline-block mr-1" size={16} />
+                      <PlusIcon className="inline-block absolute top-px right-px" size={16} />
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </>
+        )}
       </div>
+
+      {((productType !== 'spare' && filteredPresets.length === 0) || productType === 'spare') &&
+        ((productType !== 'agenda' && spareOnlyProducts.length === 0) || productType === 'agenda') && (
+          <div className="col-span-full py-12 text-center text-[#8ea2d0]">
+            Nessun risultato trovato per i filtri selezionati.
+          </div>
+        )}
     </div>
   )
 }
