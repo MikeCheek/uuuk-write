@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import Button from './Button'
 
 const ButtonTop = ({ onClick, text, onClickScrolled, textScrolled }: { onClick: () => void, text: string, onClickScrolled?: () => void, textScrolled?: string }) => {
 
@@ -103,23 +104,16 @@ const ButtonTop = ({ onClick, text, onClickScrolled, textScrolled }: { onClick: 
   }, [scrolled, onClick, onClickScrolled])
 
   return (
-    <button
-      onClick={handleClick}
-      className={`fixed cursor-none z-[100] top-4 right-4 rounded-lg border px-4 py-2 text-base font-bold uppercase tracking-wide transition-all duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0b1122] focus:ring-[#f97516] ${scrolled ? 'border-2 border-[#f97516]/45 bg-[#f97516]/10 text-[#f97516]' : 'border-[#ffb170]/35 bg-gradient-to-r from-[#f97516] to-[#ff9d57] text-[#0b1122] shadow-[0_10px_24px_rgba(249,117,22,0.26)]'
-        }`}
+    <div className="fixed cursor-none z-[100] top-4 right-4"
       aria-pressed={scrolled}
     >
-      <span
-        style={{
-          display: 'inline-block',
-          // slight transform for subtle movement while typing
-          transition: 'transform 80ms linear',
-          transform: 'translateY(0)'
-        }}
-      >
-        {displayedText}
-      </span>
-    </button>
+      <Button
+        onClick={handleClick}
+        text={displayedText}
+        type="button"
+        variant={scrolled ? "tertiary" : "primary"}
+      />
+    </div>
   )
 }
 

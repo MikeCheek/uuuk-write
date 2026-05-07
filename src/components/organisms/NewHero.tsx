@@ -192,8 +192,8 @@ const NewHero = () => {
         {/* Left column: Text & CTA (span 2 cols on md+) */}
         <div className='flex flex-col justify-center items-start px-6 row-span-3 md:col-span-3 md:px-12 lg:px-24 z-20 gap-8'>
           <div className='max-w-lg'>
-            <h1 className="uuuk-reveal font-roboto text-4xl md:text-5xl lg:text-6xl font-medium leading-tight text-[#eef6ff]">
-              Un Uuuk unico,<br />
+            <h1 className="uuuk-reveal font-roboto font-extrabold text-4xl md:text-5xl lg:text-6xl leading-tight text-[#eef6ff]">
+              Un UUUK unico,<br />
               <span className='text-[#f97516]'>progettato</span> intorno a te.
             </h1>
           </div>
@@ -208,7 +208,7 @@ const NewHero = () => {
           </div>
 
           <div className=''>
-            <Button href="/galleria" text='SCOPRI COME FUNZIONA' />
+            <Button href="/galleria" text='SCOPRI ORA' />
           </div>
         </div>
 
