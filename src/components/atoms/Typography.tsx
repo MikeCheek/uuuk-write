@@ -7,7 +7,7 @@ const Typography = ({ variant, render, children, className = "", dangerouslySetI
   if (render) renderElem = render
   else renderElem = variant
 
-  const h1Class = "font-heading text-4xl md:text-7xl leading-[0.95] " + className
+  const h1Class = "font-heading text-4xl md:text-5xl leading-[0.95] " + className
   const h2Class = "font-heading text-3xl md:text-6xl font-extrabold mb-8 md:mb-16 " + className
   const pClass = "text-base md:text-xl mt-4 max-w-2xl mx-auto max-w-[84vw] md:max-w-[42vw] leading-relaxed " + className
 

@@ -125,17 +125,25 @@ const NewHero = () => {
   }, [galleryOpen]);
 
   return (
-    <div className='relative flex min-h-screen flex-col items-center justify-center gap-32 overflow-hidden bg-[#0b1122] text-[#f3f7ff]'>
+    <div className='relative flex min-h-screen items-center overflow-hidden bg-[#0b1122] text-[#f3f7ff]'>
       <Modal show={modalOpen} onClose={() => setModalOpen(false)} />
 
-      <div className='relative z-30'>
+      {/* Absolute positioned header elements */}
+      <div className='absolute top-6 left-6 z-30'>
         <Logo className='w-[60px]' />
       </div>
 
-      <div className='relative z-50'>
-        <ButtonTop
+      <div className='absolute top-6 right-6 z-50'>
+        {/* <ButtonTop
           onClick={toggleGallery}
           text={galleryOpen ? "X" : "Galleria"}
+          onClickScrolled={() => navigate('/galleria')}
+          textScrolled='Ordina ora'
+        /> */}
+
+        <ButtonTop
+          onClick={() => navigate('/galleria')}
+          text={"Ordina"}
           onClickScrolled={() => navigate('/galleria')}
           textScrolled='Ordina ora'
         />
@@ -179,23 +187,41 @@ const NewHero = () => {
         </div>
       )}
 
+      {/* Two-column layout (left column larger) */}
+      <div className='grid w-full h-screen grid-rows-5 grid-cols-1 md:grid-rows-1 md:grid-cols-5  '>
+        {/* Left column: Text & CTA (span 2 cols on md+) */}
+        <div className='flex flex-col justify-center items-start px-6 row-span-3 md:col-span-3 md:px-12 lg:px-24 z-20 gap-8'>
+          <div className='max-w-lg'>
+            <h1 className="uuuk-reveal font-roboto text-4xl md:text-5xl lg:text-6xl font-medium leading-tight text-[#eef6ff]">
+              Un Uuuk unico,<br />
+              <span className='text-[#f97516]'>progettato</span> intorno a te.
+            </h1>
+          </div>
 
+          <div className="max-w-md space-y-2">
+            <p className="text-sm font-medium text-[#e6eeff]">
+              Personalizza il tuo diario!
+            </p>
+            <p className="text-xs font-light text-[#b8c5e6] leading-relaxed">
+              Crea un diario che non sembri scelta da un catalogo, ma pensato da te e per te
+            </p>
+          </div>
 
-      <Typography variant="h1" render='h2' className="uuuk-reveal relative z-20 mt-0 w-full text-center font-roboto font-medium max-w-[80vw] uppercase tracking-[0.06em] text-[#eef6ff] bg-gradient-to-r from-[#f5f9ff] via-[#9ad0ff] to-[#8ee4c4] bg-clip-text text-transparent drop-shadow-[0_14px_24px_rgba(0,0,0,0.35)] md:mb-0">
-        Write your story
-      </Typography>
+          <div className=''>
+            <Button href="/galleria" text='SCOPRI COME FUNZIONA' />
+          </div>
+        </div>
 
-      <h1 className="relative z-20 -mt-24 mb-4 max-w-2xl px-6 text-center text-sm font-medium uppercase tracking-[0.18em] text-[#c7d8ff] md:-mt-20 md:text-base">
-        L'agenda stampata 3D personalizzabile
-      </h1>
-
-      <div className='relative z-20'>
-        <Button href="/galleria" />
+        {/* Right column: Showcase */}
+        <div className={`flex md:flex items-center justify-center row-span-2 md:col-span-2 transition-all duration-300 ${galleryOpen ? 'z-40 opacity-100' : 'z-10 opacity-100'}`}>
+          <Showcase data={filteredEdges} opened={false} openModal={() => navigate('/galleria')} />
+        </div>
       </div>
 
-      <div className={`absolute left-0 top-0 flex h-[95vh] w-full items-center justify-center transition-all duration-300 md:h-screen ${galleryOpen ? 'z-40 opacity-100 bg-[#0b1122]/95' : 'z-10 opacity-35 saturate-75 bg-transparent pointer-events-none'}`}>
-        <Showcase data={filteredEdges} opened={galleryOpen} openModal={() => navigate('/galleria')} />
-      </div>
+      {/* Mobile overlay showcase */}
+      {/* <div className={`absolute inset-0 flex md:hidden items-center justify-center transition-all duration-300 ${galleryOpen ? 'z-40 opacity-100 bg-[#0b1122]/95' : 'z-10 opacity-35 saturate-75 bg-transparent pointer-events-none'}`}>
+        <Showcase data={filteredEdges} opened={false} openModal={() => navigate('/galleria')} />
+      </div> */}
     </div>
   )
 }
