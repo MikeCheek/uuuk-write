@@ -1,42 +1,11 @@
 import React from 'react';
 import Chip from './Chip';
-import { Module, ColorOption } from '../../utilities/arenaSettings';
+import { CartItem } from '../../utilities/arenaSettings';
 
-interface FrontCover {
-  collection: string;
-  template?: string;
-  color: ColorOption;
-  text: string;
-  fontSize: string;
-  position: string;
-  textColor: ColorOption;
-}
-
-interface BackCover {
-  color: ColorOption;
-  text: string;
-  fontSize: string;
-  position: string;
-  textColor: ColorOption;
-}
-
-interface ProductCustomizationDetailsProps {
-  frontCover?: FrontCover;
-  backCover?: BackCover;
-  modules?: Module[];
-  productType?: 'agenda' | 'spare';
-  sparePart?: {
-    id: string;
-    nome: string;
-    description: string;
-    personalization?: {
-      color: ColorOption;
-      text: string;
-    };
+type ProductCustomizationDetailsProps = Pick<CartItem, 'cartId'> &
+  Partial<Pick<CartItem, 'frontCover' | 'backCover' | 'modules' | 'productType' | 'sparePart'>> & {
+    size?: 'sm' | 'md';
   };
-  cartId: string | number;
-  size?: 'sm' | 'md';
-}
 
 /**
  * Reusable component for displaying product customization details

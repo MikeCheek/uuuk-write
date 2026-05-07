@@ -95,6 +95,10 @@ export interface Metadata extends RawMetadata {
     id: string
     nome: string
     description: string
+    personalization?: {
+      color: ColorOption
+      text: string
+    }
   }
 }
 

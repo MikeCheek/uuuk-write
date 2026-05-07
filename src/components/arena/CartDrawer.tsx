@@ -89,22 +89,30 @@ const CartDrawer = ({ isSidebarOpen, setIsSidebarOpen }:
                       </p>
                     </div>
 
-                    <details className="mt-2 rounded-md border border-white/10 bg-[#0b1531]/70 p-1.5 text-[10px] text-[#cddcff]">
-                      <summary className="cursor-pointer select-none text-[9px] font-bold uppercase tracking-wide text-[#8ea2d0]">
-                        {item.productType === 'spare' ? 'Dettagli ricambio' : 'Dettagli personalizzazione'}
-                      </summary>
-                      <div className="mt-1.5">
-                        <ProductCustomizationDetails
-                          frontCover={item.frontCover}
-                          backCover={item.backCover}
-                          modules={item.modules}
-                          productType={item.productType}
-                          sparePart={item.sparePart}
-                          cartId={item.cartId}
-                          size="sm"
-                        />
-                      </div>
-                    </details>
+                    {
+                      item.productType === 'spare' && !item.sparePart?.personalization ?
+                        <></>
+                        : (
+                          <details className="mt-2 rounded-md border border-white/10 bg-[#0b1531]/70 p-1.5 text-[10px] text-[#cddcff]">
+                            <summary className="cursor-pointer select-none text-[9px] font-bold uppercase tracking-wide text-[#8ea2d0]">
+                              {item.productType === 'spare' ? 'Dettagli ricambio' : 'Dettagli personalizzazione'}
+                            </summary>
+                            <div className="mt-1.5">
+                              <ProductCustomizationDetails
+                                frontCover={item.frontCover}
+                                backCover={item.backCover}
+                                modules={item.modules}
+                                productType={item.productType}
+                                sparePart={item.sparePart}
+                                cartId={item.cartId}
+                                size="sm"
+                              />
+                            </div>
+                          </details>
+                        )
+                    }
+
+
                   </div>
 
                   {/* 3. Remove Button */}
