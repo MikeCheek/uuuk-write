@@ -106,17 +106,22 @@ const CartCheckout = () => {
                             </div>
                           </div>
 
-                          <div className="mt-4 rounded-xl border border-white/10 bg-[#101d3f]/75 p-3 text-xs text-[#d8e5ff]">
-                            <ProductCustomizationDetails
-                              frontCover={item.frontCover}
-                              backCover={item.backCover}
-                              modules={item.modules}
-                              productType={item.productType}
-                              sparePart={item.sparePart}
-                              cartId={item.cartId}
-                              size="md"
-                            />
-                          </div>
+                          {
+                            //@ts-ignore
+                            item.productType === 'spare' && !item.sparePart?.personalization ? <></> : (
+
+                              <div className="mt-4 rounded-xl border border-white/10 bg-[#101d3f]/75 p-3 text-xs text-[#d8e5ff]">
+                                <ProductCustomizationDetails
+                                  frontCover={item.frontCover}
+                                  backCover={item.backCover}
+                                  modules={item.modules}
+                                  productType={item.productType}
+                                  sparePart={item.sparePart}
+                                  cartId={item.cartId}
+                                  size="md"
+                                />
+                              </div>
+                            )}
                         </div>
 
                         {/* 3. Trash Icon / Remove Option */}
