@@ -1,8 +1,13 @@
 import React, { useState } from 'react'
+
+// TypeScript may complain about missing type declarations for these CSS side-effect imports
+// @ts-ignore
+import "slick-carousel/slick/slick.css";
+// @ts-ignore
+import "slick-carousel/slick/slick-theme.css";
+
 import Slider from 'react-slick'
 import { GatsbyImage, IGatsbyImageData } from 'gatsby-plugin-image'
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import OrderNow from '../atoms/Button';
 
 const Showcase = ({ data, opened, openModal }: { data: any[], opened: boolean, openModal: () => void }) => {
@@ -19,7 +24,7 @@ const Showcase = ({ data, opened, openModal }: { data: any[], opened: boolean, o
     infinite: true,
     centerMode: true,
     speed: opened ? 200 : 3000,
-    slidesToShow: 3,
+    slidesToShow: 1,
     centerPadding: "60px",
     pauseOnHover: true,
     waitForAnimate: false,
@@ -30,23 +35,23 @@ const Showcase = ({ data, opened, openModal }: { data: any[], opened: boolean, o
     swipeToSlide: false,
     className: 'h-fit relative overflow-x-hidden',
     beforeChange: handleBeforeChange,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          arrows: opened,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
+    // responsive: [
+    //   {
+    //     breakpoint: 1024,
+    //     settings: {
+    //       slidesToShow: 2,
+    //       slidesToScroll: 1,
+    //       arrows: opened,
+    //     },
+    //   },
+    //   {
+    //     breakpoint: 768,
+    //     settings: {
+    //       slidesToShow: 1,
+    //       slidesToScroll: 1,
+    //     },
+    //   },
+    // ],
   }), [opened, handleBeforeChange])
 
   const NextArrow = (props: any) => {
@@ -85,7 +90,7 @@ const Showcase = ({ data, opened, openModal }: { data: any[], opened: boolean, o
 
   return (
     <>
-      <div className='w-screen relative'>
+      <div className='w-full relative'>
         {/* left/right gradient */}
         <div className="absolute left-0 top-0 bottom-0 w-20 pointer-events-none z-10">
           <div className="h-full bg-gradient-to-r from-[#0b1122] to-transparent" />

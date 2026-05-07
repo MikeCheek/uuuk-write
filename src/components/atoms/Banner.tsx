@@ -1,4 +1,5 @@
 import React from 'react'
+import Button from './Button'
 import Instagram from '../../assets/instagram.svg'
 
 const Banner = () => {
@@ -28,12 +29,12 @@ const Banner = () => {
           </div>
         </div>
       </div>
-      <a title='Pagina Instagram' href="https://www.instagram.com/uuuk.notes/" target="_blank" rel="noopener noreferrer"
-        className="md:ml-4 cursor-none rounded-lg border border-[#ffb170]/35 bg-gradient-to-r from-[#f97516] to-[#ff9d57] px-4 py-3 font-bold uppercase tracking-wide text-[#0b1122] transition duration-300 ease-in-out hover:brightness-105 md:px-8 md:text-lg"
-      >
-        Dai un'occhiata
-        <Instagram className="inline-block w-4 h-4 md:w-6 md:h-6 ml-2 -mt-1" fill="white" />
-      </a>
+      <Button
+        href="https://www.instagram.com/uuuk.notes/"
+        text="Dai un'occhiata"
+        icon={<Instagram className="h-4 w-4 md:h-6 md:w-6" fill="black" />}
+        className="md:ml-4 cursor-none px-4 py-3 md:px-8 md:text-lg"
+      />
     </div>
   )
 }

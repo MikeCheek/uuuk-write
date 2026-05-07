@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { MessageCircleQuestion } from 'lucide-react'
 import Modal from '../atoms/Modal'
 import { useSnackbar } from '../../utilities/snackbarContext'
 
@@ -86,9 +87,9 @@ const HelpSupport = ({ help }: HelpSupportProps) => {
       <button
         type="button"
         onClick={() => setHelpModalOpen(true)}
-        className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full border border-[#f97316]/45 bg-[#f97316] px-5 py-3 text-sm font-black uppercase tracking-wide text-[#1e293b] shadow-[0_14px_30px_rgba(249,115,22,0.35)] transition-all hover:bg-[#fb8a35]"
+        className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full border border-[#f97316]/45 bg-[#f97316] p-3 text-sm font-black uppercase tracking-wide text-[#1e293b] shadow-[0_14px_30px_rgba(249,115,22,0.35)] transition-all hover:bg-[#fb8a35]"
       >
-        Aiuto
+        <MessageCircleQuestion size={24} />
       </button>
     </>
   )
