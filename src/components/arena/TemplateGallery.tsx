@@ -204,7 +204,7 @@ const TemplateItem = ({
     <div className="relative">
       {isHotpick && (
         <div
-          className="pointer-events-none absolute inset-0 z-50 animate-fadeIn opacity-50"
+          className="pointer-events-none absolute inset-0 z-1 animate-fadeIn opacity-50"
           style={{ animationDelay: `${index * 0.1}s` }}
         >
           {HOTPICK_PARTICLES.map((p, i) => {
