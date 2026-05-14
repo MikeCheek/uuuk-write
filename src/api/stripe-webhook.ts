@@ -451,6 +451,18 @@ const sendEmailJsOrderConfirmation = async (payload: {
       publicKey,
       privateKey
     })
+    // Record successful send event for internal counting
+    try {
+      await db.collection('emailjs_events').add({
+        createdAt: new Date().toISOString(),
+        success: true,
+        source: 'order_confirmation',
+        toEmail: payload.toEmail || null,
+        orderId: payload.orderId
+      })
+    } catch (err) {
+      console.error('Failed to record emailjs event:', err)
+    }
 
     return { sent: true, reason: null }
   } catch (error: any) {
