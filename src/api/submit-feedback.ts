@@ -52,6 +52,18 @@ export default async function handler (
         privateKey: process.env.EMAILJS_PRIVATE_KEY
       }
     )
+
+    // Internal event tracking: record a send event for monthly counting
+    try {
+      await db.collection('emailjs_events').add({
+        createdAt: new Date().toISOString(),
+        success: true,
+        source: 'feedback',
+        email: data.email || null
+      })
+    } catch (err) {
+      console.error('Failed to record emailjs event:', err)
+    }
     return res.status(200).json({ success: true })
   } catch (err: any) {
     console.error('Error saving feedback:', err)
