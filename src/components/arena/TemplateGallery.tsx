@@ -11,6 +11,7 @@ import { useCart } from '../../utilities/cartContext'
 import { PlusIcon, ShoppingCartIcon, SlidersHorizontal, X } from 'lucide-react'
 import NoImagePlaceholder from '../atoms/NoImagePlaceholder'
 import { HOTPICKS } from '../../utilities/arenaSettings'
+import SparePartImageSlider from './SparePartImageSlider'
 
 const HOTPICK_PARTICLES = [
   { x: 15, y: 100, tx: -18, ty: -55, type: 'spark' },
@@ -364,7 +365,15 @@ const SpareCard = ({
         <div className="text-xs opacity-90">Ricambio</div>
       </div>
 
-      {entry.stripeData?.images?.[0] ? (
+      {sparePart?.images?.length ? (
+        <SparePartImageSlider
+          images={sparePart.images}
+          alt={sparePart?.nome || 'Ricambio'}
+          className="w-44 h-44"
+          imageClassName="rounded-md"
+          arrowsClassName="h-8 w-8"
+        />
+      ) : entry.stripeData?.images?.[0] ? (
         <img
           src={entry.stripeData.images[0]}
           alt={sparePart?.nome || 'Ricambio'}

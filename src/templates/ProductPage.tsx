@@ -1,29 +1,13 @@
 import React from 'react'
 import { PageProps, HeadProps } from 'gatsby'
-import { Metadata, ColorOption } from '../utilities/arenaSettings'
+import { Metadata } from '../utilities/arenaSettings'
 import { getCoverTemplateImagePath } from '../utilities/arenaHelpers'
 import { StripeProduct } from '../utilities/stripeHelper'
 import Seo from '../components/atoms/Seo'
 import Layout from '../components/organisms/Layout'
 import ProductDetails from '../components/arena/ProductDetails'
 import SparePartProductView from '../components/arena/SparePartProductView'
-
-// The data passed from gatsby-node via "context"
-interface PageContextType {
-  name: string
-  preset: Metadata
-  slug: string
-}
-
-interface SparePartItem {
-  id: string
-  nome: string
-  description: string
-  personalization?: {
-    color: ColorOption
-    text: string
-  }
-}
+import { SparePartItem } from '../utilities/spareParts'
 
 interface PageContext {
   presetName: string | null
@@ -33,7 +17,7 @@ interface PageContext {
 }
 
 const ProductPage: React.FC<PageProps<null, PageContext>> = ({ pageContext }) => {
-  const { preset, stripeData, sparePart } = pageContext  // remove spareParts
+  const { preset, stripeData, sparePart } = pageContext
   const isSpare = !preset
 
   if (isSpare) {
