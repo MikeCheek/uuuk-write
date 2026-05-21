@@ -9,18 +9,61 @@ import { slugify, enrichProductWithPreset } from './src/utilities/arenaHelpers'
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
 
-export const createPages = async ({ actions }: any) => {
+export const createPages = async ({ actions, graphql }: any) => {
   const { createPage } = actions
 
   // 1. Fetch Stripe products
   const apiProducts = await getProducts()
   const allStripeProducts = apiProducts.data
 
+  const sparePartsResult = await graphql(`
+    query SparePartImages {
+      allFile(
+        filter: {
+          extension: { regex: "/(jpg|jpeg|png|webp)/" }
+          relativeDirectory: { regex: "/^spareParts\\//" }
+        }
+        sort: { name: ASC }
+      ) {
+        nodes {
+          relativeDirectory
+          name
+          childImageSharp {
+            gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
+          }
+        }
+      }
+    }
+  `)
+
+  if (sparePartsResult.errors) {
+    throw sparePartsResult.errors
+  }
+
+  const sparePartImagesById = new Map<string, any[]>()
+  ;(sparePartsResult.data?.allFile?.nodes ?? []).forEach((node: any) => {
+    const sparePartId = String(node.relativeDirectory || '')
+      .split('/')
+      .pop()
+    if (!sparePartId) return
+    const imageData = node.childImageSharp?.gatsbyImageData
+    if (!imageData) return
+
+    const current = sparePartImagesById.get(sparePartId) ?? []
+    current.push(imageData)
+    sparePartImagesById.set(sparePartId, current)
+  })
+
+  const sparePartsWithImages = spareParts.map(sparePart => ({
+    ...sparePart,
+    images: sparePartImagesById.get(sparePart.id) ?? []
+  }))
+
   // Build a map of spare parts by slug for quick lookup
   const spareMap = new Map<string, typeof spareParts[number]>()
-  spareParts.forEach(p => spareMap.set(slugify(p.nome ?? p.id), p))
+  sparePartsWithImages.forEach(p => spareMap.set(slugify(p.nome ?? p.id), p))
   // Identify universal spare parts (names without separators like " - ")
-  const universalSpareParts = spareParts.filter(
+  const universalSpareParts = sparePartsWithImages.filter(
     p => !(p.nome || '').includes(' - ')
   )
 

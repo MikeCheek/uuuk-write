@@ -5,16 +5,8 @@ import { ColorOption, colors } from '../../utilities/arenaSettings'
 import { useCart } from '../../utilities/cartContext'
 import { useSnackbar } from '../../utilities/snackbarContext'
 import NoImagePlaceholder from '../atoms/NoImagePlaceholder'
-
-export interface SparePartItem {
-  id: string
-  nome: string
-  description: string
-  personalization?: {
-    color: ColorOption
-    text: string
-  }
-}
+import SparePartImageSlider from './SparePartImageSlider'
+import { SparePartItem } from '../../utilities/spareParts'
 
 interface SparePartProductViewProps {
   stripeData: StripeProduct
@@ -88,7 +80,15 @@ const SparePartProductView = ({ stripeData, sparePart }: SparePartProductViewPro
         </div>
         <div className="grid grid-cols-1 gap-12 p-8 md:grid-cols-2 lg:p-12">
           <div className="relative flex min-h-[500px] flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#0b1531] p-8">
-            {stripeData?.images?.[0] ? (
+            {sparePart?.images?.length ? (
+              <SparePartImageSlider
+                images={sparePart.images}
+                alt={sparePart?.nome || 'Ricambio'}
+                className="max-w-full"
+                imageClassName="max-h-[60vh] rounded-xl"
+                arrowsClassName="scale-90"
+              />
+            ) : stripeData?.images?.[0] ? (
               <img
                 src={stripeData.images[0]}
                 alt={sparePart?.nome || 'Ricambio'}

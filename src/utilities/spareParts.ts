@@ -1,5 +1,18 @@
+import { IGatsbyImageData } from 'gatsby-plugin-image'
 import { getColor } from './arenaSettings'
-export const spareParts = [
+
+export interface SparePartItem {
+  id: string
+  nome: string
+  description: string
+  personalization?: {
+    color: ReturnType<typeof getColor>
+    text: string
+  }
+  images?: IGatsbyImageData[]
+}
+
+export const spareParts: SparePartItem[] = [
   {
     id: 'refill',
     nome: 'Refill',
