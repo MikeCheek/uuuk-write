@@ -190,14 +190,14 @@ const sendTelegramMessage = async (params: {
   }
 }
 
-const sendTelegramAudio = async (params: {
+const sendTelegramVoice = async (params: {
   botToken: string
   chatId: string | number
-  audio: string
+  voice: string
   messageThreadId?: number
 }) => {
   const response = await fetch(
-    `https://api.telegram.org/bot${params.botToken}/sendAudio`,
+    `https://api.telegram.org/bot${params.botToken}/sendVoice`,
     {
       method: 'POST',
       headers: {
@@ -205,7 +205,7 @@ const sendTelegramAudio = async (params: {
       },
       body: JSON.stringify({
         chat_id: params.chatId,
-        audio: params.audio,
+        voice: params.voice,
         ...(typeof params.messageThreadId === 'number'
           ? { message_thread_id: params.messageThreadId }
           : {})
@@ -943,10 +943,10 @@ export default async function handler(
     }
 
     if (parsed.command === '/buchiaterra') {
-      await sendTelegramAudio({
+      await sendTelegramVoice({
         botToken,
         chatId: message.chat.id,
-        audio: BUCHIATERRA_AUDIO_URL,
+        voice: BUCHIATERRA_AUDIO_URL,
         messageThreadId: threadId
       })
 
