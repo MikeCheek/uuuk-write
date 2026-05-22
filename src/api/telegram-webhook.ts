@@ -24,7 +24,7 @@ const db = getFirestore()
 const ORDER_COLLECTIONS = ['orders', 'orders-test'] as const
 const ORDERS_PORTAL_BASE = 'https://orders.uuuk.it/#'
 const SITE_URL = (process.env.SITE_URL || 'https://uuuk.it').replace(/\/$/, '')
-const BUCHIATERRA_AUDIO_URL = `${SITE_URL}/audio/buchiaterra.m4a`
+const BUCHIATERRA_AUDIO_URL = `${SITE_URL}/audio/buchiaterra.ogg`
 
 type TelegramChat = {
   id: number
