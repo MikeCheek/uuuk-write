@@ -23,6 +23,8 @@ if (!getApps().length) {
 const db = getFirestore()
 const ORDER_COLLECTIONS = ['orders', 'orders-test'] as const
 const ORDERS_PORTAL_BASE = 'https://orders.uuuk.it/#'
+const SITE_URL = (process.env.SITE_URL || 'https://uuuk.it').replace(/\/$/, '')
+const BUCHIATERRA_AUDIO_URL = `${SITE_URL}/audio/buchiaterra.m4a`
 
 type TelegramChat = {
   id: number
@@ -175,6 +177,35 @@ const sendTelegramMessage = async (params: {
         parse_mode: params.parseMode,
         disable_web_page_preview: true,
         ...(params.replyMarkup ? { reply_markup: params.replyMarkup } : {}),
+        ...(typeof params.messageThreadId === 'number'
+          ? { message_thread_id: params.messageThreadId }
+          : {})
+      })
+    }
+  )
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Telegram API error: ${errorText}`)
+  }
+}
+
+const sendTelegramAudio = async (params: {
+  botToken: string
+  chatId: string | number
+  audio: string
+  messageThreadId?: number
+}) => {
+  const response = await fetch(
+    `https://api.telegram.org/bot${params.botToken}/sendAudio`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chat_id: params.chatId,
+        audio: params.audio,
         ...(typeof params.messageThreadId === 'number'
           ? { message_thread_id: params.messageThreadId }
           : {})
@@ -422,6 +453,7 @@ const buildHelpMessage = (isAdminChat: boolean): string => {
     '',
     '<b>Comandi disponibili</b>',
     '• /start o /help - messaggio di benvenuto e guida',
+    '• /buchiaterra - una sorpresa sonora',
     '• /order &lt;id&gt; - stato compatto di uno specifico ordine',
     '• /status - check rapido del bot',
     '• /ping - pong'
@@ -908,6 +940,17 @@ export default async function handler(
       })
 
       return res.status(200).json({ ok: true })
+    }
+
+    if (parsed.command === '/buchiaterra') {
+      await sendTelegramAudio({
+        botToken,
+        chatId: message.chat.id,
+        audio: BUCHIATERRA_AUDIO_URL,
+        messageThreadId: threadId
+      })
+
+      return res.status(200).json({ ok: true, command: '/buchiaterra' })
     }
 
     if (parsed.command === '/status') {

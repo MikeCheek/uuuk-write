@@ -21,7 +21,7 @@ export const createPages = async ({ actions, graphql }: any) => {
       allFile(
         filter: {
           extension: { regex: "/(jpg|jpeg|png|webp)/" }
-          relativeDirectory: { regex: "/^spareParts\\//" }
+          relativeDirectory: { regex: "/^spareParts//" }
         }
         sort: { name: ASC }
       ) {
