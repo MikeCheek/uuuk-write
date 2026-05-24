@@ -58,8 +58,13 @@ export default async function handler (
       await db.collection('emailjs_events').add({
         createdAt: new Date().toISOString(),
         success: true,
-        source: 'feedback',
-        email: data.email || null
+        source:
+          data.source === 'delivery-check'
+            ? 'feedback_delivery_check'
+            : 'feedback',
+        email: data.email || null,
+        orderId: data.orderId || null,
+        livemode: typeof data.livemode === 'boolean' ? data.livemode : null
       })
     } catch (err) {
       console.error('Failed to record emailjs event:', err)

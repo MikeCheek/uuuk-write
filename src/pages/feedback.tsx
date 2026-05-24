@@ -1,6 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import StarRating from '../components/atoms/StarRating';
+
+type FeedbackOrigin = {
+  source: string | null
+  orderId: string | null
+  livemode: boolean | null
+}
 
 const initialState = {
   email: '',
@@ -19,6 +25,49 @@ const FeedbackPage: React.FC = () => {
   const [form, setForm] = useState(initialState);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [origin, setOrigin] = useState<FeedbackOrigin>({
+    source: null,
+    orderId: null,
+    livemode: null
+  });
+
+  const searchParams = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    return new URLSearchParams(window.location.search);
+  }, []);
+
+  useEffect(() => {
+    if (!searchParams) return;
+
+    const source = searchParams.get('source');
+    const orderId = searchParams.get('orderId');
+    const livemodeParam = searchParams.get('livemode');
+
+    setOrigin({
+      source,
+      orderId,
+      livemode:
+        livemodeParam === 'true'
+          ? true
+          : livemodeParam === 'false'
+            ? false
+            : null
+    });
+
+    if (source === 'delivery-check' && orderId) {
+      fetch(`/api/get-order?orderId=${encodeURIComponent(orderId)}&livemode=${String(livemodeParam !== 'false')}`)
+        .then(res => (res.ok ? res.json() : null))
+        .then(data => {
+          if (data?.success) {
+            const email = data.data?.customer_details?.email;
+            if (typeof email === 'string' && email.trim()) {
+              setForm(prev => ({ ...prev, email }));
+            }
+          }
+        })
+        .catch(() => undefined);
+    }
+  }, [searchParams]);
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -38,7 +87,12 @@ const FeedbackPage: React.FC = () => {
       const res = await fetch('/api/submit-feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          source: origin.source,
+          orderId: origin.orderId,
+          livemode: origin.livemode
+        }),
       });
       if (!res.ok) throw new Error('Errore invio');
       setSubmitted(true);
@@ -48,10 +102,6 @@ const FeedbackPage: React.FC = () => {
   };
 
 
-
-  if (typeof window === 'undefined') {
-    return null;
-  }
 
   if (submitted) {
     return (
@@ -70,8 +120,17 @@ const FeedbackPage: React.FC = () => {
       <div className="mx-auto w-full md:max-w-[80vw] rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_12px_36px_rgba(6,10,20,0.45)]">
         <h1 className="text-3xl md:text-4xl font-black mb-2 text-[#f6f8ff] tracking-tight uppercase">DICCI LA TUA 🙂</h1>
         <p className="mb-6 text-[#b6c8f2] leading-relaxed">
-          Il tuo parere conta tantissimo per noi!<br />
-          Bastano <b>meno di 45 secondi</b> per rispondere a qualche domanda:<br />
+          {origin.source === 'delivery-check' ? (
+            <>
+              Hai appena confermato la ricezione del tuo ordine.<br />
+              Se ti va, lascia anche un feedback veloce e una recensione facoltativa:<br />
+            </>
+          ) : (
+            <>
+              Il tuo parere conta tantissimo per noi!<br />
+              Bastano <b>meno di 45 secondi</b> per rispondere a qualche domanda:<br />
+            </>
+          )}
           <span className="block mt-2">⭐ Valuta la tua esperienza<br />
             📝 Dicci cosa ti è piaciuto (o meno)<br />
             🚀 Aiutaci a migliorare UUUUk per te e per tutti!</span><br />

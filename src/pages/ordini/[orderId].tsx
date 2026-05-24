@@ -188,6 +188,10 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
     step.toLowerCase().trim().replace(" ", "-") === order['order-status']?.toLowerCase().trim()
   )
   const currentStepIndex = stepIndex !== -1 ? stepIndex : 0
+  const canConfirmReception = currentStepIndex === 1
+  const confirmReceptionUrl = `/ordini/conferma-ricezione?orderId=${encodeURIComponent(
+    orderId || ''
+  )}&livemode=${String(!order.isTest)}`
 
   return (
     <Layout help={{ orderId: order.orderId }}>
@@ -308,6 +312,18 @@ const OrderPage = ({ params }: PageProps<Record<string, never>, OrderPageParams>
                   <p className="mt-1 text-center text-xs text-[#8ea2d0]">Completato</p>
                 </div>
               </div>
+
+              {canConfirmReception ? (
+                <div className="mt-8 flex justify-center">
+                  <a
+                    href={confirmReceptionUrl}
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#f97316] px-5 py-3 font-bold text-[#1e293b] transition hover:bg-[#ff9d57]"
+                  >
+                    <CheckCircle size={18} />
+                    Conferma ricezione ordine
+                  </a>
+                </div>
+              ) : null}
             </div>
           </div>
           <div className="mb-8 rounded-2xl border border-white/10 bg-[#0f1b3c]/90 p-8 shadow-[0_15px_45px_rgba(6,10,20,0.5)]">
