@@ -5,6 +5,8 @@ import {
 } from 'gatsby'
 import { cert, getApps, initializeApp } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
+import emailjs from '@emailjs/nodejs'
+import { buildDeliveryCheckEmailHtml } from '../utilities/buildDeliveryCheckEmailHtml'
 
 export const config: GatsbyFunctionConfig = {
   bodyParser: {
@@ -25,6 +27,7 @@ const db = getFirestore()
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000
 const DEFAULT_TOPIC_ID = 9
+const SITE_URL = (process.env.SITE_URL || 'https://uuuk.it').replace(/\/$/, '')
 
 type OrderData = {
   orderId?: string
@@ -39,6 +42,17 @@ type OrderData = {
     name?: string
     email?: string
   }
+  shipping_details?: {
+    name?: string
+    address?: {
+      line1?: string
+      line2?: string
+      city?: string
+      postal_code?: string
+      state?: string
+      country?: string
+    }
+  }
   telegramNotification?: {
     chatId?: string | number
     topicId?: number
@@ -50,6 +64,41 @@ type OrderData = {
     reason?: string | null
     chatId?: string | number
     topicId?: number
+  }
+  deliveryCheckNotification?: {
+    sent?: boolean
+    lastSentAt?: string
+    attemptedAt?: string
+    reason?: string | null
+    recipient?: string | null
+    confirmUrl?: string | null
+    reviewUrl?: string | null
+  }
+  emailNotification?: {
+    confirmation?: {
+      sentAt?: string | null
+      recipient?: string | null
+      subject?: string | null
+      status?: 'pending' | 'sent' | 'failed'
+      reason?: string | null
+    }
+    shipped?: {
+      sentAt?: string | null
+      recipient?: string | null
+      subject?: string | null
+      status?: 'pending' | 'sent' | 'failed'
+      reason?: string | null
+    }
+    deliveryCheck?: {
+      sentAt?: string | null
+      recipient?: string | null
+      subject?: string | null
+      status?: 'pending' | 'sent' | 'failed'
+      reason?: string | null
+      confirmUrl?: string | null
+      reviewUrl?: string | null
+    }
+    custom?: Array<Record<string, unknown>>
   }
 }
 
@@ -207,6 +256,100 @@ const sendTelegramMessage = async (params: {
   }
 }
 
+const sendDeliveryCheckEmail = async (params: {
+  toEmail: string
+  toName: string
+  orderId: string
+  shippingName: string
+  shippingAddress: string
+  confirmUrl: string
+  reviewUrl: string
+}) => {
+  const serviceId = process.env.EMAILJS_SERVICE_ID
+  const templateId = process.env.EMAILJS_DELIVERY_CHECK_TEMPLATE_ID
+  const publicKey = process.env.EMAILJS_PUBLIC_KEY
+  const privateKey = process.env.EMAILJS_PRIVATE_KEY
+
+  if (!serviceId || !templateId || !publicKey || !privateKey) {
+    return {
+      sent: false,
+      reason: 'EmailJS configuration is missing'
+    }
+  }
+
+  if (!params.toEmail.trim()) {
+    return {
+      sent: false,
+      reason: 'Customer email is missing'
+    }
+  }
+
+  const html = buildDeliveryCheckEmailHtml({
+    toName: params.toName,
+    orderId: params.orderId,
+    shippingName: params.shippingName,
+    shippingAddress: params.shippingAddress,
+    ctaUrl: params.confirmUrl,
+    reviewUrl: params.reviewUrl,
+    recipientEmail: params.toEmail,
+    actionText: '✓ Sì, ho ricevuto il mio ordine',
+    footerNote:
+      'Dopo la conferma puoi lasciare una recensione dalla pagina feedback.'
+  })
+
+  try {
+    await emailjs.send(
+      serviceId,
+      templateId,
+      {
+        email: params.toEmail,
+        to_email: params.toEmail,
+        to_name: params.toName,
+        order_id: params.orderId,
+        shipping_name: params.shippingName,
+        shipping_address: params.shippingAddress,
+        confirm_url: params.confirmUrl,
+        review_url: params.reviewUrl,
+        html,
+        html_body: html,
+        object: {
+          orderId: params.orderId,
+          confirmUrl: params.confirmUrl,
+          reviewUrl: params.reviewUrl
+        },
+        payload: JSON.stringify({
+          orderId: params.orderId,
+          confirmUrl: params.confirmUrl,
+          reviewUrl: params.reviewUrl
+        })
+      },
+      {
+        publicKey,
+        privateKey
+      }
+    )
+
+    try {
+      await db.collection('emailjs_events').add({
+        createdAt: new Date().toISOString(),
+        success: true,
+        source: 'delivery_check',
+        toEmail: params.toEmail,
+        orderId: params.orderId,
+        confirmUrl: params.confirmUrl,
+        reviewUrl: params.reviewUrl
+      })
+    } catch (err) {
+      console.error('Failed to record emailjs event:', err)
+    }
+
+    return { sent: true, reason: null }
+  } catch (error: any) {
+    console.error('Delivery check email error:', error?.message || error)
+    return { sent: false, reason: error?.message || 'Unknown EmailJS error' }
+  }
+}
+
 const formatOrderMessage = (params: {
   order: OrderData
   lastUpdate: Date
@@ -287,6 +430,60 @@ const formatOrderMessage = (params: {
   return lines.join('\n')
 }
 
+const getDeliveryCheckShippingName = (order: OrderData): string => {
+  return order.shipping_details?.name || order.customer_details?.name || 'N/A'
+}
+
+const getDeliveryCheckShippingAddress = (order: OrderData): string => {
+  const address = order.shipping_details?.address
+  if (!address) return 'N/A'
+
+  return [
+    address.line1,
+    address.line2,
+    address.city,
+    address.postal_code,
+    address.state,
+    address.country
+  ]
+    .filter(Boolean)
+    .join(', ')
+}
+
+const buildDeliveryCheckUrls = (params: { orderId: string }) => {
+  const confirmUrl = `${SITE_URL}/ordini/conferma-ricezione?orderId=${encodeURIComponent(
+    params.orderId
+  )}&livemode=true`
+  const reviewUrl = `${SITE_URL}/feedback?source=delivery-check&orderId=${encodeURIComponent(
+    params.orderId
+  )}&livemode=true`
+
+  return { confirmUrl, reviewUrl }
+}
+
+const buildDeliveryCheckEmailNotification = (params: {
+  order: OrderData
+  recipient: string | null
+  sentAt: string | null
+  status: 'pending' | 'sent' | 'failed'
+  reason?: string | null
+  confirmUrl: string
+  reviewUrl: string
+}) => {
+  return {
+    ...(params.order.emailNotification ?? {}),
+    deliveryCheck: {
+      sentAt: params.sentAt,
+      recipient: params.recipient,
+      subject: 'Il tuo ordine è arrivato?',
+      status: params.status,
+      reason: params.reason ?? null,
+      confirmUrl: params.confirmUrl,
+      reviewUrl: params.reviewUrl
+    }
+  }
+}
+
 export default async function handler (
   req: GatsbyFunctionRequest,
   res: GatsbyFunctionResponse
@@ -324,11 +521,14 @@ export default async function handler (
   let scanned = 0
   let eligible = 0
   let sent = 0
+  let deliveryChecksSent = 0
   let skippedDelivered = 0
   let skippedNotEligible = 0
   let skippedRecentNotification = 0
   let skippedInvalidDate = 0
+  let skippedDeliveryCheckAlreadySent = 0
   let failed = 0
+  let failedDeliveryChecks = 0
 
   for (const doc of overdueSnapshot.docs) {
     scanned += 1
@@ -352,8 +552,111 @@ export default async function handler (
       continue
     }
 
-    const lastUpdateDate =
+    const shippingCheckLastUpdate =
       getDateFromIso(order.updatedAt) || getDateFromIso(order.createdAt)
+
+    if (!shippingCheckLastUpdate) {
+      skippedInvalidDate += 1
+      continue
+    }
+
+    const deliveryCheckCooldownMs = SEVEN_DAYS_MS
+    const deliveryCheckSent = order.deliveryCheckNotification?.sent === true
+    const deliveryCheckLastSentDate = getDateFromIso(
+      order.deliveryCheckNotification?.lastSentAt ||
+        order.deliveryCheckNotification?.attemptedAt
+    )
+
+    const shouldSendDeliveryCheck =
+      shippingStatusNorm === 'spedito' &&
+      nowMs - shippingCheckLastUpdate.getTime() >= deliveryCheckCooldownMs &&
+      !deliveryCheckSent &&
+      (!deliveryCheckLastSentDate ||
+        nowMs - deliveryCheckLastSentDate.getTime() >= deliveryCheckCooldownMs)
+
+    if (!shouldSendDeliveryCheck) {
+      if (deliveryCheckSent) {
+        skippedDeliveryCheckAlreadySent += 1
+      }
+    } else {
+      const customerEmail = order.customer_details?.email || ''
+      const customerName = order.customer_details?.name || 'Cliente'
+      const shippingName = getDeliveryCheckShippingName(order)
+      const shippingAddress = getDeliveryCheckShippingAddress(order)
+      const urls = buildDeliveryCheckUrls({
+        orderId: doc.id
+      })
+
+      if (!customerEmail) {
+        failedDeliveryChecks += 1
+        await doc.ref.set(
+          {
+            emailNotification: buildDeliveryCheckEmailNotification({
+              order,
+              recipient: null,
+              sentAt: null,
+              status: 'failed',
+              reason: 'Missing customer email',
+              confirmUrl: urls.confirmUrl,
+              reviewUrl: urls.reviewUrl
+            }),
+            deliveryCheckNotification: {
+              sent: false,
+              reason: 'Missing customer email',
+              recipient: null,
+              confirmUrl: urls.confirmUrl,
+              reviewUrl: urls.reviewUrl,
+              attemptedAt: now.toISOString()
+            }
+          },
+          { merge: true }
+        )
+      } else {
+        const deliveryCheckResult = await sendDeliveryCheckEmail({
+          toEmail: customerEmail,
+          toName: customerName,
+          orderId: doc.id,
+          shippingName,
+          shippingAddress,
+          confirmUrl: urls.confirmUrl,
+          reviewUrl: urls.reviewUrl
+        })
+
+        if (deliveryCheckResult.sent) {
+          deliveryChecksSent += 1
+        } else {
+          failedDeliveryChecks += 1
+        }
+
+        await doc.ref.set(
+          {
+            emailNotification: buildDeliveryCheckEmailNotification({
+              order,
+              recipient: customerEmail,
+              sentAt: deliveryCheckResult.sent ? now.toISOString() : null,
+              status: deliveryCheckResult.sent ? 'sent' : 'failed',
+              reason: deliveryCheckResult.reason,
+              confirmUrl: urls.confirmUrl,
+              reviewUrl: urls.reviewUrl
+            }),
+            deliveryCheckNotification: {
+              sent: deliveryCheckResult.sent,
+              reason: deliveryCheckResult.reason,
+              recipient: customerEmail,
+              confirmUrl: urls.confirmUrl,
+              reviewUrl: urls.reviewUrl,
+              attemptedAt: now.toISOString(),
+              ...(deliveryCheckResult.sent
+                ? { lastSentAt: now.toISOString() }
+                : {})
+            }
+          },
+          { merge: true }
+        )
+      }
+    }
+
+    const lastUpdateDate = shippingCheckLastUpdate
 
     if (!lastUpdateDate) {
       skippedInvalidDate += 1
@@ -443,12 +746,15 @@ export default async function handler (
     scanned,
     eligible,
     sent,
+    deliveryChecksSent,
     failed,
+    failedDeliveryChecks,
     skipped: {
       delivered: skippedDelivered,
       notEligible: skippedNotEligible,
       recentNotification: skippedRecentNotification,
-      invalidDate: skippedInvalidDate
+      invalidDate: skippedInvalidDate,
+      deliveryCheckAlreadySent: skippedDeliveryCheckAlreadySent
     }
   })
 }
