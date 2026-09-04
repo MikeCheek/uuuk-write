@@ -6,7 +6,7 @@ const Footer = () => {
   const year = new Date().getFullYear()
 
   return (
-    <footer className='mx-auto mt-6 pt-20 w-full border-t border-white/10 bg-[#0b1122] text-[#c7d6f8]'>
+    <footer className='mx-auto mt-0 pt-20 w-full border-t border-white/10 bg-[#0b1122] text-[#c7d6f8]'>
       <div className='mx-auto grid w-full max-w-7xl gap-8 px-6 py-10 mb-20 md:grid-cols-3 md:px-10'>
         <div className='space-y-3'>
           <p className='text-sm font-bold uppercase tracking-[0.18em] text-[#f2f5ff]'>UUUK</p>
