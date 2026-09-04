@@ -28,6 +28,10 @@ const Footer = () => {
           <p className='text-sm font-bold uppercase tracking-[0.18em] text-[#f2f5ff]'>Link utili</p>
           <nav className='flex flex-col gap-2 text-sm text-[#aebddd]'>
             <Link to='/' className='transition-colors hover:text-[#ffb170]'>Home</Link>
+            <Link to='/storia' className='transition-colors hover:text-[#ffb170]'>Storia</Link>
+            <Link to='/prodotto' className='transition-colors hover:text-[#ffb170]'>Prodotto</Link>
+            <Link to='/personalizzazione' className='transition-colors hover:text-[#ffb170]'>Personalizza</Link>
+            <Link to='/sostenibilita' className='transition-colors hover:text-[#ffb170]'>Sostenibilità</Link>
             <Link to='/galleria' className='transition-colors hover:text-[#ffb170]'>Galleria</Link>
             {/* <Link to='/carrello' className='transition-colors hover:text-[#ffb170]'>Carrello</Link>
             <Link to='/feedback' className='transition-colors hover:text-[#ffb170]'>Feedback</Link> */}

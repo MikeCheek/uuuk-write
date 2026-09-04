@@ -4,8 +4,6 @@ import Showcase from '../molecules/Showcase'
 import Button from '../atoms/Button'
 import Typography from '../atoms/Typography'
 import Modal from '../atoms/Modal'
-import Logo from '../atoms/Logo'
-import ButtonTop from '../atoms/ButtonTop'
 
 const NewHero = () => {
   const [galleryOpen, setGalleryOpen] = useState(false)
@@ -125,29 +123,8 @@ const NewHero = () => {
   }, [galleryOpen]);
 
   return (
-    <div className='relative flex min-h-screen items-center overflow-hidden bg-[#0b1122] text-[#f3f7ff]'>
+    <div className='relative flex min-h-screen items-center overflow-hidden bg-[#0b1122] pt-24 text-[#f3f7ff] md:pt-0'>
       <Modal show={modalOpen} onClose={() => setModalOpen(false)} />
-
-      {/* Absolute positioned header elements */}
-      <div className='absolute top-6 left-6 z-30'>
-        <Logo className='w-[60px]' />
-      </div>
-
-      <div className='absolute top-6 right-6 z-50'>
-        {/* <ButtonTop
-          onClick={toggleGallery}
-          text={galleryOpen ? "X" : "Galleria"}
-          onClickScrolled={() => navigate('/galleria')}
-          textScrolled='Ordina ora'
-        /> */}
-
-        <ButtonTop
-          onClick={() => navigate('/galleria')}
-          text={"Ordina"}
-          onClickScrolled={() => navigate('/galleria')}
-          textScrolled='Ordina ora'
-        />
-      </div>
 
       {galleryOpen && (
         <div className="absolute top-20 left-1/2 z-50 flex w-max -translate-x-1/2 scale-[.84] flex-wrap justify-center gap-4 rounded-xl border border-white/20 bg-[#0d1732]/95 p-4 text-[#f2f6ff] sm:scale-100">
